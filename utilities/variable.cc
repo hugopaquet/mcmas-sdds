@@ -105,7 +105,7 @@ variable::get_var_type()
 {
   return var_type;
 }
-
+ /*
 ADD
 variable::build_ADD_tree(Cudd * bddmgr, vector<ADD> * addv, map< string,
                          ADD > *ADD_cache)
@@ -140,4 +140,4 @@ variable::encode_BDD_false(Cudd * bddmgr, vector<BDD> * v)
   }
   return bddmgr->bddZero();
 }
-
+*/

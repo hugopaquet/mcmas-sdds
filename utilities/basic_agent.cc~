@@ -304,7 +304,7 @@ map< string, vector< bool > *>*basic_agent::get_action_indices()
 {
   return action_indices;
 }
-
+/*
 int
 basic_agent::allocate_BDD_2_variables(int start)
 {
@@ -338,8 +338,8 @@ basic_agent::allocate_BDD_2_actions(int start)
   set_action_index_end(end - 1);
   return end;
 }
-
-BDD
+/*
+/* BDD
 basic_agent::encode_action(bdd_parameters * para, string act)
 {
   map< string, vector< bool > *>::iterator k = action_indices->find(act);
@@ -778,132 +778,6 @@ basic_agent::check_lobsvars(map< string, basictype * >*envars)
   return true;
 }
 
-void
-basic_agent::print_stateXML(ofstream * myfile, BDD state, vector<BDD> v)
-{
-  if (obsvars != NULL)
-    for (map< string, basictype * >::iterator i = obsvars->begin();
-         i != obsvars->end(); i++) {
-      i->second->print_stateXML(myfile, state, v);
-    }
-  if (vars != NULL)
-    for (map< string, basictype * >::iterator i = vars->begin();
-         i != vars->end(); i++) {
-      i->second->print_stateXML(myfile, state, v);
-    }
-}
-
-string
-basic_agent::state_to_str(BDD state, vector<BDD> v)
-{
-  ostringstream s;
-  if (obsvars != NULL)
-    for (map< string, basictype * >::iterator i = obsvars->begin();
-         i != obsvars->end(); i++) {
-      s << "    " << i->second->state_to_str(state, v) << "\n";
-    }
-  if (vars != NULL)
-    for (map< string, basictype * >::iterator i = vars->begin();
-         i != vars->end(); i++) {
-      s << "    " << i->second->state_to_str(state, v) << "\n";
-    }
-  return s.str();
-}
-
-string
-basic_agent::action_to_str(BDD state, vector<BDD> a)
-{
-  ostringstream s;
-  vector< bool > index;
-  for (int i = action_index_begin; i <= action_index_end; i++)
-    if (state <= a[i])
-      index.push_back(true);
-    else
-      index.push_back(false);
-  for (map< string, vector< bool > *>::iterator i = action_indices->begin();
-       i != action_indices->end(); i++) {
-    bool flag = true;
-    for (unsigned int j = 0; j < i->second->size(); j++)
-      if ((*(i->second))[j] != index[j]) {
-        flag = false;
-        break;
-      }
-    if (flag) {
-      s << i->first;
-    }
-  }
-  return s.str();
-}
-
-BDD
-basic_agent::project_local_state(BDD * state, Cudd * bddmgr, vector<BDD> * v)
-{
-  BDD tmp = bddmgr->bddOne(); // Always true
-
-  if (lobsvars != NULL && lobsvars->size() > 0) {
-    map< string, basictype * >*envars = (*agents)[0]->get_vars();
-    for (map< string, basictype * >::iterator i = envars->begin();
-         i != envars->end(); i++) {
-      if (lobsvars->find(i->first) == lobsvars->end()) {  // i->first is not local observable variable 
-        basictype *bt = i->second;
-        int index_begin = bt->get_index_begin();
-        int index_end = bt->get_index_end();
-        for (int j = index_begin; j <= index_end; j++)
-          tmp = tmp * (*v)[j];
-      }
-    }
-    for (int j = envars_bdd_length; j < get_var_index_begin(); j++) {
-      tmp = tmp * (*v)[j];
-    }
-  } else {
-    for (int j = obsvars_bdd_length; j < get_var_index_begin(); j++) {
-      tmp = tmp * (*v)[j];
-    }
-  }
-
-  for (unsigned int j = get_var_index_end() + 1; j < v->size(); j++) {
-    tmp = tmp * (*v)[j];
-  }
-
-  return state->ExistAbstract(tmp);
-}
-
-BDD
-basic_agent::project_local_trans(BDD * trans, Cudd * bddmgr, vector<BDD> * v,
-                                 vector<BDD> * pv)
-{
-  BDD tmp = bddmgr->bddOne(); // Always true
-
-  for (int j = 0; j < get_var_index_begin(); j++) {
-    tmp = tmp * (*v)[j];
-    tmp = tmp * (*pv)[j];
-  }
-
-  for (unsigned int j = get_var_index_end() + 1; j < v->size(); j++) {
-    tmp = tmp * (*v)[j];
-    tmp = tmp * (*pv)[j];
-  }
-
-  return trans->ExistAbstract(tmp);
-}
-
-vector<BDD>
-basic_agent::get_BDDvector(Cudd * bddmgr, vector<BDD> * v, vector<BDD> * pv)
-{
-  int begin = get_var_index_begin();
-  int end = get_var_index_end();
-  vector<BDD> tmp;
-  int k = 0;
-
-  for (int j = begin; j <= end; j++)
-    tmp[k++] = (*v)[j];
-
-  for (int j = begin; j <= end; j++)
-    tmp[k++] = (*pv)[j];
-
-  return tmp;
-}
-
 basictype*
 basic_agent::get_var_def(string varname) {
 	if (obsvars != NULL) {
@@ -918,4 +792,4 @@ basic_agent::get_var_def(string varname) {
 	}
     
   return NULL;
-}
+} */

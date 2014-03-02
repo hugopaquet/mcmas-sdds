@@ -304,7 +304,7 @@ map< string, vector< bool > *>*basic_agent::get_action_indices()
 {
   return action_indices;
 }
-
+/*
 int
 basic_agent::allocate_BDD_2_variables(int start)
 {
@@ -338,8 +338,8 @@ basic_agent::allocate_BDD_2_actions(int start)
   set_action_index_end(end - 1);
   return end;
 }
-
-BDD
+/*
+/* BDD
 basic_agent::encode_action(bdd_parameters * para, string act)
 {
   map< string, vector< bool > *>::iterator k = action_indices->find(act);
@@ -711,7 +711,7 @@ basic_agent::is_valid_action(BDD state, vector<BDD> a)
   }
   return false;
 }
-
+*/
 set< string > *basic_agent::get_obs_enum_values()
 {
   if (obsvars != NULL) {
@@ -792,4 +792,4 @@ basic_agent::get_var_def(string varname) {
 	}
     
   return NULL;
-}
+} 

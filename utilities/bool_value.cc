@@ -39,31 +39,3 @@ bool_value::to_string()
   return (value ? "true" : "false");
 }
 
-ADD
-bool_value::build_ADD_tree(Cudd * bddmgr, vector<ADD> * addv, map< string,
-                           ADD > *ADD_cache)
-{
-  if (value)
-    return bddmgr->addOne();
-  else
-    return bddmgr->addZero();
-}
-
-BDD
-bool_value::encode_BDD_true(Cudd * bddmgr, vector<BDD> * v)
-{
-  if (value)
-    return bddmgr->bddOne();
-  else
-    return bddmgr->bddZero();
-}
-
-BDD
-bool_value::encode_BDD_false(Cudd * bddmgr, vector<BDD> * v)
-{
-  if (value)
-    return bddmgr->bddZero();
-  else
-    return bddmgr->bddOne();
-}
-

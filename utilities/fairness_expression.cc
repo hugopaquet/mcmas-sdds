@@ -26,21 +26,3 @@ fairness_expression::fairness_expression(atomic_proposition * obj1):
 {
 }
 
-BDD
-fairness_expression::get_bdd_representation()
-{
-  return bdd_representation;
-}
-
-void
-fairness_expression::set_bdd_representation(BDD bddrep)
-{
-  bdd_representation = bddrep;
-}
-
-void 
-fairness_expression::delete_bdd_representation(bdd_parameters *para)
-{
-  if(para != NULL)
-    bdd_representation = para->bddmgr->bddZero();
-}

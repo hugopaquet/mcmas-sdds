@@ -41,16 +41,6 @@ evolution_line::to_string()
   return str;
 }
 
-BDD
-evolution_line::encode_bdd_assignements(bdd_parameters * para)
-{
-  BDD tmpbdd = para->bddmgr->bddOne();
-  for (vector< assignment * >::iterator i = assignments->begin();
-       i != assignments->end(); i++)
-    tmpbdd = (*i)->encode_bdd(para, tmpbdd);
-  return tmpbdd;
-}
-
 bool
 evolution_line::check_double_assignment()
 {
@@ -76,24 +66,6 @@ evolution_line::check_double_assignment()
   return flag;
 }
 
-BDD
-evolution_line::encode_bdd_condition(bdd_parameters * para)
-{
-  BDD tmpbdd = condition->encode_bdd_flat(para, para->bddmgr->bddOne());
-  return tmpbdd;
-}
-
-BDD 
-evolution_line::encode_bdd_overflow(bdd_parameters * para)
-{
-  BDD tmpbdd = para->bddmgr->bddZero();
-  for (vector< assignment * >::iterator i = assignments->begin();
-       i != assignments->end(); i++) {
-    tmpbdd += (*i)->encode_bdd_overflow(para);
-  }
-  tmpbdd *= encode_bdd_condition(para);
-  return tmpbdd;
-}
 
 vector< evolution_line * >*
 evolution_line::extend_to_all_variables(map<string, basictype*>* allvars)

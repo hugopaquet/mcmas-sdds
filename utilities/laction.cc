@@ -84,23 +84,3 @@ laction::to_string()
 {
   return (agent_name == NULL ? "" : *agent_name + ".") + "Action";
 }
-
-ADD
-laction::build_ADD_tree(Cudd * bddmgr, vector<ADD> * addv, map< string,
-                        ADD > *ADD_cache)
-{
-  return bddmgr->addZero();
-}
-
-BDD
-laction::encode_BDD_true(Cudd * bddmgr, vector<BDD> * v)
-{
-  return bddmgr->bddZero();
-}
-
-BDD
-laction::encode_BDD_false(Cudd * bddmgr, vector<BDD> * v)
-{
-  return bddmgr->bddZero();
-}
-

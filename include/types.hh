@@ -201,7 +201,7 @@ public:
 			     ADD > *ADD_cache);
   virtual BDD encode_BDD_true(Cudd * bddmgr, vector<BDD> * v);
   virtual BDD encode_BDD_false(Cudd * bddmgr, vector<BDD> * v); */
-  virtual bool equal_to(expression * expr);
+  virtual bool equal_to(expression * expr) =0;
 };
 
 class variable:public expression
@@ -224,9 +224,9 @@ public:
   basictype *get_var_type();
 /*  ADD build_ADD_tree(Cudd * bddmgr, vector<ADD> * addv, map< string,
 		     ADD > *ADD_cache);
-  bool equal_to(variable * expr);
+*/  bool equal_to(variable * expr);
   bool equal_to(expression * expr);
-  BDD encode_BDD_true(Cudd * bddmgr, vector<BDD> * v);
+/*  BDD encode_BDD_true(Cudd * bddmgr, vector<BDD> * v);
   BDD encode_BDD_false(Cudd * bddmgr, vector<BDD> * v); */
 };
 
@@ -245,13 +245,13 @@ public:
   string get_agent_name();
   void set_agent(basic_agent * a);
   basic_agent *get_agent();
-  bool is_agent_name_null();
+  bool is_agent_name_null();	
   string to_string();
 /*  ADD build_ADD_tree(Cudd * bddmgr, vector<ADD> * addv, map< string,
 		     ADD > *ADD_cache);
-  bool equal_to(laction * expr);
+*/  bool equal_to(laction * expr);
   bool equal_to(expression * expr);
-  BDD encode_BDD_true(Cudd * bddmgr, vector<BDD> * v);
+/*  BDD encode_BDD_true(Cudd * bddmgr, vector<BDD> * v);
   BDD encode_BDD_false(Cudd * bddmgr, vector<BDD> * v); */
 };
 
@@ -265,9 +265,9 @@ public:
   string to_string();
 /*  ADD build_ADD_tree(Cudd * bddmgr, vector<ADD> * addv, map< string,
 		     ADD > *ADD_cache);
-  bool equal_to(bool_value * expr);
+*/  bool equal_to(bool_value * expr);
   bool equal_to(expression * expr);
-  BDD encode_BDD_true(Cudd * bddmgr, vector<BDD> * v);
+/*  BDD encode_BDD_true(Cudd * bddmgr, vector<BDD> * v);
   BDD encode_BDD_false(Cudd * bddmgr, vector<BDD> * v); */
 };
 
@@ -297,9 +297,9 @@ public:
   string to_string();
 /*  ADD build_ADD_tree(Cudd * bddmgr, vector<ADD> * addv, map< string,
 		     ADD > *ADD_cache);
-  bool equal_to(enum_value * expr);
+*/  bool equal_to(enum_value * expr);
   bool equal_to(expression * expr);
-  BDD encode_BDD_true(Cudd * bddmgr, vector<BDD> * v);
+/*  BDD encode_BDD_true(Cudd * bddmgr, vector<BDD> * v);
   BDD encode_BDD_false(Cudd * bddmgr, vector<BDD> * v); */
 };
 
@@ -317,9 +317,9 @@ public:
   bool check_var_and_value(map< string, map< string, basictype * > >*vars);
 /*  ADD build_ADD_tree(Cudd * bddmgr, vector<ADD> * addv, map< string,
 		     ADD > *ADD_cache);
-  bool equal_to(arithmetic_expression * expr);
+ */ bool equal_to(arithmetic_expression * expr);
   bool equal_to(expression * expr);
-  BDD encode_BDD_true(Cudd * bddmgr, vector<BDD> * v);
+/*  BDD encode_BDD_true(Cudd * bddmgr, vector<BDD> * v);
   BDD encode_BDD_false(Cudd * bddmgr, vector<BDD> * v); */
 };
 
@@ -337,9 +337,9 @@ public:
   bool check_var_and_value(map< string, map< string, basictype * > >*vars);
 /*  ADD build_ADD_tree(Cudd * bddmgr, vector<ADD> * addv, map< string,
 		     ADD > *ADD_cache);
-  bool equal_to(bit_expression * expr);
+*/  bool equal_to(bit_expression * expr);
   bool equal_to(expression * expr);
-  BDD encode_BDD_true(Cudd * bddmgr, vector<BDD> * v);
+/*  BDD encode_BDD_true(Cudd * bddmgr, vector<BDD> * v);
   BDD encode_BDD_false(Cudd * bddmgr, vector<BDD> * v); */
 };
 
@@ -598,8 +598,8 @@ public:
   bool is_valid_action(BDD state, vector<BDD> a);
   void print_stateXML(ofstream * myfile, BDD state, vector<BDD> v);
   string state_to_str(BDD state, vector<BDD> v);
-  string action_to_str(BDD state, vector<BDD> v);
-	basictype *get_var_def(string varname); */
+  string action_to_str(BDD state, vector<BDD> v); */
+	basictype *get_var_def(string varname); 
 
   /*
    * delete all local states of other agent

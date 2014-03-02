@@ -43,21 +43,3 @@ enum_value::to_string()
   return get_value();
 }
 
-ADD
-enum_value::build_ADD_tree(Cudd * bddmgr, vector<ADD> * addv, map< string,
-                           ADD > *ADD_cache)
-{
-  return bddmgr->addZero();
-}
-
-BDD
-enum_value::encode_BDD_true(Cudd * bddmgr, vector<BDD> * v)
-{
-  return bddmgr->bddZero();
-}
-
-BDD
-enum_value::encode_BDD_false(Cudd * bddmgr, vector<BDD> * v)
-{
-  return bddmgr->bddZero();
-}

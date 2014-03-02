@@ -40,23 +40,3 @@ int_value::to_string()
   o << value;
   return o.str();
 }
-
-ADD
-int_value::build_ADD_tree(Cudd * bddmgr, vector<ADD> * addv, map< string,
-                          ADD > *ADD_cache)
-{
-  return bddmgr->constant(value);
-}
-
-BDD
-int_value::encode_BDD_true(Cudd * bddmgr, vector<BDD> * v)
-{
-  return bddmgr->bddZero();
-}
-
-BDD
-int_value::encode_BDD_false(Cudd * bddmgr, vector<BDD> * v)
-{
-  return bddmgr->bddZero();
-}
-

@@ -28,6 +28,8 @@ SYNTAXCHECK	= parser/syntaxcheck
 UTILITIES	= utilities/utilities
 READ_OPTIONS = utilities/read_options
 ATOMIC_PROPOSITION = utilities/atomic_proposition
+ARITHMETIC_EXPRESSION = utilities/arithmetic_expression
+ASSIGNMENT = utilities/assignment
 BASIC_AGENT = utilities/basic_agent
 BASICTYPE = utilities/basictype
 BIT_EXPRESSION = utilities/bit_expression
@@ -45,7 +47,6 @@ MODAL_FORMULA = utilities/modal_formula
 OBJECT = utilities/object
 PROTOCOL_LINE = utilities/protocol_line
 RANGEDINT = utilities/rangedint
-TRANSITION = utilities/transition
 VARIABLE = utilities/variable
 MAIN		= main_sdd
 LEX		= flex
@@ -74,7 +75,7 @@ all: makesdd mcmas
 makesdd: 
 	cd $(SDD) && make
 
-OBJECTS = parser/lex.yy.o $(GRAMMAR).o $(READ_OPTIONS).o $(DRIVER).o $(SYNTAXCHECK).o $(UTILITIES).o $(ATOMIC_PROPOSITION).o $(BASIC_AGENT).o $(BASICTYPE).o $(BIT_EXPRESSION).o $(BOOL_EXPRESSION).o $(BOOL_VALUE).o $(ENUMERATE).o $(ENUM_VALUE).o $(EVOLUTION_LINE).o $(EXPRESSION).o $(FAIRNESS_EXPRESSION).o $(INT_VALUE).o $(LACTION).o $(LOGIC_EXPRESSION).o $(MODAL_FORMULA).o $(OBJECT).o $(PROTOCOL_LINE).o $(RANGEDINT).o $(TRANSITION).o $(VARIABLE).o
+OBJECTS = parser/lex.yy.o $(GRAMMAR).o $(READ_OPTIONS).o $(DRIVER).o $(SYNTAXCHECK).o $(UTILITIES).o $(ATOMIC_PROPOSITION).o $(BASIC_AGENT).o $(BASICTYPE).o $(BIT_EXPRESSION).o $(BOOL_EXPRESSION).o $(BOOL_VALUE).o $(ENUMERATE).o $(ENUM_VALUE).o $(EVOLUTION_LINE).o $(EXPRESSION).o $(FAIRNESS_EXPRESSION).o $(ARITHMETIC_EXPRESSION).o $(ASSIGNMENT).o $(INT_VALUE).o $(LACTION).o $(LOGIC_EXPRESSION).o $(MODAL_FORMULA).o $(OBJECT).o $(PROTOCOL_LINE).o $(RANGEDINT).o $(VARIABLE).o
 
 mcmas : $(OBJECTS) $(MAIN).cc $(SDDLIB)
 	$(CPP) $(CPPFLAGS) $(INCLUDE) $(SDDLIB) $(PTHREADLIB) $(OBJECTS) -o mcmas $(MAIN).cc
@@ -99,6 +100,12 @@ $(READ_OPTIONS).o: include/utilities.hh $(READ_OPTIONS).cc
 
 $(ATOMIC_PROPOSITION).o: include/utilities.hh include/types.hh $(ATOMIC_PROPOSITION).cc
 	$(CPP) $(CPPFLAGS) $(INCLUDE) -c $(ATOMIC_PROPOSITION).cc -o $(ATOMIC_PROPOSITION).o
+
+$(ARITHMETIC_EXPRESSION).o: include/utilities.hh include/types.hh $(ARITHMETIC_EXPRESSION).cc
+	$(CPP) $(CPPFLAGS) $(INCLUDE) -c $(ARITHMETIC_EXPRESSION).cc -o $(ARITHMETIC_EXPRESSION).o
+
+$(ASSIGNMENT).o: include/utilities.hh include/types.hh $(ASSIGNMENT).cc
+	$(CPP) $(CPPFLAGS) $(INCLUDE) -c $(ASSIGNMENT).cc -o $(ASSIGNMENT).o
 
 $(BASIC_AGENT).o: include/utilities.hh include/types.hh $(BASIC_AGENT).cc
 	$(CPP) $(CPPFLAGS) $(INCLUDE) -c $(BASIC_AGENT).cc -o $(BASIC_AGENT).o
@@ -150,9 +157,6 @@ $(PROTOCOL_LINE).o: include/utilities.hh include/types.hh $(PROTOCOL_LINE).cc
 
 $(RANGEDINT).o: include/utilities.hh include/types.hh $(RANGEDINT).cc
 	$(CPP) $(CPPFLAGS) $(INCLUDE) -c $(RANGEDINT).cc -o $(RANGEDINT).o
-
-$(TRANSITION).o: include/utilities.hh include/types.hh $(TRANSITION).cc
-	$(CPP) $(CPPFLAGS) $(INCLUDE) -c $(TRANSITION).cc -o $(TRANSITION).o
 
 $(VARIABLE).o: include/utilities.hh include/types.hh $(VARIABLE).cc
 	$(CPP) $(CPPFLAGS) $(INCLUDE) -c $(VARIABLE).cc -o $(VARIABLE).o

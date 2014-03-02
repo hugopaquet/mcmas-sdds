@@ -21,7 +21,6 @@
 #include "types.hh"
 #include "utilities.hh"
 #include "mcmas-driver.hh"
-#include "cuddObj.hh"
 #include <sys/timeb.h>
 
 
@@ -46,8 +45,7 @@ string cex_prefix;    // Destination directory for counterexamples
 int scount;     // a global counter for counterexamples.
 int states_count = 0;
 int actions_count = 0;
-Cudd_ReorderingType REORDERING = CUDD_REORDER_GROUP_SIFT_CONV;
-bdd_parameters * parameters; /* copy of the single parameters for the signal handler */
+//bdd_parameters * parameters; /* copy of the single parameters for the signal handler */
 
 bool global_consistency_check();
 bool read_options(int argc, char *argv[]);
@@ -78,12 +76,12 @@ mcmas_signal_handler(int signal)
   }
 
   /* check if we have bdd_stats */
-  if (options["bdd_stats"] == 1) {
-    /* check if we have a single BDD parameter and a bddmgr */
+/*  if (options["bdd_stats"] == 1) {
+    // check if we have a single BDD parameter and a bddmgr 
     if (parameters && (parameters->bddmgr))	{
-      parameters->bddmgr->info(); /* print the current bdd stats */
+      parameters->bddmgr->info(); // print the current bdd stats 
     }
-  }
+  } */
   exit(signal);
 }
 
@@ -94,12 +92,13 @@ print_banner(void)
     "************************************************************************"
        << endl;
   cout << "A Model Checker Based on Multi-Agent Systems" << endl;
+  cout << "\t\tThis version uses SDDs." << endl;
   cout <<
     "************************************************************************"
        << endl << endl;
 }
 
-
+/*
 void
 print_state(BDD state, vector<BDD> v)
 {
@@ -121,7 +120,7 @@ state_to_str(BDD state, vector<BDD> v)
   }
   return s.str();
 }
-
+*/
 bool
 find_same_state(map< string, int >*statehash, string state)
 {
@@ -133,7 +132,7 @@ find_same_state(map< string, int >*statehash, string state)
   }
   return false;
 }
-
+/*
 bool
 is_valid_state(BDD state, vector<BDD> v)
 {
@@ -255,7 +254,7 @@ void free_mcmas_memory(bdd_parameters *para) {
 }
 
 
-
+*/
 int
 main(int argc, char *argv[])
 {
@@ -288,10 +287,8 @@ main(int argc, char *argv[])
 
   if (read_options(argc, argv))
     exit(1);
-  cout << "This is the version of MCMAS " << endl;
 
   print_banner();
-  cout << "This version uses SDDs." << endl;
 
   is_agents = new map< string, basic_agent * >;
   agents = new vector< basic_agent * >;
@@ -313,15 +310,20 @@ main(int argc, char *argv[])
      cout << "Global syntax checking..." << endl;
     if (!global_consistency_check()) {
       cout << filename << " has error(s)." << endl;
-      free_mcmas_memory(NULL);
+      //free_mcmas_memory(NULL);
       exit(-1);
     }
     if (options["quiet"] == 0)
       cout << "Done" << endl;
   } else {
     cout << filename << " has syntax error(s)." << endl;
-    free_mcmas_memory(NULL);
+   // free_mcmas_memory(NULL);
     exit(-1);
+  }
+	cout << "hello!" << endl;
+  for(int i = 0; i < agents->size(); i++)
+  {
+		cout << (*agents)[i]->to_string() << endl;
   }
 
   cout << "THE END" << endl;

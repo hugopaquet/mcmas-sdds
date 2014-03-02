@@ -203,6 +203,7 @@ modal_formula::check_atomic_proposition(unsigned char type)
   return false;
 }
 
+/*
 BDD
 modal_formula::check_formula(bdd_parameters * para)
 {
@@ -337,7 +338,7 @@ modal_formula::check_formula(bdd_parameters * para)
   }
   return result * (*para->reach);
 }
-
+*/
 modal_formula *
 modal_formula::push_negations(unsigned int level)
 {
@@ -799,6 +800,7 @@ modal_formula::is_NoCTL()
  * the wrong initial state)
  */
 /** index is used to retrieve the index of the state */
+/*
 bool
 modal_formula::build_cex(BDD * state, unsigned int index, bdd_parameters * para, 
                          vector< vector< int >*>* countex, map< int, BDD * >* idbdd, 
@@ -951,7 +953,7 @@ modal_formula::build_cex(BDD * state, unsigned int index, bdd_parameters * para,
 						(*Qh[i])[j]->print(2, 2);
 						}
 				}*/
-  
+ /* 
         unsigned int count;
         BDD predecessors;
         bool restart;
@@ -1373,7 +1375,7 @@ modal_formula::build_cex(BDD * state, unsigned int index, bdd_parameters * para,
         }
         curstate = aset2.PickOneMinterm(*para->v);
 
-        /* print state */
+        /* print state *//*
         tmpresult.push_back(new BDD(curstate));
 
         j++;
@@ -1559,7 +1561,7 @@ modal_formula::build_cex(BDD * state, unsigned int index, bdd_parameters * para,
         for (unsigned int i = 1; i < tmpresult.size(); i++) {
           string strkey = state_to_str(*tmpresult[i], *para->v);
           map< string, int >::iterator gi = statekeys.find(strkey);
-          ((modal_formula *) obj[1])->build_cex(tmpresult[i], /* ++position1 */
+          ((modal_formula *) obj[1])->build_cex(tmpresult[i], /* ++position1 */ /*
                                                 gi->second, para, countex, idbdd, cextr);
         }
       }
@@ -2858,4 +2860,4 @@ modal_formula::build_cex(BDD * state, unsigned int index, bdd_parameters * para,
   return false;
 
 }
-
+*/

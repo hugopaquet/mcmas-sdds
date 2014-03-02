@@ -1035,6 +1035,7 @@ logic_expression::check_global_consistency(map< string, map< string,
   return false;
 }
 
+/*
 BDD
 logic_expression::encode_bdd(bdd_parameters * para, BDD base)
 {
@@ -1222,4 +1223,4 @@ logic_expression::encode_bdd(bdd_parameters * para, BDD base)
 
   return tmpbdd;
 }
-
+*/
