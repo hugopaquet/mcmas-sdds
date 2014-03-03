@@ -7,14 +7,11 @@ SDD	= sdd-1.1.1/
 CPP     = g++
 # C compiler
 CC 	= gcc
-# CC and C compilation flags
-CCFLAGS	= -O3 -g
-CFLAGS = -std=c99 -O2 -Wall -finline-functions -Iinclude
+
 # CPP compilation flags
-CPPFLAGS = -O3 -W -g
-INCLUDE = -Iinclude -I$(SDD)include
-# SDD Library flags
-LIBRARY_FLAGS = -Llib -lsdd -lm
+CPPFLAGS = -O3 -W -g -finline-functions -Llib -lsdd -lm 
+INCLUDE = -Iinclude
+
 # ---- END COMPILERS ----
 
 GCC_MAJOR := $(shell (echo|gcc -dM -E -|grep __GNUC__|cut -d' ' -f3))
@@ -63,14 +60,14 @@ else
 endif
 ############################################################################
 
-SDDLIB = $(SDD)lib/libsdd.a
+SDDLIB = lib/libsdd.a
 SDD_MAKEFILE = Makefile
 
 PTHREADLIB = -lpthread
 
 default: all
 
-all: makesdd mcmas  
+all: mcmas  
 
 makesdd: 
 	cd $(SDD) && make
@@ -78,7 +75,7 @@ makesdd:
 OBJECTS = parser/lex.yy.o $(GRAMMAR).o $(READ_OPTIONS).o $(DRIVER).o $(SYNTAXCHECK).o $(UTILITIES).o $(ATOMIC_PROPOSITION).o $(BASIC_AGENT).o $(BASICTYPE).o $(BIT_EXPRESSION).o $(BOOL_EXPRESSION).o $(BOOL_VALUE).o $(ENUMERATE).o $(ENUM_VALUE).o $(EVOLUTION_LINE).o $(EXPRESSION).o $(FAIRNESS_EXPRESSION).o $(ARITHMETIC_EXPRESSION).o $(ASSIGNMENT).o $(INT_VALUE).o $(LACTION).o $(LOGIC_EXPRESSION).o $(MODAL_FORMULA).o $(OBJECT).o $(PROTOCOL_LINE).o $(RANGEDINT).o $(VARIABLE).o
 
 mcmas : $(OBJECTS) $(MAIN).cc $(SDDLIB)
-	$(CPP) $(CPPFLAGS) $(INCLUDE) $(SDDLIB) $(PTHREADLIB) $(OBJECTS) -o mcmas $(MAIN).cc
+	$(CPP) $(CPPFLAGS) $(INCLUDE) $(SDDLIB) $(PTHREADLIB) $(OBJECTS) -o mcmas $(MAIN).cc $(SDDLIB)
 
 parser/lex.yy.o: $(LEXFILE).ll $(GRAMMAR)$(BISONSUFFIX).yy
 	$(LEX) -oparser/lex.yy.c $(LEXFILE).ll

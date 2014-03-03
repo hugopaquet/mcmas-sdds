@@ -23,7 +23,9 @@
 #include "mcmas-driver.hh"
 #include <sys/timeb.h>
 
-
+extern "C" {
+	#include "sddapi.h"
+}
 using namespace std;
 
 vector< string * >*string_table;
@@ -323,8 +325,17 @@ main(int argc, char *argv[])
 	cout << "hello!" << endl;
   for(int i = 0; i < agents->size(); i++)
   {
-		cout << agents[i]->to_string() << endl;
+		cout << (*agents)[i]->to_string() << endl;
   }
+
+	SddLiteral var_count = 5;
+	
+	// initial number of variables
+	int auto_gc_and_minimize = 0; // disable (0) or enable (1) auto-gc & auto-min
+	SddManager* manager = sdd_manager_create(var_count,auto_gc_and_minimize);
+	cout << "Manager was created!" << endl;
+	sdd_manager_free(manager);
+
 
   cout << "THE END" << endl;
 
