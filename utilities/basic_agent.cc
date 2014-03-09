@@ -78,7 +78,7 @@ string *
 basic_agent::get_name_point()
 {
   return name;
-}
+}	
 
 map< string, basictype * >*basic_agent::get_obsvars()
 {
@@ -304,7 +304,7 @@ map< string, vector< bool > *>*basic_agent::get_action_indices()
 {
   return action_indices;
 }
-/*
+
 int
 basic_agent::allocate_BDD_2_variables(int start)
 {
@@ -362,40 +362,36 @@ basic_agent::encode_protocol(bdd_parameters * para)
   BDD nullaction = para->bddmgr->bddOne();
   if (protocol->size() == 0)
     return para->bddmgr->bddOne();
-  if(protocol->back()->get_condition()->is_other_branch()) {
-    for (vector< protocol_line * >::iterator i = protocol->begin();
-	 i != protocol->end(); i++) {
+  if(protocol->back()->get_condition()->is_other_branch())
+  {
+    for (vector< protocol_line * >::iterator i = protocol->begin(); i != protocol->end(); i++) {
       bool_expression *condition = (*i)->get_condition();
       BDD tmpcond = para->bddmgr->bddOne();
       if (!condition->is_other_branch()) {
-	tmpcond = condition->encode_bdd_flat(para, para->bddmgr->bddOne());
-	nullaction = nullaction * !tmpcond;
+				tmpcond = condition->encode_bdd_flat(para, para->bddmgr->bddOne());
+				nullaction = nullaction * !tmpcond;
       } else
-	tmpcond = nullaction;
-      
-      BDD tmpact = para->bddmgr->bddZero();
-      set< string > *actions = (*i)->get_actions();
-      for (set< string >::iterator j = actions->begin(); j != actions->end();
-	   j++) {
-	tmpact = tmpact + encode_action(para, *j);
+				tmpcond =	 nullaction;
+		  BDD tmpact = para->bddmgr->bddZero();
+		  set< string > *actions = (*i)->get_actions();
+      for (set< string >::iterator j = actions->begin(); j != actions->end(); j++) {
+				tmpact = tmpact + encode_action(para, *j);
       }
-      
       BDD oneline = tmpcond * tmpact;
-      
       bddprot = bddprot + oneline;
     }
-  } else {
-    for (vector< protocol_line * >::iterator i = protocol->begin();
-	 i != protocol->end(); i++) {
+  } 
+	else 
+	{
+    for (vector< protocol_line * >::iterator i = protocol->begin(); i != protocol->end(); i++) {
       bool_expression *condition = (*i)->get_condition();
       BDD tmpcond = para->bddmgr->bddOne();
       tmpcond = condition->encode_bdd_flat(para, para->bddmgr->bddOne());
       
       BDD tmpact = para->bddmgr->bddZero();
       set< string > *actions = (*i)->get_actions();
-      for (set< string >::iterator j = actions->begin(); j != actions->end();
-	   j++) {
-	tmpact = tmpact + encode_action(para, *j);
+      for (set< string >::iterator j = actions->begin(); j != actions->end(); j++) {
+				tmpact = tmpact + encode_action(para, *j);
       }
       
       BDD oneline = tmpcond * tmpact;

@@ -201,7 +201,7 @@ public:
 			     ADD > *ADD_cache);
   virtual BDD encode_BDD_true(Cudd * bddmgr, vector<BDD> * v);
   virtual BDD encode_BDD_false(Cudd * bddmgr, vector<BDD> * v); */
-  pure virtual bool equal_to(expression * expr);
+  virtual bool equal_to(expression * expr) =0;
 };
 
 class variable:public expression

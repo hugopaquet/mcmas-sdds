@@ -322,15 +322,42 @@ main(int argc, char *argv[])
    // free_mcmas_memory(NULL);
     exit(-1);
   }
-	cout << "hello!" << endl;
 
+	// Count number of boolean variables needed to encode the model (states and actions)
+	// TODO rename BDD functions
+	for (unsigned int i = 0; i < agents->size(); i++) {
+ 	  states_count += (*agents)[i]->state_BDD_length();
+    actions_count += (*agents)[i]->actions_BDD_length();
+  }
 
-	SddLiteral var_count = 5;
-	
-	// initial number of variables
-	int auto_gc_and_minimize = 0; // disable (0) or enable (1) auto-gc & auto-min
+	// Allocate variables to each agent (states/variables + actions). This is setting the indices in each agens
+  int k1 = 0;
+  int k2 = 0;
+  for (unsigned int i = 0; i < agents->size(); i++) { 
+    k1 = (*agents)[i]->allocate_BDD_2_variables(k1);
+    k2 = (*agents)[i]->allocate_BDD_2_actions(k2);
+  }
+
+	// Create and setup SDD manager
+	SddLiteral var_count = 2*states_count + actions_count;
+	int auto_gc_and_minimize = 1; //yes
 	SddManager* manager = sdd_manager_create(var_count,auto_gc_and_minimize);
-	cout << "Manager was created!" << endl;
+
+	// Compute transition relation SDD for each agent
+	// vector<SDD*>* transition_relation_vector = new vector<SDD*>;
+	for (unsigned int i = 0; i < agents->size(); i++) {
+		// encode protocol into SDD protocol_sdd
+		// encode evolution into SDD evolution_sdd
+		// add protocol_sdd && evolution_sdd to transition_relation_vector
+	}
+
+	// Make SDD for initial states 
+
+
+	// Compute Reachable States
+
+
+
 	sdd_manager_free(manager);
 
 

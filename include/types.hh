@@ -583,9 +583,9 @@ public:
   void generate_action_bdd_value();
   void print_value_index();
   map< string, vector< bool > *>*get_action_indices();
-/*  int allocate_BDD_2_variables(int start);
+  int allocate_BDD_2_variables(int start);
   int allocate_BDD_2_actions(int start);
-  BDD encode_action(bdd_parameters * para, string act);
+/*  BDD encode_action(bdd_parameters * para, string act);
   BDD encode_protocol(bdd_parameters * para);
   BDD encode_evolution(bdd_parameters * para);
   BDD encode_evolution_smv(bdd_parameters * para);

@@ -711,7 +711,7 @@ basic_agent::is_valid_action(BDD state, vector<BDD> a)
   }
   return false;
 }
-
+*/
 set< string > *basic_agent::get_obs_enum_values()
 {
   if (obsvars != NULL) {
@@ -792,4 +792,4 @@ basic_agent::get_var_def(string varname) {
 	}
     
   return NULL;
-} */
+} 
