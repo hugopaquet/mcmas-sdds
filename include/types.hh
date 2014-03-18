@@ -11,6 +11,9 @@
 #include <vector>
 #include <string>
 #include <map>
+extern "C" {
+	#include "sddapi.h"
+}
 
 #define MAX_ID_LENGTH 50
 
@@ -81,8 +84,15 @@ struct bdd_parameters1
 	bool *termination;
   BDD **reach1;
 };
+*/ 
 
+struct parameters { 
+	vector<SddNode*>* action_variable_sdds;
+	vector<SddNode*>* variable_sdds;
+	vector<SddNode*>* primed_variable_sdds;
+};
 
+/*
 typedef BDD* BDD_ptr; 
 typedef BDD** BDD_ptr_ptr; 
 typedef vector<BDD*> * vec_BDD_ptr;
@@ -198,9 +208,9 @@ public:
   unsigned char get_type();
   virtual string to_string();
 /*  virtual ADD build_ADD_tree(Cudd * bddmgr, vector<ADD> * addv, map< string,
-			     ADD > *ADD_cache);
-  virtual BDD encode_BDD_true(Cudd * bddmgr, vector<BDD> * v);
-  virtual BDD encode_BDD_false(Cudd * bddmgr, vector<BDD> * v); */
+			     ADD > *ADD_cache); */
+  virtual SddNode* encode_sdd_true(SddManager* manager, vector<SddNode*> * v);
+  virtual SddNode* encode_sdd_false(SddManager* manager, vector<SddNode*> * v);
   virtual bool equal_to(expression * expr) =0;
 };
 
@@ -339,8 +349,8 @@ public:
 		     ADD > *ADD_cache);
 */  bool equal_to(bit_expression * expr);
   bool equal_to(expression * expr);
-/*  BDD encode_BDD_true(Cudd * bddmgr, vector<BDD> * v);
-  BDD encode_BDD_false(Cudd * bddmgr, vector<BDD> * v); */
+  SddNode* encode_sdd_true(SddManager* manager, vector<SddNode*> * v);
+  SddNode* encode_sdd_false(SddManager* manager, vector<SddNode*> * v);
 };
 
 class logic_expression:public Object
@@ -361,6 +371,7 @@ public:
   bool check_global_consistency(map< string, map< string,
 				basictype * > >*vars);
 /*  BDD encode_bdd(bdd_parameters * para, BDD base); */
+	SddNode* encode_sdd(SddManager* manager, struct parameters* params);
   bool equal_to(logic_expression * expr);
   bool equal_to(expression * e1, expression * e2);
 };
@@ -396,6 +407,8 @@ public:
 /*  BDD encode_bdd_flat(bdd_parameters * para, BDD base); */
   bool equal_to(bool_expression * expr);
   bool equal_to(expression * e1, expression * e2);
+  SddNode* encode_sdd(SddManager* manager, struct parameters* params);
+
 };
 
 class atomic_proposition:public Object
@@ -498,8 +511,8 @@ public:
   string to_string();
   bool check_var_and_value(map< string, basictype * >*obsvars, map< string,
 			   basictype * >*vars);
-//  BDD encode_bdd(bdd_parameters * para, BDD base);
-//  BDD encode_bdd_overflow(bdd_parameters * para);
+  SddNode* encode_sdd(SddManager* manager, struct parameters * params, SddNode* base);
+
 };
 
 /*
@@ -517,6 +530,8 @@ public:
   string to_string();
 /*  BDD encode_bdd_assignements(bdd_parameters * para);
   BDD encode_bdd_condition(bdd_parameters * para); */
+	SddNode* encode_sdd_assignments(SddManager * manager, struct parameters* params); 
+	SddNode* encode_sdd_condition(SddManager * manager, struct parameters* params); 
   bool check_double_assignment();
   vector< evolution_line * >*extend_to_all_variables(map< string,
 						      basictype *
@@ -585,6 +600,10 @@ public:
   map< string, vector< bool > *>*get_action_indices();
   int allocate_BDD_2_variables(int start);
   int allocate_BDD_2_actions(int start);
+	SddNode* encode_action(SddManager * manager, string action_name, vector<SddNode*>* action_variable_sdds);
+	SddNode * encode_protocol(SddManager * manager, struct parameters* params);
+	SddNode * encode_evolution(SddManager * manager, struct parameters * params);
+
 /*  BDD encode_action(bdd_parameters * para, string act);
   BDD encode_protocol(bdd_parameters * para);
   BDD encode_evolution(bdd_parameters * para);

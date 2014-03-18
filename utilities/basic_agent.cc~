@@ -1,6 +1,9 @@
 #include <ctime>
 #include "types.hh"
 #include "utilities.hh"
+extern "C" {
+	#include "sddapi.h"
+}
 
 using namespace std;
 
@@ -78,7 +81,7 @@ string *
 basic_agent::get_name_point()
 {
   return name;
-}
+}	
 
 map< string, basictype * >*basic_agent::get_obsvars()
 {
@@ -288,6 +291,7 @@ basic_agent::generate_action_bdd_value()
   }
 }
 
+
 void
 basic_agent::print_value_index()
 {
@@ -304,7 +308,7 @@ map< string, vector< bool > *>*basic_agent::get_action_indices()
 {
   return action_indices;
 }
-/*
+
 int
 basic_agent::allocate_BDD_2_variables(int start)
 {
@@ -338,8 +342,170 @@ basic_agent::allocate_BDD_2_actions(int start)
   set_action_index_end(end - 1);
   return end;
 }
+
+SddNode* 
+basic_agent::encode_action(SddManager * manager, string action_name, vector<SddNode*>* action_variable_sdds) 
+{
+  map< string, vector< bool > *>::iterator k = action_indices->find(action_name);
+  if (k != action_indices->end()) {
+    SddNode* encoding = sdd_manager_true(manager);
+    vector< bool > *variable_vector = (*k).second;
+    for (int i = action_index_begin; i <= action_index_end; i++) {
+  	  encoding = sdd_conjoin(encoding, (*variable_vector)[i - action_index_begin] ? (*action_variable_sdds)[i] : sdd_negate((*action_variable_sdds)[i], manager), manager);
+		}
+
+    return encoding;
+  } else 
+	return 0;
+}
+
+
+SddNode* 
+basic_agent::encode_protocol(SddManager * manager, struct parameters* params) 
+{
+	SddNode* protocol_sdd = sdd_manager_false(manager);
+  for (vector<protocol_line *>::iterator i = protocol->begin(); i != protocol->end(); i++) {
+		SddNode* condition_sdd = sdd_manager_false(manager);
+		bool_expression* condition = (*i)->get_condition();
+		if(!condition->is_other_branch()) {
+			condition_sdd = condition->encode_sdd(manager, params);
+		} else {
+			condition_sdd = sdd_manager_true(manager);
+		}	
+
+		SddNode* actions_sdd = sdd_manager_false(manager); // start from condition rather than false? 
+		for(set<string>::iterator j = (*i)->get_actions()->begin(); j != (*i)->get_actions()->end(); j++) {
+			string action_name = (*j);
+			//sdd_manager_auto_gc_and_minimize_off(manager);
+			actions_sdd = sdd_disjoin(actions_sdd, encode_action(manager, action_name, params->action_variable_sdds), manager);
+			//sdd_manager_auto_gc_and_minimize_on(manager);
+		}
+		SddNode* line = sdd_conjoin(condition_sdd, actions_sdd, manager);
+
+		protocol_sdd = sdd_disjoin(protocol_sdd, line, manager);			
+	}
+	cout << "Finished encoding the protocol for " << get_name() << endl;
+
+	return protocol_sdd;
+}
+
+
+SddNode* 
+basic_agent::encode_evolution(SddManager * manager, struct parameters * params) 
+{
+	SddNode * evolution_sdd = sdd_manager_false(manager);
+	SddNode * lastcond_sdd = sdd_manager_true(manager);
+  for (vector< evolution_line * >::iterator i = evolution->begin();
+       i != evolution->end(); i++) {
+    vector< assignment * >*assignments = (*i)->get_assignments();
+    map< string, basictype * >*mp = new map< string, basictype * >;
+  if (obsvars != NULL)
+      for (map< string, basictype * >::iterator j = obsvars->begin();
+           j != obsvars->end(); j++) {
+        bool found = false;
+        for (unsigned int k = 0; k < assignments->size(); k++) {
+          variable *var = (*assignments)[k]->get_var();
+          string varname = var->get_variable_name();
+          if (varname == j->first) {
+            found = true;
+            break;
+          }
+        }
+        if (!found)   // we add this variable to both sides
+          mp->insert(*j);
+      }
+    if (vars != NULL)
+      for (map< string, basictype * >::iterator j = vars->begin();
+           j != vars->end(); j++) {
+        bool found = false;
+        for (unsigned int k = 0; k < assignments->size(); k++) {
+          variable *var = (*assignments)[k]->get_var();
+          string varname = var->get_variable_name();
+          if (varname == j->first) {
+            found = true;
+            break;
+          }
+        }
+
+        if (!found)   // we add this variable to both sides
+          mp->insert(*j);
+      }
+    SddNode* assignment_sdd = (*i)->encode_sdd_assignments(manager, params);
+    SddNode* condition_sdd = (*i)->encode_sdd_condition(manager, params);
+
+		for (map< string, basictype * >::iterator j = mp->begin();
+         j != mp->end(); j++) {
+      int begin = j->second->get_index_begin();
+      int end = j->second->get_index_end();
+		//	sdd_manager_auto_gc_and_minimize_off(manager);
+      for (int k = begin; k <= end; k++) {
+				
+				assignment_sdd = sdd_conjoin(
+															assignment_sdd, 
+															sdd_conjoin(
+																	sdd_disjoin(
+																			sdd_negate((*params->variable_sdds)[k], manager),
+																		  (*params->primed_variable_sdds)[k],
+																			manager), 
+																  sdd_disjoin(
+																			(*params->variable_sdds)[k],
+																			sdd_negate((*params->primed_variable_sdds)[k], manager),
+																			manager),
+																  manager), 
+															manager);
+
+      }
+		//	sdd_manager_auto_gc_and_minimize_on(manager);
+
+    }
+		lastcond_sdd = sdd_conjoin(lastcond_sdd, sdd_negate(condition_sdd, manager), manager);
+		evolution_sdd = sdd_disjoin(evolution_sdd, sdd_conjoin(assignment_sdd, condition_sdd, manager), manager);	
+	}
+	SddNode* dnc = sdd_manager_true(manager);
+  int begin, end;
+  if (obsvars != NULL)
+    for (map< string, basictype * >::iterator i = obsvars->begin();
+         i != obsvars->end(); i++) {
+      basictype *var_type = (*i).second;
+      begin = var_type->get_index_begin();
+      end = var_type->get_index_end();	
+      for (int j = begin; j <= end; j++) {
+		//	sdd_manager_auto_gc_and_minimize_off(manager);
+				dnc = sdd_conjoin(dnc, sdd_conjoin(sdd_disjoin(sdd_negate((*params->variable_sdds)[j], manager), 
+											(*params->primed_variable_sdds)[j], manager), sdd_disjoin((*params->variable_sdds)[j], 
+											sdd_negate((*params->primed_variable_sdds)[j], manager), manager), manager), manager);
+		//	sdd_manager_auto_gc_and_minimize_on(manager);
+			}
+    }
+  if (vars != NULL) {
+    for (map< string, basictype * >::iterator i = vars->begin();
+         i != vars->end(); i++) {
+      basictype *var_type = (*i).second;
+      begin = var_type->get_index_begin();
+      end = var_type->get_index_end();
+      for (int j = begin; j <= end; j++) {
+	//			sdd_manager_auto_gc_and_minimize_off(manager);
+				dnc = sdd_conjoin(dnc, sdd_conjoin(sdd_disjoin(sdd_negate((*params->variable_sdds)[j], manager), 
+											(*params->primed_variable_sdds)[j], manager), sdd_disjoin((*params->variable_sdds)[j], 
+											sdd_negate((*params->primed_variable_sdds)[j], manager), manager), manager), manager);
+	//			sdd_manager_auto_gc_and_minimize_on(manager);
+				}
+			}
+		}
+  
+	lastcond_sdd = sdd_conjoin(lastcond_sdd, dnc, manager);
+
+  evolution_sdd =  sdd_disjoin(evolution_sdd, lastcond_sdd, manager);
+	if(!sdd_node_is_false(evolution_sdd)) {
+		cout << "evolution works!!" << endl;
+		sdd_save_as_dot("evo.dot", evolution_sdd);	
+}
+	cout << "gone through it" << endl;
+	return evolution_sdd;
+}
+ 
 /*
-/* BDD
+BDD
 basic_agent::encode_action(bdd_parameters * para, string act)
 {
   map< string, vector< bool > *>::iterator k = action_indices->find(act);
@@ -347,11 +513,9 @@ basic_agent::encode_action(bdd_parameters * para, string act)
     BDD temp = para->bddmgr->bddOne();
     vector< bool > *b = (*k).second;
     for (int i = action_index_begin; i <= action_index_end; i++)
-      temp =
-        temp *
-        ((*b)[i - action_index_begin] ? (*para->a)[i] : !(*para->a)[i]);
+      temp = temp * ((*b)[i - action_index_begin] ? (*para->a)[i] : !(*para->a)[i]);
     return temp;
-  }
+  }			condition_sdd = sdd_manager_true(manager);
   return para->bddmgr->bddZero();
 }
 
@@ -362,40 +526,36 @@ basic_agent::encode_protocol(bdd_parameters * para)
   BDD nullaction = para->bddmgr->bddOne();
   if (protocol->size() == 0)
     return para->bddmgr->bddOne();
-  if(protocol->back()->get_condition()->is_other_branch()) {
-    for (vector< protocol_line * >::iterator i = protocol->begin();
-	 i != protocol->end(); i++) {
+  if (protocol->back()->get_condition()->is_other_branch())
+  {
+    for (vector< protocol_line * >::iterator i = protocol->begin(); i != protocol->end(); i++) {
       bool_expression *condition = (*i)->get_condition();
       BDD tmpcond = para->bddmgr->bddOne();
       if (!condition->is_other_branch()) {
-	tmpcond = condition->encode_bdd_flat(para, para->bddmgr->bddOne());
-	nullaction = nullaction * !tmpcond;
+				tmpcond = condition->encode_bdd_flat(para, para->bddmgr->bddOne());
+				nullaction = nullaction * !tmpcond;
       } else
-	tmpcond = nullaction;
-      
-      BDD tmpact = para->bddmgr->bddZero();
-      set< string > *actions = (*i)->get_actions();
-      for (set< string >::iterator j = actions->begin(); j != actions->end();
-	   j++) {
-	tmpact = tmpact + encode_action(para, *j);
+				tmpcond =	 nullaction;
+		  BDD tmpact = para->bddmgr->bddZero();
+		  set< string > *actions = (*i)->get_actions();
+      for (set< string >::iterator j = actions->begin(); j != actions->end(); j++) {
+				tmpact = tmpact + encode_action(para, *j);
       }
-      
       BDD oneline = tmpcond * tmpact;
-      
       bddprot = bddprot + oneline;
     }
-  } else {
-    for (vector< protocol_line * >::iterator i = protocol->begin();
-	 i != protocol->end(); i++) {
+  } 
+	else 
+	{
+    for (vector< protocol_line * >::iterator i = protocol->begin(); i != protocol->end(); i++) {
       bool_expression *condition = (*i)->get_condition();
       BDD tmpcond = para->bddmgr->bddOne();
       tmpcond = condition->encode_bdd_flat(para, para->bddmgr->bddOne());
       
       BDD tmpact = para->bddmgr->bddZero();
       set< string > *actions = (*i)->get_actions();
-      for (set< string >::iterator j = actions->begin(); j != actions->end();
-	   j++) {
-	tmpact = tmpact + encode_action(para, *j);
+      for (set< string >::iterator j = actions->begin(); j != actions->end(); j++) {
+				tmpact = tmpact + encode_action(para, *j);
       }
       
       BDD oneline = tmpcond * tmpact;

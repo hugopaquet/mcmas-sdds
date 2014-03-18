@@ -257,9 +257,74 @@ void free_mcmas_memory(bdd_parameters *para) {
 
 
 */
+
+vector<SddNode*>* 
+compute_action_variable_sdds(SddManager* manager)
+{
+	vector<SddNode*>* a = new vector<SddNode*>;
+//	if(options["ordering"] == 1) {
+		for(int i = 1; i <= actions_count; i++) {
+			a->push_back(sdd_manager_literal(states_count*2 + i, manager));			
+		}
+		return a;	
+//	}
+//	if(options["ordering"] == 2) {
+//
+//	}
+}
+
+
+vector<SddNode*>* 
+compute_variable_sdds(SddManager* manager)
+{
+	vector<SddNode*>* v = new vector<SddNode*>;
+	for(int i = 1; i <= states_count; i++) {
+		v->push_back(sdd_manager_literal(i, manager));
+	} 
+	
+
+	return v;
+}
+
+vector<SddNode*>*
+compute_primed_variable_sdds(SddManager* manager) 
+{
+	vector<SddNode*>* pv = new vector<SddNode*>;
+	for(int i = 1; i <= states_count; i++) { 
+		pv->push_back(sdd_manager_literal(states_count + i, manager));
+	}
+	return pv;
+}
+
+void print_params(struct parameters * params) 
+{
+	cout << "Params:" << endl;
+	cout << "No. of state variables: " << states_count << endl;
+	cout << "No. of action variables: " << actions_count << endl;
+	cout << "Action vector: " << "Size " << params->action_variable_sdds->size() << endl;
+	for(unsigned int i = 0; i < params->action_variable_sdds->size(); i++) {
+		if((*params->action_variable_sdds)[i] == 0)
+			cout << "	null for i = " << i << endl; 
+	}
+	cout << "Variable vector: " << "Size " << params->variable_sdds->size() << endl;	
+	for(unsigned int i = 0; i < params->variable_sdds->size(); i++) 
+		if((*params->variable_sdds)[i] == 0)
+			cout << "		null for i = " << i << endl; 
+	cout << "Primed variable vector: " << "Size " << params->primed_variable_sdds->size() << endl;
+	for(unsigned int i = 0; i < params->primed_variable_sdds->size(); i++) 
+		if((*params->primed_variable_sdds)[i] == 0)
+			cout << "		null for i = " << i << endl; 
+
+}
+
+
 int
 main(int argc, char *argv[])
 {
+
+
+
+
   struct timeb tmb;
   ftime(&tmb);
 
@@ -339,24 +404,45 @@ main(int argc, char *argv[])
   }
 
 	// Create and setup SDD manager
-	SddLiteral var_count = 2*states_count + actions_count;
-	int auto_gc_and_minimize = 1; //yes
+	SddLiteral var_count = 2 * states_count + actions_count;
+	int auto_gc_and_minimize = 0; //1=yes
 	SddManager* manager = sdd_manager_create(var_count,auto_gc_and_minimize);
 
+
+	// Compute vector "a" = action_variable_sdds
+	struct parameters* params = new parameters;	
+	params->action_variable_sdds = compute_action_variable_sdds(manager); 
+	params->variable_sdds = compute_variable_sdds(manager);
+	params->primed_variable_sdds = compute_primed_variable_sdds(manager);
+
+	print_params(params);
+
 	// Compute transition relation SDD for each agent
-	// vector<SDD*>* transition_relation_vector = new vector<SDD*>;
+	
+  vector<SddNode*>* transition_relation_sdds = new vector<SddNode*>;
+	
 	for (unsigned int i = 0; i < agents->size(); i++) {
-		// encode protocol state -> actions into SDD protocol_sdd
-		// encode evolution function state + action -> states into SDD evolution_sdd
+		// encode protocol into SDD protocol_sdd
+		SddNode* protocol_sdd = (*agents)[i]->encode_protocol(manager, params);
+
+		// encode evolution into SDD evolution_sdd
+		SddNode* evolution_sdd = (*agents)[i]->encode_evolution(manager, params);
 		// add protocol_sdd && evolution_sdd to transition_relation_vector
+		SddNode* agent_transition_relation_sdd = sdd_conjoin(protocol_sdd, evolution_sdd, manager);
+		transition_relation_sdds->push_back(agent_transition_relation_sdd);
+		if(i == 1) 
+			sdd_save_as_dot("sdd.dot", agent_transition_relation_sdd);
 	}
 
-	// Make SDD for initial states
+	// Make SDD for initial states 
 
-
+	if(is_istates == NULL) 
+		cout << "it is null" << endl;
+	else {
+		SddNode* initial_states_sdd = is_istates->encode_sdd(manager, params);
+		sdd_save_as_dot("istates.dot", initial_states_sdd);
+	}
 	// Compute Reachable States
-
-
 
 
 

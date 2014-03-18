@@ -1035,6 +1035,179 @@ logic_expression::check_global_consistency(map< string, map< string,
   return false;
 }
 
+SddNode* 
+logic_expression::encode_sdd(SddManager* manager, struct parameters* params) { 
+  int lhstype = operands[0]->get_type();
+  int rhstype = operands[1]->get_type();
+	int begin, end, begin1;
+	SddNode* encoding = sdd_manager_true(manager);
+
+	if (lhstype == 4) { // LHS is an action - not sure when this case can happen?
+		laction *la = (laction *) operands[0];
+    basic_agent *ba = la->get_agent();
+    begin = ba->get_action_index_begin();
+    end = ba->get_action_index_end();
+    string act_name = ((variable *) operands[1])->get_variable_name();
+    map< string, vector< bool > *>::iterator k =
+      ba->get_action_indices()->find(act_name);
+    vector< bool > *b = (*k).second;
+    for (int i = begin; i <= end; i++)
+      encoding = sdd_conjoin(encoding, ((*b)[i - begin] ? (*(params->action_variable_sdds))[i] : sdd_negate((*(params->action_variable_sdds))[i], manager)), manager);
+
+	}  else if (lhstype == 0 && rhstype == 0) { // both RHS and LHS are variables
+
+		  basictype *var_type_lhs = ((variable *) operands[0])->get_var_type();
+		  basictype *var_type_rhs = ((variable *) operands[1])->get_var_type();
+		  if (var_type_lhs->get_type() != var_type_rhs->get_type()) {
+		    cout << "Error: only two variables in both sides of " << to_string() <<
+		      " have different types" << endl;
+		    exit(0);
+		  }
+		  begin = var_type_lhs->get_index_begin();
+		  begin1 = var_type_rhs->get_index_begin();
+		  if (var_type_lhs->get_type() == 1) {  // bool
+		    if (op != 0 && op != 1) {
+		      cout << "Error: only EQ and NEQ on bool types are allowed in " <<
+		        to_string() << endl;
+		      exit(0);
+		    }
+				SddNode* iff_sdd = sdd_conjoin( 
+																sdd_disjoin(sdd_negate((*params->variable_sdds)[begin], manager), (*params->variable_sdds)[begin1], manager), 
+																sdd_disjoin((*params->variable_sdds)[begin1], sdd_negate((*params->variable_sdds)[begin], manager), manager), 
+																	 manager); 
+		    if (op == 1)
+		      encoding = sdd_conjoin(encoding, sdd_negate(iff_sdd, manager), manager);
+		    else
+		      encoding = sdd_conjoin(encoding, iff_sdd, manager);
+		  } else if (var_type_lhs->get_type() == 2) { // rangedint 
+		    /*ADD rhs =
+		      ((rangedint *) var_type_rhs)->build_ADD_tree(para->bddmgr, para->addv,
+		                                                para->ADD_cache);
+		    ADD lhs =
+		      ((rangedint *) var_type_lhs)->build_ADD_tree(para->bddmgr, para->addv,
+		                                               para->ADD_cache);
+		    ADD result;
+		    if (op == 0)
+		      result = addEQ(para->bddmgr, lhs, rhs);
+		    else if (op == 1)
+		      result = addNEQ(para->bddmgr, lhs, rhs);
+		    else if (op == 2)
+		      result = addLT(para->bddmgr, lhs, rhs);
+		    else if (op == 3)
+		      result = addLE(para->bddmgr, lhs, rhs);
+		    else if (op == 4)
+		      result = addGT(para->bddmgr, lhs, rhs);
+		    else if (op == 5)
+		      result = addGE(para->bddmgr, lhs, rhs);
+		    tmpbdd *= result.BddThreshold(1); */
+				cout << "Error: No support for arithmetic expressions. " << endl;	
+				exit(0);
+			
+		  } else {      // enumerate
+				  if (op != 0 && op != 1) {
+				    cout << "Error: only EQ and NEQ on enumerate types are allowed in " <<
+				      to_string() << endl;
+				    exit(0);
+				  }
+				  set< string > *enums1 = ((enumerate *) var_type_lhs)->get_enumvalue();
+				  set< string > *enums2 = ((enumerate *) var_type_rhs)->get_enumvalue();
+				  if (enums1->size() == enums2->size()) { // TODO find out what this case is for
+				    /* ADD rhs =
+				      ((enumerate *) var_type_rhs)->build_ADD_tree(para->bddmgr, para->addv,
+				                                                para->ADD_cache);
+				    ADD lhs =
+				      ((enumerate *) var_type_lhs)->build_ADD_tree(para->bddmgr, para->addv,
+				                                               para->ADD_cache);
+				    ADD result =
+				      (op == 0) ? addEQ(para->bddmgr, lhs, rhs) : addNEQ(para->bddmgr,
+				                                                         lhs, rhs);
+				    tmpbdd *= result.BddThreshold(1); */ 
+						cout << "This type of logic condition is not supported." << endl;
+						exit(0);
+				  } else {
+				    end = var_type_lhs->get_index_end();
+				    int end1 = var_type_rhs->get_index_end();
+						SddNode * tmpsdd2 = sdd_manager_false(manager);
+				    set< string > *enums =
+				      (enums1->size() < enums2->size())? enums1 : enums2;
+				    for (set< string >::iterator i = enums->begin(); i != enums->end();
+				         i++) {
+				      vector< bool > *vb = ((enumerate *) var_type_lhs)->get_value_index(*i);
+				      vector< bool > *vb1 = ((enumerate *) var_type_rhs)->get_value_index(*i);
+							SddNode * tmpsdd3 = sdd_manager_true(manager);
+				      for (int i = end; i >= begin; i--) {
+				        if ((*vb)[i - begin])
+									tmpsdd3 = sdd_conjoin(tmpsdd3, (*params->variable_sdds)[i], manager);
+				        else
+									tmpsdd3 = sdd_conjoin(tmpsdd3, sdd_negate((*params->variable_sdds)[i], manager), manager); 
+							}
+				      for (int i = end1; i >= begin1; i--) {
+				        if ((*vb1)[i - begin1])
+									tmpsdd3 = sdd_conjoin(tmpsdd3, (*params->variable_sdds)[i], manager);
+				        else
+									tmpsdd3 = sdd_conjoin(tmpsdd3, sdd_negate((*params->variable_sdds)[i], manager), manager);
+							}
+				      tmpsdd2 = sdd_disjoin(tmpsdd2, tmpsdd3, manager);
+				    }
+				    if (op == 1)
+							encoding = sdd_conjoin(encoding, sdd_negate(tmpsdd2, manager), manager);
+				    else
+				      encoding = sdd_conjoin(encoding, tmpsdd2, manager);
+				  }
+		  } 
+	} else  if (lhstype == 1 || rhstype == 1) { // one of LHS, RHS is Bool
+		SddNode* temp = sdd_manager_false(manager);
+    variable *var =
+      lhstype == 0 ? (variable *) operands[0] : (variable *) operands[1];
+    bool_value *value =
+      lhstype == 1 ? (bool_value *) operands[0] : (bool_value *) operands[1];
+    basictype *var_type = var->get_var_type();
+    begin = var_type->get_index_begin();
+    if (value->get_value())
+			temp = (*params->variable_sdds)[begin];
+    else
+			temp = sdd_negate((*params->variable_sdds)[begin], manager);
+    if (op == 1)
+			encoding = sdd_conjoin(encoding, sdd_negate(temp, manager), manager);
+    else
+			encoding = sdd_conjoin(encoding, temp, manager);
+
+  } else if (lhstype == 3 || rhstype == 3) {  // one of LHS, RHS is enumerate value
+    variable *var =
+      lhstype == 0 ? (variable *) operands[0] : (variable *) operands[1];
+    basictype *var_type = var->get_var_type();
+    begin = var_type->get_index_begin();
+    end = var_type->get_index_end();
+    string value =
+      lhstype ==
+      3 ? ((enum_value *) operands[0])->
+      get_value() : ((enum_value *) operands[1])->get_value();
+    vector< bool > *vb = ((enumerate *) var_type)->get_value_index(value);
+		SddNode* temp = sdd_manager_true(manager);
+
+    for (int i = end; i >= begin; i--) {
+      if ((*vb)[i - begin])
+				temp = sdd_conjoin(temp, (*params->variable_sdds)[i], manager);
+			else
+				temp = sdd_conjoin(temp, sdd_negate((*params->variable_sdds)[i], manager), manager);
+		}
+
+    if (op == 1)
+			encoding = sdd_conjoin(encoding, sdd_negate(temp, manager), manager);
+    else
+			encoding = sdd_conjoin(encoding, temp, manager);
+
+
+	} else { // arithmetic expression
+
+		cout << "Error: No support for SDD conversion of arithmetic expressions." << endl;
+		exit(0);
+
+	}	
+	return encoding;
+}
+
+
 /*
 BDD
 logic_expression::encode_bdd(bdd_parameters * para, BDD base)

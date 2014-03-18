@@ -161,3 +161,147 @@ assignment::check_var_and_value(map< string, basictype * >*obsvars,
 }
 
 
+SddNode*
+assignment::encode_sdd(SddManager * manager, struct parameters * params, SddNode* base)
+{
+  basictype *var_type = var->get_var_type();
+  unsigned char value_type = var_type->get_type();
+  int begin = var_type->get_index_begin();
+  int end = var_type->get_index_end();
+  SddNode * encoding = base;
+  unsigned char var_value_type = var_value->get_type();
+
+  if (value_type == 1) {  // boolean type
+    if (var_value_type == 1) {
+      if (((bool_value *) var_value)->get_value())
+				encoding = sdd_conjoin(encoding, (*params->primed_variable_sdds)[begin], manager);
+      else
+				encoding = sdd_conjoin(encoding, sdd_negate((*params->primed_variable_sdds)[begin], manager), manager);
+    } else if (var_value_type == 0) {
+      basictype *var_type1 = ((variable *) var_value)->get_var_type();
+      int begin1 = var_type1->get_index_begin();
+      // be careful here. rhs is in v and lhs is in pv
+			encoding = sdd_conjoin(
+															encoding, 
+															sdd_conjoin(
+																	sdd_disjoin(
+																			sdd_negate((*params->primed_variable_sdds)[begin], manager),
+																		  (*params->variable_sdds)[begin1],
+																			manager), 
+																  sdd_disjoin(
+																			(*params->primed_variable_sdds)[begin],
+																			sdd_negate((*params->variable_sdds)[begin1], manager),
+																			manager),
+																  manager), 
+															manager);
+
+    } else {      // bit_operation
+      SddNode * rhstrue =
+        ((bit_expression *) var_value)->encode_sdd_true(manager,
+                                                        params->variable_sdds);
+      SddNode * rhsfalse =
+        ((bit_expression *) var_value)->encode_sdd_false(manager,
+                                                        params->variable_sdds);
+      SddNode * result =
+        sdd_conjoin(sdd_negate(sdd_disjoin((*params->primed_variable_sdds)[begin] , rhstrue, manager), manager) , sdd_disjoin((*params->primed_variable_sdds)[begin], rhsfalse, manager), manager);
+      encoding = sdd_conjoin(encoding, result, manager);
+    }
+  } else if (value_type == 2) { /* // rangedint
+    int upperbound = ((rangedint *) var_type)->get_upperbound();
+    int lowerbound = ((rangedint *) var_type)->get_lowerbound();
+
+    if (var_value_type == 0) {  // a variable
+      basictype *var_type1 = ((variable *) var_value)->get_var_type();
+      if (options["quiet"] == 0 && options["verbosity"] > 5) {
+        int upperbound1 = ((rangedint *) var_type1)->get_upperbound();
+        int lowerbound1 = ((rangedint *) var_type1)->get_lowerbound();
+        if (upperbound1 > upperbound) {
+          cout << "Warning: \"" << var_value->
+            to_string() << "\" might be greater than the upperbound of \"" <<
+            var->
+            get_variable_name() << "\" in assignment " << to_string() << endl;
+        }
+        if (lowerbound1 < lowerbound) {
+          cout << "Warning: \"" << var_value->
+            to_string() << "\"  might be less than the lowerbound of \"" <<
+            var->
+            get_variable_name() << "\" in assignment " << to_string() << endl;
+        }
+      }
+      ADD rhs =
+        ((rangedint *) var_type1)->build_ADD_tree(para->bddmgr, para->addv,
+                                                  para->ADD_cache);
+      ADD lhs =
+        ((rangedint *) var_type)->build_ADD_tree(para->bddmgr, para->addv,
+                                                 para->ADD_cache);
+      lhs = lhs.SwapVariables(*para->addv, *para->addpv);
+      ADD result = addEQ(para->bddmgr, lhs, rhs);
+      tmpbdd *= result.BddThreshold(1);
+    } else if (var_value_type == 2) { // an integer
+      int value = ((int_value *) var_value)->get_value();
+      vector< int >*vb = ((rangedint *) var_type)->get_value_index(value);
+      for (int i = end; i >= begin; i--)
+        if ((*vb)[i - begin] == 1)
+          tmpbdd = tmpbdd * (*para->pv)[i];
+        else if ((*vb)[i - begin] == -1)
+          tmpbdd = tmpbdd * !(*para->pv)[i];
+    } else if (var_value_type >= 5 && var_value_type <= 8) {  // arithmetic expression
+      ADD rhs =
+        ((arithmetic_expression *) var_value)->build_ADD_tree(para->bddmgr,
+                                                              para->addv,
+                                                              para->
+                                                              ADD_cache);
+      if (options["quiet"] == 0 && options["verbosity"] > 5) {
+        ADD overflow =
+          addGT(para->bddmgr, rhs, para->bddmgr->constant(upperbound));
+        if (overflow != para->bddmgr->addZero()) {
+          cout << "Warning: \"" << var_value->
+            to_string() << "\" might be greater than the upperbound of \"" <<
+            var->
+            get_variable_name() << "\" in assignment " << to_string() << endl;
+        }
+        ADD underflow =
+          addLT(para->bddmgr, rhs, para->bddmgr->constant(lowerbound));
+        if (underflow != para->bddmgr->addZero()) {
+          cout << "Warning: \"" << var_value->
+            to_string() << "\" might be less than the lowerbound of \"" <<
+            var->
+            get_variable_name() << "\" in assignment " << to_string() << endl;
+        }
+      }
+      ADD lhs =
+        ((rangedint *) var_type)->build_ADD_tree(para->bddmgr, para->addv,
+                                                 para->ADD_cache);
+      lhs = lhs.SwapVariables(*para->addv, *para->addpv);
+      ADD result = addEQ(para->bddmgr, lhs, rhs);
+      tmpbdd *= result.BddThreshold(1);
+    } */
+  } else {      // enumerate
+
+		//exit(0);
+    if (var_value_type == 3) {
+      string value = ((enum_value *) var_value)->get_value();
+      vector< bool > *vb = ((enumerate *) var_type)->get_value_index(value);
+      for (int i = end; i >= begin; i--)
+        if ((*vb)[i - begin])
+					encoding = sdd_conjoin(encoding, (*params->primed_variable_sdds)[i], manager);
+        else
+					encoding = sdd_conjoin(encoding, sdd_negate((*params->primed_variable_sdds)[i], manager), manager);
+    } else {
+			cout << "This type of assignment is not supported." << endl;
+			exit(0);
+   /*   basictype *var_type1 = ((variable *) var_value)->get_var_type();
+      ADD rhs =
+        ((enumerate *) var_type1)->build_ADD_tree(para->bddmgr, para->addv,
+                                                  para->ADD_cache);
+      ADD lhs =
+        ((enumerate *) var_type)->build_ADD_tree(para->bddmgr, para->addv,
+                                                 para->ADD_cache);
+      lhs = lhs.SwapVariables(*para->addv, *para->addpv);
+      ADD result = addEQ(para->bddmgr, lhs, rhs);
+      tmpbdd *= result.BddThreshold(1); */
+    } 
+  } 
+  return encoding;
+}
+

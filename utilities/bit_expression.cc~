@@ -224,4 +224,55 @@ bit_expression::check_var_and_value(map< string, map< string,
   return flag;
 }
 
+SddNode*
+bit_expression::encode_sdd_true(SddManager* manager, vector<SddNode*> * v)
+{
+  unsigned char op = get_type();
+  SddNode* res;
+
+  if (op == 9) {    // and "&"
+    SddNode* lhs = operands[0]->encode_sdd_true(manager, v);
+    SddNode* rhs = operands[1]->encode_sdd_true(manager, v);
+		res = sdd_conjoin(lhs, rhs, manager);
+  } else if (op == 10) {  // or "|"
+    SddNode* lhs = operands[0]->encode_sdd_true(manager, v);
+    SddNode* rhs = operands[1]->encode_sdd_true(manager, v);
+		res = sdd_disjoin(lhs, rhs, manager);
+  } else if (op == 11) {  // not "~"
+    res = operands[0]->encode_sdd_false(manager, v);
+  } else {      // xor "^"
+    SddNode* lhs1 = operands[0]->encode_sdd_true(manager, v);
+    SddNode* rhs1 = operands[1]->encode_sdd_true(manager, v);
+    SddNode* lhs2 = operands[0]->encode_sdd_false(manager, v);
+    SddNode* rhs2 = operands[1]->encode_sdd_false(manager, v);
+    res = sdd_disjoin(sdd_conjoin(lhs1, rhs2, manager), sdd_disjoin(lhs2, rhs1, manager), manager);
+  }
+  return res;
+}
+
+SddNode*
+bit_expression::encode_sdd_false(Cudd * bddmgr, vector<BDD> * v)
+{
+  unsigned char op = get_type();
+  SddNode* res;
+
+  if (op == 9) {    // and "&"
+    SddNode* lhs = operands[0]->encode_sdd_false(manager, v);
+    SddNode* rhs = operands[1]->encode_sdd_false(manager, v);
+		res = sdd_conjoin(lhs, rhs, manager);
+  } else if (op == 10) {  // or "|"
+    SddNode* lhs = operands[0]->encode_sdd_false(manager, v);
+    SddNode* rhs = operands[1]->encode_sdd_false(manager, v);
+		res = sdd_disjoin(lhs, rhs, manager);
+  } else if (op == 11) {  // not "~"
+    res = operands[0]->encode_sdd_true(manager, v);
+  } else {      // xor "^"
+    SddNode* lhs1 = operands[0]->encode_sdd_false(manager, v);
+    SddNode* rhs1 = operands[1]->encode_sdd_false(manager, v);
+    SddNode* lhs2 = operands[0]->encode_sdd_true(manager, v);
+    SddNode* rhs2 = operands[1]->encode_sdd_true(manager, v);
+    res = sdd_disjoin(sdd_conjoin(lhs1, rhs2, manager), sdd_disjoin(lhs2, rhs1, manager), manager);
+  }
+  return res;
+}
 

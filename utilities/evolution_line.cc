@@ -199,3 +199,27 @@ evolution_line::extend_to_all_variables(map<string, basictype*>* allvars)
   }
   return els;
 }
+
+
+SddNode* 
+evolution_line::encode_sdd_assignments(SddManager * manager, struct parameters* params) 
+{
+  SddNode* encoding = sdd_manager_true(manager);
+  for (vector< assignment * >::iterator i = assignments->begin();
+       i != assignments->end(); i++)
+    encoding = (*i)->encode_sdd(manager, params, encoding);
+  return encoding;
+
+}
+
+
+SddNode* 
+evolution_line::encode_sdd_condition(SddManager * manager, struct parameters* params) 
+{
+  SddNode* encoding = condition->encode_sdd(manager, params);
+  return encoding;
+
+}
+
+
+

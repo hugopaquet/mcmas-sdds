@@ -13,106 +13,56 @@
 #include <ctime>
 #include "types.hh"
 #include "utilities.hh"
-#include "cuddObj.hh"
+extern "C" {
+	#include "sddapi.h"
+}
 
 // #define num_of_threads1 2
 // #define num_of_blocks 2
 // #define time_of_iteration 5
 
-extern Cudd_ReorderingType REORDERING;
 
 extern void *compute_reach_parallel( void *ptr );
-extern void allocate_bdd_variables(vector<BDD> *v, vector<ADD> *addv, 
-                                   vector<BDD> *pv, vector<ADD> *addpv,
-                                   vector<BDD> *a, Cudd *bddmgr);
 
-BDD compute_reach(BDD in_st, vector<BDD> *v, vector<BDD> *pv, 
-                  vector<BDD> *a, vector<BDD> *vRT, Cudd *bddmgr,
+
+SddNode* compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, SddNode* full_transition_relation,
                   unsigned int *acounter1, int id, unsigned long *threadmem) {
-  BDD reach;
+  
 
-  /*BDD cubev = bddmgr->bddOne();	
-  for (int j = 0; j < v->count(); j++) 
-    cubev = cubev * (*v)[j];
-  BDD cubea = bddmgr->bddOne();	
-	for (int j = 0; j < a->count(); j++) 
-	cubea = cubea * (*a)[j]; */
+	SddNode* reach = sdd_manager_false(manager);
 
-  if (options["experiment"] == 1) {
-    reach = bddmgr->bddZero();
-    BDD q1 = in_st;
-    BDD next1 = bddmgr->bddZero();
-    
-    while (q1 != reach) {
-      if (options["verbosity"] > 0)
-        cout << "    Computing depth " << *acounter1 << endl;
+  SddNode* q1 = in_st;
+  SddNode* next1 = sdd_manager_false(manager);
+
+/* Algo:    
+Y = false;	
+X = in_st;
+while(q1 != Y)
+{
+	Y = q1
+	next1 = Exists(all non-primed variables, conjoin(X, transition_relation))
+	unprime next1
+	q1 = disjoin(q1, next1)
+}
+
+return q1
+
+*/
+
+ /* while (!sdd_node_is_true(sdd_equiv(q1, reach, manager))) {
       
       reach = q1;
       next1 = q1;
-      for (unsigned int k = 0; k < agents->size(); k++)
-        next1 *= (*vRT)[k];
+			next1 = conjoin(next1, full_transition_relation, manager);
+
       next1 = Exists(bddmgr, v, next1);
       next1 = next1.SwapVariables(*v, *pv);
       next1 = Exists(bddmgr, a, next1); // Clear actions.
       
       q1 = q1 + next1;
       (*acounter1)++;
-    }
-    
-    if (options["verbosity"] > 2) {
-      cout << "Done" << endl;
-    }
-  } else if (options["experiment"] == 2) {  // BMC goes here
-    reach = in_st;
-    BDD q1 = bddmgr->bddZero();
-    BDD next1 = in_st;
-    while (true) {
-      if (options["verbosity"] > 0)
-        cout << "    Computing depth " << *acounter1 << endl;
-      
-      for (unsigned int k = 0; k < agents->size(); k++)
-        next1 *= (*vRT)[k];
- 			next1 = Exists(bddmgr, v, next1);
-      next1 = next1.SwapVariables(*v, *pv);
-      next1 = Exists(bddmgr, a, next1); // Clear actions.
-			q1 = reach + next1;
-      (*acounter1)++;
-      
-      if (q1 == reach)
-        break;
-      else
-        reach = q1;
-    }
-    
-    if (options["verbosity"] > 2) {
-      cout << "Done" << endl;
-    }
-  } else {  
-    reach = in_st;
-    BDD next1 = in_st;
-    while (true) {
-      if (options["verbosity"] > 0)
-        cout << "    Computing depth " << *acounter1 << endl;
-      
-      for (unsigned int k = 0; k < agents->size(); k++)
-        next1 *= (*vRT)[k];
-			next1 = Exists(bddmgr, v, next1);
-      next1 = next1.SwapVariables(*v, *pv);
-      next1 = Exists(bddmgr, a, next1); // Clear actions.
-      next1 = next1 - reach;
-      (*acounter1)++;
-      
-      if (next1 == bddmgr->bddZero())
-        break;
-      else
-        reach = reach + next1;
-    }
-    
-    if (options["verbosity"] > 2) {
-      cout << "Done" << endl;
-    }
   }
-
+*/
   return reach;
 }
 

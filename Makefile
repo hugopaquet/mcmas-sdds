@@ -119,6 +119,7 @@ $(BOOL_EXPRESSION).o: include/utilities.hh include/types.hh $(BOOL_EXPRESSION).c
 $(BOOL_VALUE).o: include/utilities.hh include/types.hh $(BOOL_VALUE).cc
 	$(CPP) $(CPPFLAGS) $(INCLUDE) -c $(BOOL_VALUE).cc -o $(BOOL_VALUE).o
 
+
 $(ENUMERATE).o: include/utilities.hh include/types.hh $(ENUMERATE).cc
 	$(CPP) $(CPPFLAGS) $(INCLUDE) -c $(ENUMERATE).cc -o $(ENUMERATE).o
 

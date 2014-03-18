@@ -227,4 +227,78 @@ bool_expression::collect_exprs(vector< bool_expression * >*expr_vector,
     expr_vector->push_back(this);
 }
 
+SddNode*
+bool_expression::encode_sdd(SddManager* manager, struct parameters* params) {
+  if (op == 0) {    // logic_expression
+			return ((logic_expression *) operands[0])->encode_sdd(manager, params); 
+  } else if (op == 3) {   // not operaror
+			return sdd_negate(((bool_expression *) operands[0])->encode_sdd(manager, params), manager);
+  } else if (op == 1) {   // and operaror
+		  vector< bool_expression * >*expr_vector =
+		    new vector< bool_expression * >();
+		  ((bool_expression *) operands[0])->collect_exprs(expr_vector, op);
+		  ((bool_expression *) operands[1])->collect_exprs(expr_vector, op);
+		  SddNode* result = sdd_manager_true(manager);
+		  for (unsigned int i = 0; i < expr_vector->size(); i++) {
+		    result = sdd_conjoin(result, (*expr_vector)[i]->encode_sdd(manager, params), manager);
+		  }	
+		  return result;
+  } else if (op == 2) {   // or operaror
+    vector< bool_expression * >*expr_vector =
+      new vector< bool_expression * >();
+    ((bool_expression *) operands[0])->collect_exprs(expr_vector, op);
+    ((bool_expression *) operands[1])->collect_exprs(expr_vector, op);
+    SddNode* result = sdd_manager_false(manager);
+    for (unsigned int i = 0; i < expr_vector->size(); i++) {
+      result = sdd_disjoin(result, (*expr_vector)[i]->encode_sdd(manager, params), manager);
+    }
+    return result;
+  } else if (op == 5) {   // true
+   	 return sdd_manager_true(manager);
+  } else if (op == 6) {   // false
+    	return sdd_manager_false(manager);
+  } else {
+			cout << "encoding sdd from bool_expression - not sure what to return" << endl;
+    	return 0;
+  }
+}
+
+/*
+BDD
+bool_expression::encode_bdd_flat(bdd_parameters * para, BDD base)
+{
+  if (op == 0) {    // logic_expression
+    return ((logic_expression *) operands[0])->encode_bdd(para, base);
+  } else if (op == 3) {   // not operaror
+    return !((bool_expression *) operands[0])->encode_bdd_flat(para, base);
+  } else if (op == 1) {   // and operaror
+    vector< bool_expression * >*expr_vector =
+      new vector< bool_expression * >();
+    ((bool_expression *) operands[0])->collect_exprs(expr_vector, op);
+    ((bool_expression *) operands[1])->collect_exprs(expr_vector, op);
+    BDD result = para->bddmgr->bddOne();
+    for (unsigned int i = 0; i < expr_vector->size(); i++) {
+      result = result * (*expr_vector)[i]->encode_bdd_flat(para, base);
+    }
+    return result;
+  } else if (op == 2) {   // or operaror
+    vector< bool_expression * >*expr_vector =
+      new vector< bool_expression * >();
+    ((bool_expression *) operands[0])->collect_exprs(expr_vector, op);
+    ((bool_expression *) operands[1])->collect_exprs(expr_vector, op);
+    BDD result = para->bddmgr->bddZero();
+    for (unsigned int i = 0; i < expr_vector->size(); i++) {
+      result = result + (*expr_vector)[i]->encode_bdd_flat(para, base);
+    }
+    return result;
+  } else if (op == 5) {   // true
+    return para->bddmgr->bddOne();
+  } else if (op == 6) {   // false
+    return para->bddmgr->bddZero();
+  } else {
+    return base;
+  }
+}
+*/
+
 

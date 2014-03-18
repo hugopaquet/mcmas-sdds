@@ -1,0 +1,9 @@
+
+digraph sdd {
+
+overlap=false
+
+n35 [label= "Q",shape=box]; 
+
+
+}
