@@ -258,6 +258,77 @@ void free_mcmas_memory(bdd_parameters *para) {
 
 */
 
+
+SddNode* 
+compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, SddNode* full_transition_relation) {
+  
+	cout << "Welcome to the compute reach function!" << endl;
+
+	SddNode* reach = sdd_manager_false(manager);
+  SddNode* q1 = in_st;
+  SddNode* next1 = sdd_manager_false(manager);
+
+/* Algo:    
+Y = false;	
+X = in_st;
+while(q1 != Y)
+{
+	Y = q1
+	next1 = Exists(all non-primed variables, conjoin(X, transition_relation))
+	unprime next1
+	q1 = disjoin(q1, next1)
+}
+
+return q1
+
+*/
+SddNode* iff = sdd_disjoin(
+										sdd_conjoin(sdd_negate(q1, manager), sdd_negate(reach, manager), manager), 
+										sdd_conjoin(q1, reach, manager), 
+										manager);
+
+	unsigned int v = params->variable_sdds->size(); // number of state variables
+	unsigned int a = params->action_variable_sdds->size(); // number of action variables
+	while (!sdd_node_is_true(iff)) { // until reach stops changing 
+
+      reach = q1;
+      next1 = q1;
+			next1 = sdd_conjoin(next1, full_transition_relation, manager);
+			// compute 1 step
+			for(unsigned int i = 0; i < v; i++) {
+				next1 = sdd_exists(sdd_node_literal((*params->variable_sdds)[i]), next1, manager);
+			} 
+			// un-prime variables
+			SddLiteral map[2 * v + a + 1]; 
+			for(unsigned int i = 1; i <= v; i++) {	
+				map[i] = sdd_node_literal((*params->variable_sdds)[i-1]); 
+			}
+			for(unsigned int i = v + 1; i <= 2 * v; i++) {
+				map[i] = sdd_node_literal((*params->variable_sdds)[i - v - 1]); 
+			}
+			for(unsigned int i = 2 * v + 1; i <= 2 * v + a; i++) {
+				map[i] = sdd_node_literal((*params->action_variable_sdds)[i - 2 * v - 1]); 
+			}
+			next1 = sdd_rename_variables(next1, map, manager);
+			// clear actions
+			for(unsigned int i = 0; i < params->action_variable_sdds->size(); i++) {
+				next1 = sdd_exists(sdd_node_literal((*params->action_variable_sdds)[i]), next1, manager);
+			} 
+
+ 			q1 = sdd_disjoin(q1, next1, manager);
+			iff = sdd_disjoin(
+								sdd_conjoin(sdd_negate(q1, manager), sdd_negate(reach, manager), manager), 
+								sdd_conjoin(q1, reach, manager), 
+								manager);
+
+  }
+	sdd_save_as_dot("reach.dot", reach);
+
+	cout << "Bye!" << endl;
+  return reach;
+}
+
+
 vector<SddNode*>* 
 compute_action_variable_sdds(SddManager* manager)
 {
@@ -438,8 +509,14 @@ main(int argc, char *argv[])
 	SddNode* initial_states_sdd = is_istates->encode_sdd(manager, params);
 	sdd_save_as_dot("istates.dot", initial_states_sdd);
 
+	// Compute full transition relation
+	SddNode* full_transition_relation = sdd_manager_true(manager);	
+	for(unsigned int i = 0; i < transition_relation_sdds->size(); i++) {
+		full_transition_relation = sdd_conjoin(full_transition_relation, (*transition_relation_sdds)[i], manager);
+	}
+
 	// Compute Reachable States
-	
+	SddNode* r = compute_reach(initial_states_sdd, manager, params, full_transition_relation);
 
 
 
