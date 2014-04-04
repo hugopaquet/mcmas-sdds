@@ -203,113 +203,131 @@ modal_formula::check_atomic_proposition(unsigned char type)
   return false;
 }
 
-/*
-BDD
-modal_formula::check_formula(bdd_parameters * para)
+
+SddNode*
+modal_formula::check_formula(SddManager * manager, struct parameters* params)
 {
-  BDD result, rel, af, phi1, phi2;
+	//cout << "CHECK  " << to_string() << endl; 
+  SddNode* result;
+	SddNode* rel;
+	SddNode* af;
+	SddNode* phi1;
+	SddNode* phi2;
   string name, name1;
   Object *id;
 
   switch (op) {
-  case 0:{      // leaf
+  case 0:{      // leaf -done
     name = ((atomic_proposition *) obj[0])->get_proposition();
-    if(options["nobddcache"] == 0)
-      if (para->BDD_cache->find(name) != para->BDD_cache->end())
-        return ((*para->BDD_cache)[name]);
+//    if(options["nobddcache"] == 0)
+//      if (para->BDD_cache->find(name) != para->BDD_cache->end())
+//        return ((*para->BDD_cache)[name]);
     bool_expression *simple = is_evaluation->find(name)->second;
-    result = simple->encode_bdd_flat(para, para->bddmgr->bddOne()) * (*para->reach);
-    if(options["nobddcache"] == 0)
-      (*para->BDD_cache)[name] = result;
+    result = sdd_conjoin(simple->encode_sdd(manager, params), params->reach, manager);
+//    if(options["nobddcache"] == 0)
+//      (*para->BDD_cache)[name] = result;
     break;
   }
-  case 1:     // AND
-    result = ((modal_formula *) obj[0])->check_formula(para) *
-      ((modal_formula *) obj[1])->check_formula(para);
+  case 1:     // AND - done
+    result = sdd_conjoin(((modal_formula *) obj[0])->check_formula(manager, params),
+      ((modal_formula *) obj[1])->check_formula(manager, params), manager);
     break;
-  case 2:     // OR
-    result = ((modal_formula *) obj[0])->check_formula(para) +
-      ((modal_formula *) obj[1])->check_formula(para);
+  case 2:     // OR - done
+    result = sdd_disjoin(((modal_formula *) obj[0])->check_formula(manager, params),
+      ((modal_formula *) obj[1])->check_formula(manager, params), manager);
     break;
-  case 3:     // NOT
-    result = !((modal_formula *) obj[0])->check_formula(para);
+  case 3:     // NOT -done
+    result = sdd_negate(((modal_formula *) obj[0])->check_formula(manager, params), manager);
     break;
-  case 4:     // IMPLIES
+  case 4:     // IMPLIES -done
     {
-      BDD res1 = !(((modal_formula *) obj[0])->check_formula(para)) * (*para->reach);
-      BDD res2 = ((modal_formula *) obj[1])->check_formula(para);
-      result = res1 + res2;
+      SddNode* res1 = sdd_conjoin(sdd_negate((((modal_formula *) obj[0])->check_formula(manager, params)), manager), params->reach, manager);
+      SddNode* res2 = ((modal_formula *) obj[1])->check_formula(manager, params);
+      result = sdd_disjoin(res1, res2, manager);
       break;
     }
-  case 10:      // AG p = !EF !p
-    phi1 = (!((modal_formula *) obj[0])->check_formula(para)) * (*para->reach);
-    result = !check_EF(phi1, para);
+  case 10:      // AG p = !EF !p - done 	
+	{
+		sdd_save_as_dot("phi.dot", (((modal_formula *) obj[0])->check_formula(manager, params)));
+    phi1 = sdd_conjoin(sdd_negate(((modal_formula *) obj[0])->check_formula(manager, params), manager), params->reach, manager);
+		SddNode* node = check_EF(phi1, manager, params);
+    result = sdd_negate(node, manager);
     break;
-  case 11:      // EG 
-    phi1 = ((modal_formula *) obj[0])->check_formula(para);
-    result = check_EG(phi1, para);
+	}
+  case 11:      // EG - done
+    phi1 = ((modal_formula *) obj[0])->check_formula(manager, params);
+    result = check_EG(phi1, manager, params);
     break;
-  case 12:      // AX p = ! EX !p
-    phi1 = (!((modal_formula *) obj[0])->check_formula(para)) * (*para->reach);
-    result = !check_EX(phi1, para);
+  case 12:      // AX p = ! EX !p - done
+    phi1 = sdd_conjoin(sdd_negate(((modal_formula *) obj[0])->check_formula(manager, params), manager), params->reach, manager);
+    result = sdd_negate(check_EX(phi1, manager, params), manager);
     break;
-  case 13:      // EX
-    phi1 = ((modal_formula *) obj[0])->check_formula(para);
-    result = check_EX(phi1, para);
+  case 13:      // EX - done
+    phi1 = ((modal_formula *) obj[0])->check_formula(manager, params);
+    result = check_EX(phi1, manager, params);
     break;
-  case 14:      // AF p = !EG !p
-    phi1 = (!((modal_formula *) obj[0])->check_formula(para)) * (*para->reach);
-    result = !check_EG(phi1, para);
+  case 14: // AF p = !EG !p - done
+	{   
+    phi1 = sdd_conjoin(sdd_negate(((modal_formula *) obj[0])->check_formula(manager, params), manager), params->reach, manager);
+
+		SddNode* node = check_EG(phi1, manager, params);
+		if(sdd_node_is_false(node)) {
+			cout << "node is false " << endl;
+			result = sdd_manager_true(manager); 
+		}
+		else     
+			result = sdd_negate(node, manager);
+    break; 
+	}
+  case 15:      // EF p = p \lor EX EF p - done
+    phi1 = ((modal_formula *) obj[0])->check_formula(manager, params);
+    result = check_EF(phi1, manager, params);
     break;
-  case 15:      // EF p = p \lor EX EF p
-    phi1 = ((modal_formula *) obj[0])->check_formula(para);
-    result = check_EF(phi1, para);
+  case 16:      // AU (see check_AU) - done 
+    phi1 = ((modal_formula *) obj[0])->check_formula(manager, params);
+    phi2 = ((modal_formula *) obj[1])->check_formula(manager, params);
+    result = check_AU(phi1, phi2, manager, params);
     break;
-  case 16:      // AU (see check_AU)
-    phi1 = ((modal_formula *) obj[0])->check_formula(para);
-    phi2 = ((modal_formula *) obj[1])->check_formula(para);
-    result = check_AU(phi1, phi2, para);
+  case 17:      // EU - done
+    phi1 = ((modal_formula *) obj[0])->check_formula(manager, params);
+    phi2 = ((modal_formula *) obj[1])->check_formula(manager, params);
+    result = check_EU(phi1, phi2, manager, params);
     break;
-  case 17:      // EU
-    phi1 = ((modal_formula *) obj[0])->check_formula(para);
-    phi2 = ((modal_formula *) obj[1])->check_formula(para);
-    result = check_EU(phi1, phi2, para);
-    break;
-  case 30:      // K
+  case 30:      // K - done
     {
       id = ((modal_formula *) obj[0])->get_operand(0);
       name = ((atomic_proposition *) id)->get_proposition();
-      af = !((modal_formula *) obj[1])->check_formula(para) * (*para->reach);
-      result = (*para->reach) - get_nK_states(&af, name, para);
+      af = sdd_conjoin(sdd_negate(((modal_formula *) obj[1])->check_formula(manager, params), manager), params->reach, manager);
+      result = sdd_conjoin(params->reach, sdd_negate(get_nK_states(af, name, manager, params), manager), manager);
       break;
     }
-  case 31:      // Everybody knows
+/*  case 31:      // Everybody knows - TODO
     id = ((modal_formula *) obj[0])->get_operand(0);
     name = ((atomic_proposition *) id)->get_proposition();
     af = ((modal_formula *) obj[1])->check_formula(para);
     result = check_GK(af, name, para);
-    break;
-  case 32:      // Common knowledge
+    break; */
+  case 32:      // GCK - Common knowledge
     id = ((modal_formula *) obj[0])->get_operand(0);
     name = ((atomic_proposition *) id)->get_proposition();
-    af = ((modal_formula *) obj[1])->check_formula(para);
-    result = check_GCK(af, name, para);
+    af = ((modal_formula *) obj[1])->check_formula(manager, params);
+    result = check_GCK(af, name, manager, params);
     break;
-  case 40:      // O
+/*  case 40:      // O - what is that?
     id = ((modal_formula *) obj[0])->get_operand(0);
     name = ((atomic_proposition *) id)->get_proposition();
     af = !((modal_formula *) obj[1])->check_formula(para) * (*para->reach);
     result =
       !check_nO(af, name, para);
     break;
-  case 42:      // Distributed knowledge
+*/ /*case 42:      // Distributed knowledge - TODO
     id = ((modal_formula *) obj[0])->get_operand(0);
     name = ((atomic_proposition *) id)->get_proposition();
     af = ((modal_formula *) obj[1])->check_formula(para);
     result = check_DK(((modal_formula *) obj[1])->check_formula(para),
                       name, para);
     break;
-  case 45:      // ATL operator X
+/*  case 45:      // ATL operator X
     id = ((modal_formula *) obj[0])->get_operand(0);
     name = ((atomic_proposition *) id)->get_proposition();
     phi1 = ((modal_formula *) obj[1])->check_formula(para);
@@ -334,11 +352,16 @@ modal_formula::check_formula(bdd_parameters * para)
     phi1 = ((modal_formula *) obj[1])->check_formula(para);
     phi2 = ((modal_formula *) obj[2])->check_formula(para);
     result = check_ATLU(phi1, phi2, name, para);
-    break;
+    break; */
+	default: 
+		cout << "Checking this formula (code " << op << ") is not yet supported." << endl;
   }
-  return result * (*para->reach);
+	//cout << "FINISH " << to_string() << endl; 
+	return sdd_conjoin(result, params->reach, manager);;
 }
-*/
+
+
+
 modal_formula *
 modal_formula::push_negations(unsigned int level)
 {

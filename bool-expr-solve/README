@@ -1,0 +1,113 @@
+Boolean Expression Solver 1.0
+
+Boolean Expression Solver is a command-line utility that generates a truth table for a given Boolean expression.  Boolean Expression Solver has support for multiple expressions and user-defined symbols.
+
+Boolean Expression Solver requires JRE 1.5 or later and, GNU Make, and the Bourne Again Shell (bash), all of which are free software and readily available.
+
+
+== PROJECT CONTENTS ==
+
+You should have received the following files and folders with this project:
+
+  - COPYING				Text file containing the GNU General Public License version 3
+  - doc/				Directory containing JavaDoc documentation
+  - javadoc.xml				ANT build script to generate JavaDoc documentation
+  - Makefile				Makefile for GNU Make to build this project
+  - README				This readme file
+  - src/				Directory containing source
+    - src/net/jbouchard/bool/		Directories containing the net.jbouchard.bool package
+      - BooleanExpression.java		Java source file for the BooleanExpression class
+      - BooleanExpressionSolver.java	Java source file for the BooleanExpressionSolver class
+      - BooleanOperator.java		Java source file for the BooleanOperator class
+      - Brackets.java			Java source file for the Brackets class
+      - TruthTable.java			Java source file for the TruthTable class
+      - Variables.java			Java source file for the Variables class
+
+== INSTALLATION ==
+
+To build this project, run the following command:
+
+	make
+
+This generates the bin/ directory, which contains the compiled Java classes, and the boolsolve shell script, which acts as a wrapper around the java command.  To remove these binary files, run:
+
+	make clean
+
+This removes the bin/ directory and the boolsolve shell script.  For more make options, see INSTALL
+
+
+== RUNNING Boolean Expression Solver ==
+
+To run Boolean Expression Solver, either use the java command:
+
+	java -cp bin net.jbouchard.bool.BooleanExpressionSolver [arguments]
+
+Or use the generated shell script:
+
+	./boolsolve [arguments]
+
+Boolean Expression Solver reads from standard input until it reaches EOF (end of file).  This behaviour is similar to GNU grep.
+
+The accepted command-line arguments are listed below:
+
+{-b|--break}
+	Break the expression into subexpressions.
+
+{-d|--define} var1=value1[,var2=value2...[,varN=valueN]
+	Define the constants var1 through varN with the values var1 through varN.  NOTE: constant names must be valid <variable>s as defined below.  Also, do not insert any whitespace in the definition list.
+
+{-f|--file} filename
+	Input from filename instead of standard input.
+
+{-h|--help}
+	Display a message listing accepted arguments.
+
+{-j|--join}
+	Join all truth tables into one truth table.
+
+{-v|--version}
+	Display version and copyright information.
+
+{-e|--expression} expression1[ expression2...[expressionN]]
+	Build truth tables for the given expressions. Do not take input from stdin. NOTE: This argument must come last as all remaining arguments will be parsed as expressions.
+
+
+== USING Boolean Expression Solver ==
+
+Boolean Expression Solver uses the following syntax:
+
+<variable> = A-Z/a-z
+<value> = <variable>/1/0
+<unary oper> = ~
+<binary oper> = &/|/+/>/=
+<expression> = <value>/(<expression>)/[<expression>]/{<expression>}/<unary oper><expression>/
+               <expression><binary oper><expression>
+
+The operators are defined as follows:
+
+~ NOT (unary)
+& AND
+| OR
++ XOR (exclusive OR)
+> IMPLIES (if then)
+= IFF (if and only if)
+
+The operators above are listed in order of precedence; that is, the first binds more tightly than the last.  For example, "A&B|C" is interpreted as "(A&B)|C", not as "A&(B|C)".  Also, all binary operators are left associative, so "A&B&C" is "(A&B)&C", not "A&(B&C)" (although this does not matter with AND).
+
+To see how expressions are being interpreted, run Boolean Expression Solver with the -b or --break argument.
+
+
+== RELEASE HISTORY ==
+Version 1.0
+  - First release!
+
+
+== CONTACT INFORMATION ==
+
+Chris Bouchard
+http://sourceforge.net/users/javajunkie314/
+Email can be sent through SourceForge
+
+== LEGAL INFORMATION ==
+Copyright © 2007 Chris Bouchard.
+Boolean Expression Solver is Free Software (free as in beer and free as in speech) licensed under the GNU General Public License (GPL) version 3.  For more information on licensing and distribution of this software, see COPYING.

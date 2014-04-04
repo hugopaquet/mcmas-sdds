@@ -380,11 +380,11 @@ basic_agent::encode_protocol(SddManager * manager, struct parameters* params)
 			actions_sdd = sdd_disjoin(actions_sdd, encode_action(manager, action_name, params->action_variable_sdds), manager);
 			//sdd_manager_auto_gc_and_minimize_on(manager);
 		}
-		SddNode* line = sdd_conjoin(condition_sdd, actions_sdd, manager);
 
+		SddNode* line = sdd_conjoin(condition_sdd, actions_sdd, manager);
 		protocol_sdd = sdd_disjoin(protocol_sdd, line, manager);			
 	}
-	cout << "Finished encoding the protocol for " << get_name() << endl;
+
 
 	return protocol_sdd;
 }
@@ -948,3 +948,45 @@ basic_agent::get_var_def(string varname) {
     
   return NULL;
 } 
+
+
+SddNode*
+basic_agent::project_local_state(SddNode * state, SddManager* manager, struct parameters* params)
+{
+  SddNode* tmp = sdd_manager_true(manager); // Always true
+	vector<SddNode*>* v = params->variable_sdds;
+  if (lobsvars != NULL && lobsvars->size() > 0) {
+    map< string, basictype * >*envars = (*agents)[0]->get_vars();
+    for (map< string, basictype * >::iterator i = envars->begin();
+         i != envars->end(); i++) {
+      if (lobsvars->find(i->first) == lobsvars->end()) {  // i->first is not local observable variable 
+        basictype *bt = i->second;
+        int index_begin = bt->get_index_begin();
+        int index_end = bt->get_index_end();
+        for (int j = index_begin; j <= index_end; j++)
+          tmp = sdd_conjoin(tmp, (*v)[j], manager);
+      }
+    }
+    for (int j = envars_bdd_length; j < get_var_index_begin(); j++) {
+      tmp = sdd_conjoin(tmp, (*v)[j], manager);
+    }
+  } else {
+		  for (int j = obsvars_bdd_length; j < get_var_index_begin(); j++) {
+		    tmp = sdd_conjoin(tmp, (*v)[j], manager);
+		  }
+  }
+
+  for (unsigned int j = get_var_index_end() + 1; j < v->size(); j++) {
+    tmp = sdd_conjoin(tmp, (*v)[j], manager);
+  }
+
+	// computing state->ExistAbstract(tmp)
+	vector<SddLiteral>* literals = new vector<SddLiteral>;
+	get_literals(tmp, literals);
+	for(unsigned int k = 0; k < literals->size(); k++) {
+		state = sdd_exists((*literals)[k], state, manager);		
+	}
+  return state;
+
+}
+

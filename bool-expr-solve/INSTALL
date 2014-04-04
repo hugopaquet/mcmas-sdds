@@ -1,0 +1,29 @@
+Boolean Expression Solver 1.0
+
+Boolean Expression Solver is a command-line utility that generates a truth table for a given Boolean expression.  Boolean Expression Solver has support for multiple expressions and user-defined symbols.  This document describes how to build its various components.
+
+== INSTALLATION ==
+
+To build all parts this project, run the following command:
+
+	make all
+
+This generates the bin/ directory, which contains the compiled Java class files, and the boolsolve shell script, which acts as a wrapper around the java command.  This also happens to be the default target for make.  To remove these binary files, run:
+
+	make clean
+
+This removes the bin/ directory and the boolsolve shell script.  To generate Javadoc documentation:
+
+	make javadoc
+
+And to remove the documentation:
+
+	make cleandoc
+
+The following builds only the class files:
+
+	make BooleanExpressionSolver
+
+And this builds only the shell script:
+
+	make boolsolve

@@ -90,6 +90,8 @@ struct parameters {
 	vector<SddNode*>* action_variable_sdds;
 	vector<SddNode*>* variable_sdds;
 	vector<SddNode*>* primed_variable_sdds;
+	SddNode* reach;
+	vector<SddNode*>* transitions; 
 };
 
 /*
@@ -448,7 +450,7 @@ public:
   Object *get_operand(unsigned char i);
   string to_string();
   bool check_atomic_proposition(unsigned char type);
-//  BDD check_formula(bdd_parameters * para);
+	SddNode* check_formula(SddManager* manager, struct parameters * params);
   //BDD check_formula_fair(bdd_parameters * para, BDD fair_reach);
 
   modal_formula *push_negations(unsigned int level);
@@ -623,9 +625,9 @@ public:
   /*
    * delete all local states of other agent
    */
- /* BDD project_local_state(BDD * state, Cudd * bddmgr, vector<BDD> * v);
+ 	SddNode* project_local_state(SddNode * state, SddManager * manager, struct parameters * params);
 
-  vector<BDD> get_BDDvector(Cudd * bddmgr, vector<BDD> * v, vector<BDD> * pv);
+/*  vector<BDD> get_BDDvector(Cudd * bddmgr, vector<BDD> * v, vector<BDD> * pv);
   BDD project_local_trans(BDD * trans, Cudd * bddmgr, vector<BDD> * v,
 			  vector<BDD> * pv); */
   /* 

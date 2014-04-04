@@ -259,7 +259,7 @@ bool_expression::encode_sdd(SddManager* manager, struct parameters* params) {
     	return sdd_manager_false(manager);
   } else {
 			cout << "encoding sdd from bool_expression - not sure what to return" << endl;
-    	return 0;
+    	return sdd_manager_true(manager);
   }
 }
 

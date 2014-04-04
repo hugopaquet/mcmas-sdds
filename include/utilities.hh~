@@ -18,17 +18,17 @@ extern "C++" {
   BDD Exists(Cudd *bddmgr, vector<BDD>* v, BDD x);
   BDD Abstract_key_var(Cudd * bddmgr, vector<BDD> * v, BDD x, int index_begin, int index_end);
   ADD ADDExists(Cudd * bddmgr, vector<ADD> v, ADD x);
-  BDD check_EX (BDD next, bdd_parameters *para);
-  BDD check_EF (BDD p, bdd_parameters *para);
-  BDD check_EG (BDD p, bdd_parameters *para);
-  BDD check_EU(BDD p, BDD q, bdd_parameters *para);
-  BDD check_AU(BDD p, BDD q, bdd_parameters *para);
-  BDD check_nK (BDD next, BDD RK, bdd_parameters *para);
-  BDD check_nO (BDD next, string name, bdd_parameters *para);
-  BDD check_GK (BDD next, string name, bdd_parameters *para);
-  BDD check_DK (BDD next, string name, bdd_parameters *para);
-  BDD check_GCK (BDD next, string name, bdd_parameters *para);
-  BDD check_ATLX(BDD next, string grpname, bdd_parameters *para);
+*/SddNode* check_EX(SddNode* p, SddManager* manager, struct parameters* params);
+	SddNode* check_EU(SddNode* p, SddNode* q, SddManager* manager, struct parameters* params);
+	SddNode* check_EG (SddNode* p, SddManager* manager, struct parameters *params);
+	SddNode* check_AU(SddNode* p, SddNode* q, SddManager* manager, struct parameters* params);
+	SddNode* check_EF(SddNode* p, SddManager* manager, struct parameters* params);
+//  BDD check_nK (BDD next, BDD RK, bdd_parameters *para);
+//  BDD check_nO (BDD next, string name, bdd_parameters *para);
+	SddNode* check_GK(SddNode* next, string name, SddManager* manager, struct parameters* params);
+/*  BDD check_DK (BDD next, string name, bdd_parameters *para); */
+  BDD check_GCK (SddNode* next, string name, SddManager* manager, struct parameters* params);
+/*  BDD check_ATLX(BDD next, string grpname, bdd_parameters *para);
   BDD check_ATLG(BDD p, string grpname, bdd_parameters *para);
   BDD check_ATLU(BDD q1, BDD q2, string grpname, bdd_parameters *para);  
 
@@ -46,8 +46,8 @@ extern "C++" {
   BDD check_ATLG_fair(BDD p, string grpname, bdd_parameters *para);
   BDD check_ATLU_fair(BDD q1, BDD q2, string grpname, BDD fair_reach, bdd_parameters *para);  
 
-  BDD get_K_states(BDD aset1, BDD *state, string name, bdd_parameters *para);
-  BDD get_nK_states(BDD *state, string name, bdd_parameters *para);
+  BDD get_K_states(BDD aset1, BDD *state, string name, bdd_parameters *para); */
+	SddNode* get_nK_states(SddNode * state, string name, SddManager* manager, struct parameters* params); /*
   BDD get_nK_states_fair(BDD *state, string name, BDD fair_reach, bdd_parameters *para);
   BDD get_GK_states(BDD aset1, BDD *state, string name, bdd_parameters *para);
   BDD get_DK_states(BDD aset1, BDD *state, string name, bdd_parameters *para);
@@ -77,6 +77,8 @@ extern "C++" {
   int search_logic_expression_table1(bool_expression *le);
   int search_logic_expression_table(expression *e1, expression *e2);
   int search_logic_expression_table1(expression *e1, expression *e2);
+
+	void get_literals(SddNode* node, vector<SddLiteral>* literals);
 }
 
 extern map < string, int > options;

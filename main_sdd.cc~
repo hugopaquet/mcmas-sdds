@@ -258,39 +258,47 @@ void free_mcmas_memory(bdd_parameters *para) {
 
 */
 
+string
+to_string(SddNode* node) {
+	string alphabet[] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"} ;
+	if(sdd_node_is_true(node))
+			return "1";
+		if(sdd_node_is_false(node))
+		return "0";
+ 	if(sdd_node_is_literal(node)) {
+		int n = sdd_node_literal(node);
+		if (n < 0) {
+ 			return "(~" + alphabet[-n] + ")";  
+		}
+
+		return alphabet[n]; // set 'Re
+	}
+	string result = "";
+	for (unsigned int i = 0; i < sdd_node_size(node); i++) {
+		result = (result != "" ? (result + " | (") : "(") + to_string((sdd_node_elements(node))[2*i]) 
+									+ " & " + to_string((sdd_node_elements(node))[2*i + 1]) + ")"; 
+	}
+	return result;
+}
+
 
 SddNode* 
 compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, SddNode* full_transition_relation) {
-  
-	cout << "Welcome to the compute reach function!" << endl;
+ 
 
 	SddNode* reach = sdd_manager_false(manager);
   SddNode* q1 = in_st;
   SddNode* next1 = sdd_manager_false(manager);
 
-/* Algo:    
-Y = false;	
-X = in_st;
-while(q1 != Y)
-{
-	Y = q1
-	next1 = Exists(all non-primed variables, conjoin(X, transition_relation))
-	unprime next1
-	q1 = disjoin(q1, next1)
-}
-
-return q1
-
-*/
-SddNode* iff = sdd_disjoin(
+	SddNode* iff = sdd_disjoin(
 										sdd_conjoin(sdd_negate(q1, manager), sdd_negate(reach, manager), manager), 
 										sdd_conjoin(q1, reach, manager), 
 										manager);
 
 	unsigned int v = params->variable_sdds->size(); // number of state variables
 	unsigned int a = params->action_variable_sdds->size(); // number of action variables
-	while (!sdd_node_is_true(iff)) { // until reach stops changing 
-
+//	while (!sdd_node_is_true(iff)) { // until reach stops changing 
+	while(q1 != reach) {
       reach = q1;
       next1 = q1;
 			next1 = sdd_conjoin(next1, full_transition_relation, manager);
@@ -323,10 +331,7 @@ SddNode* iff = sdd_disjoin(
 
   }
 	sdd_save_as_dot("reach.dot", reach);
- 	sdd_manager_minimize(manager);
-	sdd_save_as_dot("reach2.dot", reach);	
 
-	cout << "Bye!" << endl;
   return reach;
 }
 
@@ -395,8 +400,23 @@ int
 main(int argc, char *argv[])
 {
 
-
-
+/*	SddLiteral vv = 3;
+	int aa = 0; //1=yes
+	SddManager* m = sdd_manager_create(vv, aa);
+	
+	SddNode* A = sdd_manager_literal(1, m);
+	SddNode* B = sdd_manager_literal(2, m);
+	SddNode* t = sdd_manager_true(m);
+	SddNode* c1 = sdd_disjoin(A, B, m);
+	SddNode* c2 = sdd_disjoin(B, A, m);
+	sdd_save_as_dot("trivial.dot", c1);
+	sdd_save_as_dot("trivial2.dot", c2);
+	if(c1 == t) {
+		cout << "same" << endl;
+	} else 
+		cout << "no." << endl;
+	return 0;
+*/
 
   struct timeb tmb;
   ftime(&tmb);
@@ -468,7 +488,7 @@ main(int argc, char *argv[])
     actions_count += (*agents)[i]->actions_BDD_length();
   }
 
-	// Allocate variables to each agent (states/variables + actions). This is setting the indices in each agens
+	// Allocate variables to each agent (states/variables + actions). This is setting the indices in each agent
   int k1 = 0;
   int k2 = 0;
   for (unsigned int i = 0; i < agents->size(); i++) { 
@@ -476,40 +496,54 @@ main(int argc, char *argv[])
     k2 = (*agents)[i]->allocate_BDD_2_actions(k2);
   }
 
-	// Create and setup SDD manager
+	// Create Vtree
 	SddLiteral var_count = 2 * states_count + actions_count;
+	SddLiteral* var_order = new SddLiteral[var_count];
+	for(int i = 1; i <= var_count; i++)
+		var_order[i-1] = i;
+	Vtree* vtree = sdd_vtree_new_with_var_order(var_count, var_order, "right");
+
+	// Create and setup SDD manager
 	int auto_gc_and_minimize = 0; //1=yes
-	SddManager* manager = sdd_manager_create(var_count,auto_gc_and_minimize);
+	SddManager* manager = sdd_manager_new(vtree);
 
 
-	// Compute vector "a" = action_variable_sdds
+	// Compute parameters
 	struct parameters* params = new parameters;	
 	params->action_variable_sdds = compute_action_variable_sdds(manager); 
 	params->variable_sdds = compute_variable_sdds(manager);
 	params->primed_variable_sdds = compute_primed_variable_sdds(manager);
-
+	
 	print_params(params);
 
 	// Compute transition relation SDD for each agent
 	
   vector<SddNode*>* transition_relation_sdds = new vector<SddNode*>;
-	
+	SddNode* temp = 0;
 	for (unsigned int i = 0; i < agents->size(); i++) {
 		// encode protocol into SDD protocol_sdd
+		cout << "Encoding the protocol for " << (*agents)[i]->get_name();
 		SddNode* protocol_sdd = (*agents)[i]->encode_protocol(manager, params);
+		cout << " - Done. " << endl;
+		if(sdd_node_is_true(protocol_sdd)) {
+				cout << " It is true " << endl;	
+		}
 
 		// encode evolution into SDD evolution_sdd
+		cout << "Encoding the evolution for " << (*agents)[i]->get_name();
 		SddNode* evolution_sdd = (*agents)[i]->encode_evolution(manager, params);
-		// add protocol_sdd && evolution_sdd to transition_relation_vector
+		cout << " - Done. " << endl;
+
+		// add (protocol_sdd && evolution_sdd) to transition_relation_vector
 		SddNode* agent_transition_relation_sdd = sdd_conjoin(protocol_sdd, evolution_sdd, manager);
 		transition_relation_sdds->push_back(agent_transition_relation_sdd);
-		if(i == 1) 
-			sdd_save_as_dot("sdd.dot", agent_transition_relation_sdd);
+
 	}
+	params->transitions = transition_relation_sdds;	
+
 
 	// Make SDD for initial states 
 	SddNode* initial_states_sdd = is_istates->encode_sdd(manager, params);
-	sdd_save_as_dot("istates.dot", initial_states_sdd);
 
 	// Compute full transition relation
 	SddNode* full_transition_relation = sdd_manager_true(manager);	
@@ -518,13 +552,26 @@ main(int argc, char *argv[])
 	}
 
 	// Compute Reachable States
-	SddNode* r = compute_reach(initial_states_sdd, manager, params, full_transition_relation);
+	SddNode* reachable_state_sdd = compute_reach(initial_states_sdd, manager, params, full_transition_relation);
+	params->reach = reachable_state_sdd;
+	sdd_save_as_dot("sdd.dot", reachable_state_sdd);	
 
+	// check for deadlocks (EX(True))
+	// check for arithmetic overflow
 
+	// check formulae
+   for (unsigned int i = 0; i < is_formulae->size(); i++) {
+			cout << "checking formula:  " << ((*is_formulae)[i]).to_string() << endl;
+      SddNode* result = ((*is_formulae)[i]).check_formula(manager, params);
+			
+			bool satisfaction = result == params->reach;
+			cout << "formula " << i << " is " << (satisfaction ? "true" : "false") << endl;
+	} 
 
-
+	cout << "STATS" << endl;
+	sdd_manager_print(manager);
+	sdd_vtree_save_as_dot("vtree.dot", sdd_manager_vtree(manager));
 	sdd_manager_free(manager);
-
 
   cout << "THE END" << endl;
 
