@@ -26,3 +26,22 @@ fairness_expression::fairness_expression(atomic_proposition * obj1):
 {
 }
 
+
+SddNode*
+fairness_expression::get_sdd_representation()
+{
+  return sdd_representation;
+}
+
+void
+fairness_expression::set_sdd_representation(SddNode* sddrep)
+{
+  sdd_representation = sddrep;
+}
+
+void 
+fairness_expression::delete_sdd_representation(SddManager* manager)
+{
+  if(manager != NULL)
+    sdd_representation = sdd_manager_false(manager);
+}

@@ -34,7 +34,7 @@ extern "C++" {
 
   BDD check_EU_Qh(BDD p, BDD q, bdd_parameters * para, vector< BDD* >* qh);
   BDD check_EG_fair_Qh(BDD p, bdd_parameters * para, vector< vector < BDD* >* >* Qh);
-  BDD check_EG_fair (BDD p, bdd_parameters *para);
+*/SddNode* check_EG_fair (SddNode* p, SddManager* manager, struct parameters *params);/*
   BDD check_EF_fair (BDD p, BDD fair_reach, bdd_parameters *para);
   BDD check_EX_fair (BDD p, BDD fair_reach, bdd_parameters *para);
   BDD check_EU_fair(BDD p, BDD q, BDD fair_reach, bdd_parameters *para);
@@ -79,6 +79,8 @@ extern "C++" {
   int search_logic_expression_table1(expression *e1, expression *e2);
 
 	void get_literals(SddNode* node, vector<SddLiteral>* literals);
+	string to_string(SddNode* node);
+	void save_to_string(SddNode* node);
 }
 
 extern map < string, int > options;

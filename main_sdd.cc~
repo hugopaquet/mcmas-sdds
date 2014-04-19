@@ -258,30 +258,6 @@ void free_mcmas_memory(bdd_parameters *para) {
 
 */
 
-string
-to_string(SddNode* node) {
-	string alphabet[] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"} ;
-	if(sdd_node_is_true(node))
-			return "1";
-		if(sdd_node_is_false(node))
-		return "0";
- 	if(sdd_node_is_literal(node)) {
-		int n = sdd_node_literal(node);
-		if (n < 0) {
- 			return "(~" + alphabet[-n] + ")";  
-		}
-
-		return alphabet[n]; // set 'Re
-	}
-	string result = "";
-	for (unsigned int i = 0; i < sdd_node_size(node); i++) {
-		result = (result != "" ? (result + " | (") : "(") + to_string((sdd_node_elements(node))[2*i]) 
-									+ " & " + to_string((sdd_node_elements(node))[2*i + 1]) + ")"; 
-	}
-	return result;
-}
-
-
 SddNode* 
 compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, SddNode* full_transition_relation) {
  
@@ -330,8 +306,7 @@ compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, S
 								manager);
 
   }
-	sdd_save_as_dot("reach.dot", reach);
-
+		
   return reach;
 }
 
@@ -507,7 +482,6 @@ main(int argc, char *argv[])
 	int auto_gc_and_minimize = 0; //1=yes
 	SddManager* manager = sdd_manager_new(vtree);
 
-
 	// Compute parameters
 	struct parameters* params = new parameters;	
 	params->action_variable_sdds = compute_action_variable_sdds(manager); 
@@ -517,7 +491,6 @@ main(int argc, char *argv[])
 	print_params(params);
 
 	// Compute transition relation SDD for each agent
-	
   vector<SddNode*>* transition_relation_sdds = new vector<SddNode*>;
 	SddNode* temp = 0;
 	for (unsigned int i = 0; i < agents->size(); i++) {
@@ -536,41 +509,70 @@ main(int argc, char *argv[])
 
 		// add (protocol_sdd && evolution_sdd) to transition_relation_vector
 		SddNode* agent_transition_relation_sdd = sdd_conjoin(protocol_sdd, evolution_sdd, manager);
+		if(i == 3) {
+			cout << "crash test" << endl;				
+		//	save_to_string(agent_transition_relation_sdd);
+			cout << "end" << endl;	
+		}
 		transition_relation_sdds->push_back(agent_transition_relation_sdd);
-
 	}
 	params->transitions = transition_relation_sdds;	
 
 
 	// Make SDD for initial states 
+	cout << "Computing initial states";
 	SddNode* initial_states_sdd = is_istates->encode_sdd(manager, params);
+	cout << " - Done." << endl;
+
 
 	// Compute full transition relation
+	cout << "Computing full transition relation";
 	SddNode* full_transition_relation = sdd_manager_true(manager);	
 	for(unsigned int i = 0; i < transition_relation_sdds->size(); i++) {
 		full_transition_relation = sdd_conjoin(full_transition_relation, (*transition_relation_sdds)[i], manager);
 	}
+	cout << "- Done." << endl;
 
 	// Compute Reachable States
+	cout << "Computing reachable state space" << endl;
 	SddNode* reachable_state_sdd = compute_reach(initial_states_sdd, manager, params, full_transition_relation);
 	params->reach = reachable_state_sdd;
-	sdd_save_as_dot("sdd.dot", reachable_state_sdd);	
+	cout << " - Done." << endl;
 
-	// check for deadlocks (EX(True))
+	// Deal with fairness constraints
+  if (!is_fairness->empty()) {
+    cout << "Building set of fair states";
+    for (vector< fairness_expression * >::iterator it =
+           is_fairness->begin(); it != is_fairness->end(); it++) {
+      SddNode* fairset = (*it)->check_formula(manager, params);
+      (*it)->set_sdd_representation(fairset);
+
+}
+    params->reach = check_EG_fair(sdd_manager_true(manager), manager, params);
+
+    initial_states_sdd = sdd_conjoin(initial_states_sdd, params->reach, manager);
+		cout << " - Done." << endl;
+  }      
+
+	// check for deadlocks (AGEX(True)?)
 	// check for arithmetic overflow
 
 	// check formulae
+    string str = "_init";
+    (*is_evaluation)[str] = is_istates;
+    modal_formula *init = new modal_formula(new atomic_proposition(&str));
+
    for (unsigned int i = 0; i < is_formulae->size(); i++) {
-			cout << "checking formula:  " << ((*is_formulae)[i]).to_string() << endl;
-      SddNode* result = ((*is_formulae)[i]).check_formula(manager, params);
-			
+			cout << "Checking  " << ((*is_formulae)[i]).to_string() << endl;
+     
+      modal_formula f(4, init, &((*is_formulae)[i]));
+			SddNode* result = f.check_formula(manager, params);
+			sdd_save_as_dot("result.dot", result);
 			bool satisfaction = result == params->reach;
-			cout << "formula " << i << " is " << (satisfaction ? "true" : "false") << endl;
+			cout << "formula " << i+1 << " is " << (satisfaction ? "TRUE" : "FALSE") << endl;
 	} 
 
-	cout << "STATS" << endl;
-	sdd_manager_print(manager);
-	sdd_vtree_save_as_dot("vtree.dot", sdd_manager_vtree(manager));
+
 	sdd_manager_free(manager);
 
   cout << "THE END" << endl;

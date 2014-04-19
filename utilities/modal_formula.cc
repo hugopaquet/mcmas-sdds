@@ -223,7 +223,8 @@ modal_formula::check_formula(SddManager * manager, struct parameters* params)
 //      if (para->BDD_cache->find(name) != para->BDD_cache->end())
 //        return ((*para->BDD_cache)[name]);
     bool_expression *simple = is_evaluation->find(name)->second;
-    result = sdd_conjoin(simple->encode_sdd(manager, params), params->reach, manager);
+		SddNode* node = simple->encode_sdd(manager, params);
+    result = sdd_conjoin(node, params->reach, manager);
 //    if(options["nobddcache"] == 0)
 //      (*para->BDD_cache)[name] = result;
     break;
@@ -241,16 +242,22 @@ modal_formula::check_formula(SddManager * manager, struct parameters* params)
     break;
   case 4:     // IMPLIES -done
     {
+
       SddNode* res1 = sdd_conjoin(sdd_negate((((modal_formula *) obj[0])->check_formula(manager, params)), manager), params->reach, manager);
+			if(((modal_formula *) obj[0])->to_string() != "_init") {
+			//	sdd_save_as_dot("init.dot", (((modal_formula *) obj[1])->check_formula(manager, params)));
+			//	save_to_string(((modal_formula *) obj[1])->check_formula(manager, params));
+			}
       SddNode* res2 = ((modal_formula *) obj[1])->check_formula(manager, params);
+
       result = sdd_disjoin(res1, res2, manager);
       break;
     }
   case 10:      // AG p = !EF !p - done 	
 	{
-    phi1 = sdd_conjoin(sdd_negate(((modal_formula *) obj[0])->check_formula(manager, params), manager), params->reach, manager);
-		SddNode* node = check_EF(phi1, manager, params);
-    result = sdd_negate(node, manager);
+		SddNode* sdd = ((modal_formula *) obj[0])->check_formula(manager, params);
+    phi1 = sdd_conjoin(sdd_negate(sdd, manager), params->reach, manager);	
+    result = sdd_negate(check_EF(phi1, manager, params), manager);
     break;
 	}
   case 11:      // EG - done
@@ -310,6 +317,7 @@ modal_formula::check_formula(SddManager * manager, struct parameters* params)
     id = ((modal_formula *) obj[0])->get_operand(0);
     name = ((atomic_proposition *) id)->get_proposition();
     af = ((modal_formula *) obj[1])->check_formula(manager, params);
+
     result = check_GCK(af, name, manager, params);
     break;
 /*  case 40:      // O - what is that?
@@ -353,10 +361,10 @@ modal_formula::check_formula(SddManager * manager, struct parameters* params)
     result = check_ATLU(phi1, phi2, name, para);
     break; */
 	default: 
-		cout << "Checking this formula (code " << op << ") is not yet supported." << endl;
+		cout << "Checking this formula is not yet supported." << endl;
   }
 	//cout << "FINISH " << to_string() << endl; 
-	return sdd_conjoin(result, params->reach, manager);;
+	return sdd_conjoin(result, params->reach, manager);
 }
 
 

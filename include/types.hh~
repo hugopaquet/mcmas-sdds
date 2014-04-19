@@ -91,7 +91,7 @@ struct parameters {
 	vector<SddNode*>* variable_sdds;
 	vector<SddNode*>* primed_variable_sdds;
 	SddNode* reach;
-	vector<SddNode*>* transitions;
+	vector<SddNode*>* transitions; 
 };
 
 /*
@@ -469,8 +469,7 @@ public:
  */
 class fairness_expression:public modal_formula
 {
-//  BDD bdd_representation;	// Its representation (i.e. the set of reachable states
-  // in which the expression is true, as a BDD
+  SddNode* sdd_representation;	// Its representation (i.e. the set of reachable states in which the expression is true, as an SDD
 public:
   fairness_expression(atomic_proposition * obj1);	// term
   fairness_expression(unsigned char o, modal_formula * f1);
@@ -478,9 +477,9 @@ public:
 		      modal_formula * f2);
   fairness_expression(unsigned char o, modal_formula * f1,
 		      modal_formula * f2, modal_formula * f3);
-//  BDD get_bdd_representation();
-//  void set_bdd_representation(BDD bddrep);
-//  void delete_bdd_representation(bdd_parameters *para);
+  SddNode* get_bdd_representation();
+  void set_sdd_representation(SddNode* sddrep);
+  void delete_sdd_representation(SddManager* manager);
 };
 
 /*

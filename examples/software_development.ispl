@@ -3,7 +3,6 @@
 Agent HardwareSupplier
     Vars:
         state : { HardwareSupplier_0, HardwareSupplier_1, HardwareSupplier_2, HardwareSupplier_3, HardwareSupplier_4, HardwareSupplier_5, HardwareSupplier_6, HardwareSupplier_7, HardwareSupplier_8, HardwareSupplier_9, HardwareSupplier_10, HardwareSupplier_11, HardwareSupplier_12, HardwareSupplier_13, HardwareSupplier_14 };
-        failCount : 0 .. 3;
     end Vars
     RedStates:
     end RedStates
@@ -33,23 +32,22 @@ Agent HardwareSupplier
         state = HardwareSupplier_4 if state = HardwareSupplier_3 and Action = HardwareSupplier_Invoke2 and Client.Action = Client_Pick45__1;
         state = HardwareSupplier_5 if state = HardwareSupplier_2 and Action = HardwareSupplier_toClient and Client.Action = Client_Pick45__0;
         state = HardwareSupplier_6 if state = HardwareSupplier_5 and Action = HardwareSupplier_fromClient1 and Client.Action = Client_sendDeployment;
-        state = HardwareSupplier_6 and failCount = 2 if state = HardwareSupplier_9 and Action = HardwareSupplier_Assign1;
-        state = HardwareSupplier_6 and failCount = failCount + 1 if state = HardwareSupplier_11 and Action = HardwareSupplier_Assign2;
-        state = HardwareSupplier_7 if state = HardwareSupplier_6 and failCount < 2 and Action = HardwareSupplier_fromPSPSPE and Expert.Action = Expert_toHardware and ServiceProvider.Action = ServiceProvider_sendDeploying and PSP.Action = PSP_sendDeploying;
+        state = HardwareSupplier_6 if state = HardwareSupplier_9 and Action = HardwareSupplier_Assign1;
+        state = HardwareSupplier_6 if state = HardwareSupplier_11 and Action = HardwareSupplier_Assign2;
+        state = HardwareSupplier_7 if state = HardwareSupplier_6 and Action = HardwareSupplier_fromPSPSPE and Expert.Action = Expert_toHardware and ServiceProvider.Action = ServiceProvider_sendDeploying and PSP.Action = PSP_sendDeploying;
         state = HardwareSupplier_8 if state = HardwareSupplier_7 and Action = HardwareSupplier_Pick2__0;
         state = HardwareSupplier_9 if state = HardwareSupplier_8 and Action = HardwareSupplier_DeployPassed and Expert.Action = Expert_Pick1__0 and Client.Action = Client_Pick44__0 and ServiceProvider.Action = ServiceProvider_getresult__0 and PSP.Action = PSP_Pick231__0;
         state = HardwareSupplier_10 if state = HardwareSupplier_7 and Action = HardwareSupplier_Pick2__1;
         state = HardwareSupplier_11 if state = HardwareSupplier_10 and Action = HardwareSupplier_DeplyFailed and Expert.Action = Expert_Pick1__2 and Client.Action = Client_Pick44__2 and ServiceProvider.Action = ServiceProvider_getresult__2 and PSP.Action = PSP_Pick231__2;
         state = HardwareSupplier_12 if state = HardwareSupplier_7 and Action = HardwareSupplier_Pick2__2;
         state = HardwareSupplier_13 if state = HardwareSupplier_12 and Action = HardwareSupplier_Invoke1 and Expert.Action = Expert_Pick1__1 and Client.Action = Client_Pick44__1 and ServiceProvider.Action = ServiceProvider_getresult__1 and PSP.Action = PSP_Pick231__1;
-        state = HardwareSupplier_14 if state = HardwareSupplier_6 and  ! (failCount < 2) and Action = HardwareSupplier_While1;
+        state = HardwareSupplier_14 if state = HardwareSupplier_6 and Action = HardwareSupplier_While1;
     end Evolution
 end Agent
 
 Agent TestingCompany
     Vars:
         state : { TestingCompany_0, TestingCompany_1, TestingCompany_2, TestingCompany_3, TestingCompany_4, TestingCompany_5, TestingCompany_6, TestingCompany_7, TestingCompany_8, TestingCompany_9 };
-        failCounter : 0 .. 3;
     end Vars
     RedStates:
     end RedStates
@@ -69,23 +67,22 @@ Agent TestingCompany
 
     Evolution :
         state = TestingCompany_1 if state = TestingCompany_0 and Action = TestingCompany_fromClient and Client.Action = Client_sendTesting;
-        state = TestingCompany_1 and failCounter = 2 if state = TestingCompany_4 and Action = TestingCompany_Assign1;
-        state = TestingCompany_1 and failCounter = failCounter + 1 if state = TestingCompany_6 and Action = TestingCompany_Assign2;
-        state = TestingCompany_2 if state = TestingCompany_1 and failCounter < 2 and Action = TestingCompany_fromPSPSP and ServiceProvider.Action = ServiceProvider_sendTesting and PSP.Action = PSP_sendTesting;
+        state = TestingCompany_1 if state = TestingCompany_4 and Action = TestingCompany_Assign1;
+        state = TestingCompany_1 if state = TestingCompany_6 and Action = TestingCompany_Assign2;
+        state = TestingCompany_2 if state = TestingCompany_1 and Action = TestingCompany_fromPSPSP and ServiceProvider.Action = ServiceProvider_sendTesting and PSP.Action = PSP_sendTesting;
         state = TestingCompany_3 if state = TestingCompany_2 and Action = TestingCompany_Pick1__0;
         state = TestingCompany_4 if state = TestingCompany_3 and Action = TestingCompany_TestPassed and Client.Action = Client_Pick441__0 and ServiceProvider.Action = ServiceProvider_Pick63__0 and PSP.Action = PSP_Pick23__0;
         state = TestingCompany_5 if state = TestingCompany_2 and Action = TestingCompany_Pick1__1;
         state = TestingCompany_6 if state = TestingCompany_5 and Action = TestingCompany_TestFailed and Client.Action = Client_Pick441__2 and ServiceProvider.Action = ServiceProvider_Pick63__2 and PSP.Action = PSP_Pick23__2;
         state = TestingCompany_7 if state = TestingCompany_2 and Action = TestingCompany_Pick1__2;
         state = TestingCompany_8 if state = TestingCompany_7 and Action = TestingCompany_Invoke1 and Client.Action = Client_Pick441__1 and ServiceProvider.Action = ServiceProvider_Pick63__1 and PSP.Action = PSP_Pick23__1;
-        state = TestingCompany_9 if state = TestingCompany_1 and  ! (failCounter < 2) and Action = TestingCompany_While1;
+        state = TestingCompany_9 if state = TestingCompany_1 and Action = TestingCompany_While1;
     end Evolution
 end Agent
 
 Agent Expert
     Vars:
         state : { Expert_0, Expert_1, Expert_2, Expert_3, Expert_4, Expert_5, Expert_6, Expert_7, Expert_8 };
-        failCount : 0 .. 3;
     end Vars
     RedStates:
     end RedStates
@@ -104,15 +101,15 @@ Agent Expert
 
     Evolution :
         state = Expert_1 if state = Expert_0 and Action = Expert_fromClient and Client.Action = Client_askExpert;
-        state = Expert_1 and failCount = 2 if state = Expert_4 and Action = Expert_Assign2;
-        state = Expert_1 and failCount = failCount + 1 if state = Expert_6 and Action = Expert_Assign4;
-        state = Expert_2 if state = Expert_1 and failCount < 2 and Action = Expert_Pick2__0;
+        state = Expert_1 if state = Expert_4 and Action = Expert_Assign2;
+        state = Expert_1 if state = Expert_6 and Action = Expert_Assign4;
+        state = Expert_2 if state = Expert_1 and Action = Expert_Pick2__0;
         state = Expert_3 if state = Expert_2 and Action = Expert_toHardware and HardwareSupplier.Action = HardwareSupplier_fromPSPSPE;
         state = Expert_4 if state = Expert_3 and Action = Expert_Pick1__0 and HardwareSupplier.Action = HardwareSupplier_DeployPassed;
         state = Expert_5 if state = Expert_3 and Action = Expert_Pick1__1 and HardwareSupplier.Action = HardwareSupplier_Invoke1;
         state = Expert_6 if state = Expert_3 and Action = Expert_Pick1__2 and HardwareSupplier.Action = HardwareSupplier_DeplyFailed;
-        state = Expert_7 if state = Expert_1 and failCount < 2 and Action = Expert_Pick2__1;
-        state = Expert_8 if state = Expert_1 and  ! (failCount < 2) and Action = Expert_While1;
+        state = Expert_7 if state = Expert_1 and Action = Expert_Pick2__1;
+        state = Expert_8 if state = Expert_1 and Action = Expert_While1;
     end Evolution
 end Agent
 
@@ -148,7 +145,6 @@ Agent Client
         state : { Client_0, Client_1, Client_2, Client_3, Client_4, Client_5, Client_6, Client_7, Client_8, Client_9, Client_10, Client_11, Client_12, Client_13, Client_14, Client_15, Client_16, Client_17, Client_18, Client_19, Client_20, Client_21, Client_22, Client_23, Client_24, Client_25, Client_26, Client_27, Client_28, Client_29, Client_30, Client_31, Client_32, Client_33, Client_34, Client_35, Client_36, Client_37, Client_38, Client_39, Client_40, Client_41, Client_42, Client_43, Client_44, Client_45, Client_46, Client_47, Client_48, Client_49, Client_50, Client_51 };
         passed1 : boolean;
         passed : boolean;
-        failCount : 0 .. 3;
     end Vars
     RedStates:
     end RedStates
@@ -209,10 +205,10 @@ Agent Client
     end Protocol
 
     Evolution :
-        state = Client_0 and failCount = failCount + 1 if state = Client_24 and Action = Client_Assign375;
-        state = Client_1 if state = Client_0 and failCount < 2 and Action = Client_Update1__0 and PSP.Action = PSP_updateClient;
-        state = Client_2 if state = Client_0 and failCount < 2 and Action = Client_Update1__1 and PSP.Action = PSP_payPenaltyClient;
-        state = Client_3 if state = Client_0 and failCount < 2 and Action = Client_Update1__2 and PSP.Action = PSP_Invoke1;
+        state = Client_0 if state = Client_24 and Action = Client_Assign375;
+        state = Client_1 if state = Client_0 and Action = Client_Update1__0 and PSP.Action = PSP_updateClient;
+        state = Client_2 if state = Client_0 and Action = Client_Update1__1 and PSP.Action = PSP_payPenaltyClient;
+        state = Client_3 if state = Client_0 and Action = Client_Update1__2 and PSP.Action = PSP_Invoke1;
         state = Client_4 if state = Client_1 and Action = Client_Empty1;
         state = Client_4 if state = Client_2 and Action = Client_receiveUpdate1 and PSP.Action = PSP_updateClient1;
         state = Client_5 if state = Client_4 and Action = Client_Update11__0 and ServiceProvider.Action = ServiceProvider_updateC;
@@ -224,14 +220,14 @@ Agent Client
         state = Client_10 if state = Client_8 and Action = Client_Payment1__1;
         state = Client_11 if state = Client_10 and Action = Client_Invoke1 and PSP.Action = PSP_firstPayment__1;
         state = Client_12 if state = Client_9 and Action = Client_payPSP and PSP.Action = PSP_firstPayment__0;
-        state = Client_13 if state = Client_12 and failCount = 0 and Action = Client_ChangePSP1__0;
-        state = Client_14 if state = Client_12 and failCount = 0 and Action = Client_ChangePSP1__1;
+        state = Client_13 if state = Client_12 and Action = Client_ChangePSP1__0;
+        state = Client_14 if state = Client_12 and Action = Client_ChangePSP1__1;
         state = Client_15 if state = Client_13 and Action = Client_changePSP and PSP.Action = PSP_Change1__0;
         state = Client_15 if state = Client_14 and Action = Client_Invoke2 and PSP.Action = PSP_Change1__1;
         state = Client_16 if state = Client_15 and Action = Client_ChangeSP1__0;
         state = Client_17 if state = Client_15 and Action = Client_ChangeSP1__1;
-        state = Client_18 if state = Client_12 and  ! (failCount = 0) and Action = Client_Change2__0;
-        state = Client_19 if state = Client_12 and  ! (failCount = 0) and Action = Client_Change2__1;
+        state = Client_18 if state = Client_12 and Action = Client_Change2__0;
+        state = Client_19 if state = Client_12 and Action = Client_Change2__1;
         state = Client_20 if state = Client_19 and Action = Client_AskSecondChange and ServiceProvider.Action = ServiceProvider_Change2__0 and PSP.Action = PSP_Change2__0;
         state = Client_21 if state = Client_20 and Action = Client_Pick442__0;
         state = Client_22 if state = Client_21 and Action = Client_PayPenaltyPSPSP and ServiceProvider.Action = ServiceProvider_Pick62__0 and PSP.Action = PSP_Pick22__0;
@@ -241,15 +237,15 @@ Agent Client
         state = Client_24 if state = Client_18 and Action = Client_Invoke4 and ServiceProvider.Action = ServiceProvider_Change2__1 and PSP.Action = PSP_Change2__1;
         state = Client_24 if state = Client_22 and Action = Client_SendSecondChange and ServiceProvider.Action = ServiceProvider_receiveSecondChange and PSP.Action = PSP_receiveChange2;
         state = Client_24 if state = Client_23 and Action = Client_WithdrawPSPSP and ServiceProvider.Action = ServiceProvider_Pick62__1 and PSP.Action = PSP_Pick22__1;
-        state = Client_25 if state = Client_0 and  ! (failCount < 2) and Action = Client_While1;
-        state = Client_26 and failCount = 0 if state = Client_25 and Action = Client_Assign376;
+        state = Client_25 if state = Client_0 and  Action = Client_While1;
+        state = Client_26 if state = Client_25 and Action = Client_Assign376;
         state = Client_27 if state = Client_26 and Action = Client_sendTesting and TestingCompany.Action = TestingCompany_fromClient;
-        state = Client_27 and failCount = 2 and passed = true if state = Client_28 and Action = Client_Assign35;
-        state = Client_27 and failCount = failCount + 1 if state = Client_30 and Action = Client_Assign36;
-        state = Client_28 if state = Client_27 and failCount < 2 and Action = Client_Pick441__0 and TestingCompany.Action = TestingCompany_TestPassed;
-        state = Client_29 if state = Client_27 and failCount < 2 and Action = Client_Pick441__1 and TestingCompany.Action = TestingCompany_Invoke1;
-        state = Client_30 if state = Client_27 and failCount < 2 and Action = Client_Pick441__2 and TestingCompany.Action = TestingCompany_TestFailed;
-        state = Client_31 if state = Client_27 and  ! (failCount < 2) and Action = Client_Testing;
+        state = Client_27 and passed = true if state = Client_28 and Action = Client_Assign35;
+        state = Client_27 if state = Client_30 and Action = Client_Assign36;
+        state = Client_28 if state = Client_27 and Action = Client_Pick441__0 and TestingCompany.Action = TestingCompany_TestPassed;
+        state = Client_29 if state = Client_27 and Action = Client_Pick441__1 and TestingCompany.Action = TestingCompany_Invoke1;
+        state = Client_30 if state = Client_27 and Action = Client_Pick441__2 and TestingCompany.Action = TestingCompany_TestFailed;
+        state = Client_31 if state = Client_27 and Action = Client_Testing;
         state = Client_32 if state = Client_31 and passed = true and Action = Client_If43;
         state = Client_33 if state = Client_32 and Action = Client_buyInsurance and InsuranceCompany.Action = InsuranceCompany_fromClient;
         state = Client_34 if state = Client_33 and Action = Client_buyHardware and HardwareSupplier.Action = HardwareSupplier_receiveC;
@@ -259,15 +255,15 @@ Agent Client
         state = Client_38 if state = Client_37 and Action = Client_sendDeployment and HardwareSupplier.Action = HardwareSupplier_fromClient1;
         state = Client_39 if state = Client_38 and Action = Client_askExpert and Expert.Action = Expert_fromClient;
         state = Client_39 if state = Client_42 and Action = Client_sendFInalPayment and PSP.Action = PSP_Pick232__0;
-        state = Client_39 and failCount = failCount + 1 if state = Client_46 and Action = Client_Assign361;
-        state = Client_40 if state = Client_39 and failCount < 2 and Action = Client_Pick44__0 and HardwareSupplier.Action = HardwareSupplier_DeployPassed;
-        state = Client_41 and failCount = 0 and passed1 = true if state = Client_40 and Action = Client_Assign351;
+        state = Client_39 if state = Client_46 and Action = Client_Assign361;
+        state = Client_40 if state = Client_39 and Action = Client_Pick44__0 and HardwareSupplier.Action = HardwareSupplier_DeployPassed;
+        state = Client_41 and passed1 = true if state = Client_40 and Action = Client_Assign351;
         state = Client_42 if state = Client_41 and Action = Client_Pick444__0;
         state = Client_43 if state = Client_41 and Action = Client_Pick444__1;
         state = Client_44 if state = Client_43 and Action = Client_Invoke5 and PSP.Action = PSP_Pick232__1;
-        state = Client_45 if state = Client_39 and failCount < 2 and Action = Client_Pick44__1 and HardwareSupplier.Action = HardwareSupplier_Invoke1;
-        state = Client_46 if state = Client_39 and failCount < 2 and Action = Client_Pick44__2 and HardwareSupplier.Action = HardwareSupplier_DeplyFailed;
-        state = Client_47 if state = Client_39 and  ! (failCount < 2) and Action = Client_Deploying;
+        state = Client_45 if state = Client_39 and Action = Client_Pick44__1 and HardwareSupplier.Action = HardwareSupplier_Invoke1;
+        state = Client_46 if state = Client_39 and Action = Client_Pick44__2 and HardwareSupplier.Action = HardwareSupplier_DeplyFailed;
+        state = Client_47 if state = Client_39 and Action = Client_Deploying;
         state = Client_48 if state = Client_47 and passed1 = false and Action = Client_askCompensation and InsuranceCompany.Action = InsuranceCompany_fromClient1;
         state = Client_49 if state = Client_48 and Action = Client_Pick46__0 and InsuranceCompany.Action = InsuranceCompany_toClient;
         state = Client_50 if state = Client_48 and Action = Client_Pick46__1 and InsuranceCompany.Action = InsuranceCompany_Invoke1;
@@ -280,7 +276,6 @@ Agent ServiceProvider
     Vars:
         state : { ServiceProvider_0, ServiceProvider_1, ServiceProvider_2, ServiceProvider_3, ServiceProvider_4, ServiceProvider_5, ServiceProvider_6, ServiceProvider_7, ServiceProvider_8, ServiceProvider_9, ServiceProvider_10, ServiceProvider_11, ServiceProvider_12, ServiceProvider_13, ServiceProvider_14, ServiceProvider_15, ServiceProvider_16, ServiceProvider_17, ServiceProvider_18, ServiceProvider_19, ServiceProvider_20, ServiceProvider_21, ServiceProvider_22, ServiceProvider_23, ServiceProvider_24, ServiceProvider_25, ServiceProvider_26, ServiceProvider_27, ServiceProvider_28, ServiceProvider_29, ServiceProvider_30, ServiceProvider_31, ServiceProvider_32, ServiceProvider_33, ServiceProvider_34, ServiceProvider_35, ServiceProvider_36, ServiceProvider_37, ServiceProvider_38, ServiceProvider_39, ServiceProvider_40, ServiceProvider_41, ServiceProvider_42, ServiceProvider_43, ServiceProvider_44, ServiceProvider_45, ServiceProvider_46, ServiceProvider_47, ServiceProvider_48, ServiceProvider_49 };
         Passed : boolean;
-        failCount : 0 .. 3;
     end Vars
     RedStates:
     end RedStates
@@ -339,9 +334,9 @@ Agent ServiceProvider
     end Protocol
 
     Evolution :
-        state = ServiceProvider_0 and failCount = failCount + 1 if state = ServiceProvider_28 and Action = ServiceProvider_Assign46;
-        state = ServiceProvider_1 if state = ServiceProvider_0 and failCount < 2 and Action = ServiceProvider_Pick1__0;
-        state = ServiceProvider_2 if state = ServiceProvider_0 and failCount < 2 and Action = ServiceProvider_Pick1__1;
+        state = ServiceProvider_0 if state = ServiceProvider_28 and Action = ServiceProvider_Assign46;
+        state = ServiceProvider_1 if state = ServiceProvider_0 and Action = ServiceProvider_Pick1__0;
+        state = ServiceProvider_2 if state = ServiceProvider_0 and Action = ServiceProvider_Pick1__1;
         state = ServiceProvider_3 if state = ServiceProvider_2 and Action = ServiceProvider_Pick5__0;
         state = ServiceProvider_4 if state = ServiceProvider_3 and Action = ServiceProvider_payClientPenalty and Client.Action = Client_Update11__1;
         state = ServiceProvider_5 if state = ServiceProvider_2 and Action = ServiceProvider_Pick5__1;
@@ -364,42 +359,42 @@ Agent ServiceProvider
         state = ServiceProvider_19 if state = ServiceProvider_18 and Action = ServiceProvider_receivePayment1__0 and PSP.Action = PSP_paySP;
         state = ServiceProvider_20 if state = ServiceProvider_18 and Action = ServiceProvider_receivePayment1__1 and PSP.Action = PSP_Invoke3;
         state = ServiceProvider_21 if state = ServiceProvider_19 and Action = ServiceProvider_Empty2;
-        state = ServiceProvider_22 if state = ServiceProvider_21 and failCount = 0 and Action = ServiceProvider_Change1__0 and Client.Action = Client_changeSP;
-        state = ServiceProvider_23 if state = ServiceProvider_21 and failCount = 0 and Action = ServiceProvider_Change1__1 and Client.Action = Client_Invoke3;
-        state = ServiceProvider_24 if state = ServiceProvider_21 and  ! (failCount = 0) and Action = ServiceProvider_Change2__0 and Client.Action = Client_AskSecondChange;
+        state = ServiceProvider_22 if state = ServiceProvider_21 and Action = ServiceProvider_Change1__0 and Client.Action = Client_changeSP;
+        state = ServiceProvider_23 if state = ServiceProvider_21 and Action = ServiceProvider_Change1__1 and Client.Action = Client_Invoke3;
+        state = ServiceProvider_24 if state = ServiceProvider_21 and Action = ServiceProvider_Change2__0 and Client.Action = Client_AskSecondChange;
         state = ServiceProvider_25 if state = ServiceProvider_24 and Action = ServiceProvider_Pick62__0 and Client.Action = Client_PayPenaltyPSPSP;
         state = ServiceProvider_26 if state = ServiceProvider_24 and Action = ServiceProvider_Pick62__1 and Client.Action = Client_WithdrawPSPSP;
-        state = ServiceProvider_27 if state = ServiceProvider_21 and  ! (failCount = 0) and Action = ServiceProvider_Change2__1 and Client.Action = Client_Invoke4;
+        state = ServiceProvider_27 if state = ServiceProvider_21 and Action = ServiceProvider_Change2__1 and Client.Action = Client_Invoke4;
         state = ServiceProvider_28 if state = ServiceProvider_22 and Action = ServiceProvider_Empty12;
         state = ServiceProvider_28 if state = ServiceProvider_23 and Action = ServiceProvider_Empty13;
         state = ServiceProvider_28 if state = ServiceProvider_25 and Action = ServiceProvider_receiveSecondChange and Client.Action = Client_SendSecondChange;
         state = ServiceProvider_28 if state = ServiceProvider_26 and Action = ServiceProvider_Empty15;
         state = ServiceProvider_28 if state = ServiceProvider_27 and Action = ServiceProvider_Empty14;
-        state = ServiceProvider_29 if state = ServiceProvider_0 and  ! (failCount < 2) and Action = ServiceProvider_While1;
-        state = ServiceProvider_30 and failCount = 0 if state = ServiceProvider_29 and Action = ServiceProvider_Assign47;
+        state = ServiceProvider_29 if state = ServiceProvider_0 and Action = ServiceProvider_While1;
+        state = ServiceProvider_30 if state = ServiceProvider_29 and Action = ServiceProvider_Assign47;
         state = ServiceProvider_31 if state = ServiceProvider_30 and Action = ServiceProvider_receiveRequest and PSP.Action = PSP_sendRequest;
         state = ServiceProvider_32 if state = ServiceProvider_31 and Action = ServiceProvider_SendComponent__0;
         state = ServiceProvider_33 if state = ServiceProvider_31 and Action = ServiceProvider_SendComponent__1;
         state = ServiceProvider_34 if state = ServiceProvider_33 and Action = ServiceProvider_Invoke3 and PSP.Action = PSP_receiveComponent__1;
         state = ServiceProvider_35 if state = ServiceProvider_32 and Action = ServiceProvider_sendComponent and PSP.Action = PSP_receiveComponent__0;
-        state = ServiceProvider_35 and failCount = 2 and Passed = true if state = ServiceProvider_37 and Action = ServiceProvider_passed;
-        state = ServiceProvider_35 and failCount = failCount + 1 if state = ServiceProvider_39 and Action = ServiceProvider_Assign42;
-        state = ServiceProvider_36 if state = ServiceProvider_35 and failCount < 2 and Action = ServiceProvider_sendTesting and TestingCompany.Action = TestingCompany_fromPSPSP;
+        state = ServiceProvider_35 and Passed = true if state = ServiceProvider_37 and Action = ServiceProvider_passed;
+        state = ServiceProvider_35 if state = ServiceProvider_39 and Action = ServiceProvider_Assign42;
+        state = ServiceProvider_36 if state = ServiceProvider_35 and Action = ServiceProvider_sendTesting and TestingCompany.Action = TestingCompany_fromPSPSP;
         state = ServiceProvider_37 if state = ServiceProvider_36 and Action = ServiceProvider_Pick63__0 and TestingCompany.Action = TestingCompany_TestPassed;
         state = ServiceProvider_38 if state = ServiceProvider_36 and Action = ServiceProvider_Pick63__1 and TestingCompany.Action = TestingCompany_Invoke1;
         state = ServiceProvider_39 if state = ServiceProvider_36 and Action = ServiceProvider_Pick63__2 and TestingCompany.Action = TestingCompany_TestFailed;
-        state = ServiceProvider_40 if state = ServiceProvider_35 and  ! (failCount < 2) and Action = ServiceProvider_Testing;
-        state = ServiceProvider_41 and Passed = false and failCount = 0 if state = ServiceProvider_40 and Passed = true and Action = ServiceProvider_Assign48;
+        state = ServiceProvider_40 if state = ServiceProvider_35 and Action = ServiceProvider_Testing;
+        state = ServiceProvider_41 and Passed = false if state = ServiceProvider_40 and Passed = true and Action = ServiceProvider_Assign48;
         state = ServiceProvider_41 if state = ServiceProvider_45 and Action = ServiceProvider_Empty16;
-        state = ServiceProvider_41 and failCount = failCount + 1 if state = ServiceProvider_48 and Action = ServiceProvider_onceagain;
-        state = ServiceProvider_42 if state = ServiceProvider_41 and failCount < 2 and Action = ServiceProvider_sendDeploying and HardwareSupplier.Action = HardwareSupplier_fromPSPSPE;
+        state = ServiceProvider_41 if state = ServiceProvider_48 and Action = ServiceProvider_onceagain;
+        state = ServiceProvider_42 if state = ServiceProvider_41 and Action = ServiceProvider_sendDeploying and HardwareSupplier.Action = HardwareSupplier_fromPSPSPE;
         state = ServiceProvider_43 if state = ServiceProvider_42 and Action = ServiceProvider_getresult__0 and HardwareSupplier.Action = HardwareSupplier_DeployPassed;
-        state = ServiceProvider_44 and failCount = 2 and Passed = true if state = ServiceProvider_43 and Action = ServiceProvider_passed1;
+        state = ServiceProvider_44 and Passed = true if state = ServiceProvider_43 and Action = ServiceProvider_passed1;
         state = ServiceProvider_45 if state = ServiceProvider_44 and Action = ServiceProvider_Pick64__0 and PSP.Action = PSP_sendFinalPaymentSP;
         state = ServiceProvider_46 if state = ServiceProvider_44 and Action = ServiceProvider_Pick64__1 and PSP.Action = PSP_Invoke4;
         state = ServiceProvider_47 if state = ServiceProvider_42 and Action = ServiceProvider_getresult__1 and HardwareSupplier.Action = HardwareSupplier_Invoke1;
         state = ServiceProvider_48 if state = ServiceProvider_42 and Action = ServiceProvider_getresult__2 and HardwareSupplier.Action = HardwareSupplier_DeplyFailed;
-        state = ServiceProvider_49 if state = ServiceProvider_41 and  ! (failCount < 2) and Action = ServiceProvider_deploying;
+        state = ServiceProvider_49 if state = ServiceProvider_41 and Action = ServiceProvider_deploying;
     end Evolution
 end Agent
 
@@ -407,7 +402,6 @@ Agent PSP
     Vars:
         state : { PSP_0, PSP_1, PSP_2, PSP_3, PSP_4, PSP_5, PSP_6, PSP_7, PSP_8, PSP_9, PSP_10, PSP_11, PSP_12, PSP_13, PSP_14, PSP_15, PSP_16, PSP_17, PSP_18, PSP_19, PSP_20, PSP_21, PSP_22, PSP_23, PSP_24, PSP_25, PSP_26, PSP_27, PSP_28, PSP_29, PSP_30, PSP_31, PSP_32, PSP_33, PSP_34, PSP_35, PSP_36, PSP_37, PSP_38, PSP_39, PSP_40, PSP_41, PSP_42, PSP_43, PSP_44, PSP_45, PSP_46, PSP_47, PSP_48, PSP_49, PSP_50, PSP_51, PSP_52, PSP_53, PSP_54, PSP_55 };
         passed : boolean;
-        failCount : 0 .. 3;
     end Vars
     RedStates:
     end RedStates
@@ -472,9 +466,9 @@ Agent PSP
     end Protocol
 
     Evolution :
-        state = PSP_0 and failCount = failCount + 1 if state = PSP_32 and Action = PSP_Assign4322;
-        state = PSP_1 if state = PSP_0 and failCount < 2 and Action = PSP_toC__0;
-        state = PSP_2 if state = PSP_0 and failCount < 2 and Action = PSP_toC__1;
+        state = PSP_0 if state = PSP_32 and Action = PSP_Assign4322;
+        state = PSP_1 if state = PSP_0 and Action = PSP_toC__0;
+        state = PSP_2 if state = PSP_0 and Action = PSP_toC__1;
         state = PSP_3 if state = PSP_2 and Action = PSP_Pick1__0;
         state = PSP_4 if state = PSP_3 and Action = PSP_payPenaltyClient and Client.Action = Client_Update1__1;
         state = PSP_5 if state = PSP_2 and Action = PSP_Pick1__1;
@@ -501,36 +495,36 @@ Agent PSP
         state = PSP_23 if state = PSP_21 and Action = PSP_paymentSP__1;
         state = PSP_24 if state = PSP_23 and Action = PSP_Invoke3 and ServiceProvider.Action = ServiceProvider_receivePayment1__1;
         state = PSP_25 if state = PSP_22 and Action = PSP_paySP and ServiceProvider.Action = ServiceProvider_receivePayment1__0;
-        state = PSP_26 if state = PSP_25 and failCount = 0 and Action = PSP_Change1__0 and Client.Action = Client_changePSP;
-        state = PSP_27 if state = PSP_25 and failCount = 0 and Action = PSP_Change1__1 and Client.Action = Client_Invoke2;
-        state = PSP_28 if state = PSP_25 and  ! (failCount = 0) and Action = PSP_Change2__0 and Client.Action = Client_AskSecondChange;
+        state = PSP_26 if state = PSP_25 and Action = PSP_Change1__0 and Client.Action = Client_changePSP;
+        state = PSP_27 if state = PSP_25 and Action = PSP_Change1__1 and Client.Action = Client_Invoke2;
+        state = PSP_28 if state = PSP_25 and Action = PSP_Change2__0 and Client.Action = Client_AskSecondChange;
         state = PSP_29 if state = PSP_28 and Action = PSP_Pick22__0 and Client.Action = Client_PayPenaltyPSPSP;
         state = PSP_30 if state = PSP_28 and Action = PSP_Pick22__1 and Client.Action = Client_WithdrawPSPSP;
-        state = PSP_31 if state = PSP_25 and  ! (failCount = 0) and Action = PSP_Change2__1 and Client.Action = Client_Invoke4;
+        state = PSP_31 if state = PSP_25 and Action = PSP_Change2__1 and Client.Action = Client_Invoke4;
         state = PSP_32 if state = PSP_26 and Action = PSP_Empty2;
         state = PSP_32 if state = PSP_27 and Action = PSP_Empty3;
         state = PSP_32 if state = PSP_29 and Action = PSP_receiveChange2 and Client.Action = Client_SendSecondChange;
         state = PSP_32 if state = PSP_30 and Action = PSP_Empty32;
         state = PSP_32 if state = PSP_31 and Action = PSP_Empty34;
-        state = PSP_33 if state = PSP_0 and  ! (failCount < 2) and Action = PSP_While1;
-        state = PSP_34 and failCount = 0 if state = PSP_33 and Action = PSP_Assign4323;
+        state = PSP_33 if state = PSP_0 and Action = PSP_While1;
+        state = PSP_34 if state = PSP_33 and Action = PSP_Assign4323;
         state = PSP_35 if state = PSP_34 and Action = PSP_sendRequest and ServiceProvider.Action = ServiceProvider_receiveRequest;
         state = PSP_36 if state = PSP_35 and Action = PSP_receiveComponent__0 and ServiceProvider.Action = ServiceProvider_sendComponent;
         state = PSP_37 if state = PSP_35 and Action = PSP_receiveComponent__1 and ServiceProvider.Action = ServiceProvider_Invoke3;
         state = PSP_38 if state = PSP_36 and Action = PSP_Empty33;
-        state = PSP_38 and passed = true and failCount = 2 if state = PSP_40 and Action = PSP_passed;
-        state = PSP_38 and failCount = failCount + 1 if state = PSP_42 and Action = PSP_notPassed;
-        state = PSP_39 if state = PSP_38 and failCount < 2 and Action = PSP_sendTesting and TestingCompany.Action = TestingCompany_fromPSPSP;
+        state = PSP_38 and passed = true if state = PSP_40 and Action = PSP_passed;
+        state = PSP_38 if state = PSP_42 and Action = PSP_notPassed;
+        state = PSP_39 if state = PSP_38 and Action = PSP_sendTesting and TestingCompany.Action = TestingCompany_fromPSPSP;
         state = PSP_40 if state = PSP_39 and Action = PSP_Pick23__0 and TestingCompany.Action = TestingCompany_TestPassed;
         state = PSP_41 if state = PSP_39 and Action = PSP_Pick23__1 and TestingCompany.Action = TestingCompany_Invoke1;
         state = PSP_42 if state = PSP_39 and Action = PSP_Pick23__2 and TestingCompany.Action = TestingCompany_TestFailed;
-        state = PSP_43 if state = PSP_38 and  ! (failCount < 2) and Action = PSP_Testing;
-        state = PSP_44 and failCount = 0 and passed = false if state = PSP_43 and passed = true and Action = PSP_Assign4324;
+        state = PSP_43 if state = PSP_38 and Action = PSP_Testing;
+        state = PSP_44 and passed = false if state = PSP_43 and passed = true and Action = PSP_Assign4324;
         state = PSP_44 if state = PSP_49 and Action = PSP_sendFinalPaymentSP and ServiceProvider.Action = ServiceProvider_Pick64__0;
-        state = PSP_44 and failCount = failCount + 1 if state = PSP_54 and Action = PSP_notPassed1;
-        state = PSP_45 if state = PSP_44 and failCount < 2 and Action = PSP_sendDeploying and HardwareSupplier.Action = HardwareSupplier_fromPSPSPE;
+        state = PSP_44 if state = PSP_54 and Action = PSP_notPassed1;
+        state = PSP_45 if state = PSP_44 and Action = PSP_sendDeploying and HardwareSupplier.Action = HardwareSupplier_fromPSPSPE;
         state = PSP_46 if state = PSP_45 and Action = PSP_Pick231__0 and HardwareSupplier.Action = HardwareSupplier_DeployPassed;
-        state = PSP_47 and passed = true and failCount = 2 if state = PSP_46 and Action = PSP_passed1;
+        state = PSP_47 and passed = true if state = PSP_46 and Action = PSP_passed1;
         state = PSP_48 if state = PSP_47 and Action = PSP_Pick232__0 and Client.Action = Client_sendFInalPayment;
         state = PSP_49 if state = PSP_48 and Action = PSP_Pick233__0;
         state = PSP_50 if state = PSP_48 and Action = PSP_Pick233__1;
@@ -538,7 +532,7 @@ Agent PSP
         state = PSP_52 if state = PSP_47 and Action = PSP_Pick232__1 and Client.Action = Client_Invoke5;
         state = PSP_53 if state = PSP_45 and Action = PSP_Pick231__1 and HardwareSupplier.Action = HardwareSupplier_Invoke1;
         state = PSP_54 if state = PSP_45 and Action = PSP_Pick231__2 and HardwareSupplier.Action = HardwareSupplier_DeplyFailed;
-        state = PSP_55 if state = PSP_44 and  ! (failCount < 2) and Action = PSP_Deploying;
+        state = PSP_55 if state = PSP_44 and Action = PSP_Deploying;
     end Evolution
 end Agent
 
@@ -655,22 +649,16 @@ end Evaluation
 
 InitStates
     HardwareSupplier.state = HardwareSupplier_0 and 
-    HardwareSupplier.failCount = 0 and 
     TestingCompany.state = TestingCompany_0 and 
-    TestingCompany.failCounter = 0 and 
     Expert.state = Expert_0 and 
-    Expert.failCount = 0 and 
     InsuranceCompany.state = InsuranceCompany_0 and 
     Client.state = Client_0 and 
     Client.passed1 = false and 
     Client.passed = false and 
-    Client.failCount = 0 and 
     ServiceProvider.state = ServiceProvider_0 and 
     ServiceProvider.Passed = false and 
-    ServiceProvider.failCount = 0 and 
     PSP.state = PSP_0 and 
-    PSP.passed = false and 
-    PSP.failCount = 0;
+    PSP.passed = false; 
 end InitStates
 
 Groups

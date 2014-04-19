@@ -395,6 +395,7 @@ basic_agent::encode_evolution(SddManager * manager, struct parameters * params)
 {
 	SddNode * evolution_sdd = sdd_manager_false(manager);
 	SddNode * lastcond_sdd = sdd_manager_true(manager);
+	int w = 0;
   for (vector< evolution_line * >::iterator i = evolution->begin();
        i != evolution->end(); i++) {
     vector< assignment * >*assignments = (*i)->get_assignments();
@@ -431,6 +432,7 @@ basic_agent::encode_evolution(SddManager * manager, struct parameters * params)
           mp->insert(*j);
       }
     SddNode* assignment_sdd = (*i)->encode_sdd_assignments(manager, params);
+
     SddNode* condition_sdd = (*i)->encode_sdd_condition(manager, params);
 
 		for (map< string, basictype * >::iterator j = mp->begin();
@@ -460,7 +462,11 @@ basic_agent::encode_evolution(SddManager * manager, struct parameters * params)
     }
 		lastcond_sdd = sdd_conjoin(lastcond_sdd, sdd_negate(condition_sdd, manager), manager);
 		evolution_sdd = sdd_disjoin(evolution_sdd, sdd_conjoin(assignment_sdd, condition_sdd, manager), manager);	
+		 w++;
 	}
+	
+
+
 	SddNode* dnc = sdd_manager_true(manager);
   int begin, end;
   if (obsvars != NULL)
@@ -496,6 +502,7 @@ basic_agent::encode_evolution(SddManager * manager, struct parameters * params)
 	lastcond_sdd = sdd_conjoin(lastcond_sdd, dnc, manager);
 
   evolution_sdd =  sdd_disjoin(evolution_sdd, lastcond_sdd, manager);
+	
 	return evolution_sdd;
 }
  
@@ -953,39 +960,59 @@ basic_agent::get_var_def(string varname) {
 SddNode*
 basic_agent::project_local_state(SddNode * state, SddManager* manager, struct parameters* params)
 {
+	cout << "PROJECT LOCAL STATE" << endl;
   SddNode* tmp = sdd_manager_true(manager); // Always true
 	vector<SddNode*>* v = params->variable_sdds;
   if (lobsvars != NULL && lobsvars->size() > 0) {
+	cout << "A" << endl;
     map< string, basictype * >*envars = (*agents)[0]->get_vars();
     for (map< string, basictype * >::iterator i = envars->begin();
          i != envars->end(); i++) {
+	cout << "B" << endl;
       if (lobsvars->find(i->first) == lobsvars->end()) {  // i->first is not local observable variable 
+	cout << "C" << endl;
         basictype *bt = i->second;
         int index_begin = bt->get_index_begin();
         int index_end = bt->get_index_end();
-        for (int j = index_begin; j <= index_end; j++)
+        for (int j = index_begin; j <= index_end; j++) {
           tmp = sdd_conjoin(tmp, (*v)[j], manager);
+					cout << "adding: " << sdd_node_literal((*v)[j]) << endl;
+				}
+	cout << "D" << endl;
       }
     }
+	cout << "E" << endl;
     for (int j = envars_bdd_length; j < get_var_index_begin(); j++) {
       tmp = sdd_conjoin(tmp, (*v)[j], manager);
+					cout << "adding: " << sdd_node_literal((*v)[j]) << endl;
     }
+	cout << "F" << endl;
   } else {
-		  for (int j = obsvars_bdd_length; j < get_var_index_begin(); j++) {
+	cout << "G" << endl;
+		  for (int j = obsvars_bdd_length; j < get_var_index_begin(); j++) 				{
 		    tmp = sdd_conjoin(tmp, (*v)[j], manager);
+					cout << "adding: " << sdd_node_literal((*v)[j]) << endl;
 		  }
+	cout << "H" << endl;
   }
-
+	cout << "I" << endl;
   for (unsigned int j = get_var_index_end() + 1; j < v->size(); j++) {
     tmp = sdd_conjoin(tmp, (*v)[j], manager);
+					cout << "adding: " << sdd_node_literal((*v)[j]) << endl;
   }
 
+	cout << "dotting" << endl;
+
+ 	sdd_save_as_dot("statebef.dot", state);
+	sdd_save_as_dot("tmp2.dot", tmp);
 	// computing state->ExistAbstract(tmp)
 	vector<SddLiteral>* literals = new vector<SddLiteral>;
 	get_literals(tmp, literals);
 	for(unsigned int k = 0; k < literals->size(); k++) {
 		state = sdd_exists((*literals)[k], state, manager);		
 	}
+	sdd_save_as_dot("stateaft.dot", state);
+
   return state;
 
 }

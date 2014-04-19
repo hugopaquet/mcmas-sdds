@@ -67,8 +67,9 @@ check_EG(SddNode* p, SddManager* manager, struct parameters* params)
       q = sdd_conjoin(p, x, manager);
     } 
     return q;
-  } /* else
-    return check_EG_fair(p, para); */
+  }  else
+   	  return check_EG_fair(p, manager, params); 
+			 
 }
 
 SddNode*
@@ -77,10 +78,13 @@ check_EF(SddNode* p, SddManager* manager, struct parameters* params)
   // Computes the fixpoint iterating false
 	SddNode* tmp = sdd_manager_true(manager);
   SddNode* q = sdd_manager_false(manager);
+	int iter = 0;
   while (q != tmp) {
+		if(iter == 1)
+			sdd_save_as_dot("q.dot", q);
     tmp = q;
-		SddNode* node = check_EX(tmp, manager, params);
-    q = sdd_disjoin(p, node, manager);
+    q = sdd_disjoin(p, check_EX(tmp, manager, params), manager);
+		iter++;
   }
   return sdd_conjoin(q, params->reach, manager);
 }
@@ -99,7 +103,7 @@ check_EX(SddNode* next, SddManager* manager, struct parameters* params)
       para->calReachRT = false;
     }
   } */
-
+	cout << "calling EX" << endl;
 	unsigned int v = params->variable_sdds->size(); // number of state variables
 	unsigned int a = params->action_variable_sdds->size(); // number of action variables		
 	SddLiteral map[2 * v + a + 1]; 
@@ -112,6 +116,7 @@ check_EX(SddNode* next, SddManager* manager, struct parameters* params)
 	for(unsigned int i = 2 * v + 1; i <= 2 * v + a; i++) {
 		map[i] = sdd_node_literal((*params->action_variable_sdds)[i - 2 * v - 1]); 
 	}
+
 	SddNode* result = sdd_rename_variables(next, map, manager);
 /*  if(options["nobddcache"] == 0)
     result = result * (*para->reachRT);
@@ -173,20 +178,35 @@ SddNode*
 check_GCK(SddNode* next, string name, SddManager* manager, struct parameters* params)
 {
   // GCK p = GK(p * GCK(p)) see fhmv:rak, section 11.5
+	cout << "calling GCK on name " << name << endl;
   SddNode* tmp = params->reach;
   SddNode* tmp2 = next;
+	sdd_save_as_dot("next.dot", next);
   set < string > gi = (*is_groups)[name];
+	int iter = 0;
   while (tmp != tmp2) {
     tmp2 = tmp;
     tmp = sdd_conjoin(next, tmp, manager);
-    SddNode* ntmp = sdd_conjoin(params->reach, sdd_negate(tmp, manager), manager);
+    SddNode* ntmp = sdd_conjoin(params->reach, sdd_negate(tmp, manager), manager);	
+		if(iter == 1) {
+			sdd_save_as_dot("tmp.dot", tmp);
+			sdd_save_as_dot("reach.dot", params->reach);
+			sdd_save_as_dot("ntmp.dot", ntmp);
+		}
     tmp = sdd_manager_false(manager);
+		int itera = 0;
     for (set < string >::iterator igs = gi.begin(); igs != gi.end(); igs++) {
       basic_agent *agent = (*is_agents)[*igs];
-      tmp = sdd_disjoin(tmp, agent->project_local_state(ntmp, manager, params), manager);
+			SddNode* projection = agent->project_local_state(ntmp, manager, params);
+			if(iter == 0 && itera == 0)
+				sdd_save_as_dot("proj.dot", projection);
+      tmp = sdd_disjoin(tmp, projection, manager);
+			itera++;
     }
     tmp = sdd_conjoin(params->reach, sdd_negate(tmp, manager), manager);
+		iter++;
   }
+	cout << "iterated " << iter << " times" << endl;
   return tmp;
 }
 
@@ -339,8 +359,9 @@ get_K_states(BDD aset1, BDD * state, string name, bdd_parameters * para)
 SddNode*
 get_nK_states(SddNode * state, string name, SddManager* manager, struct parameters* params)
 {
+
   basic_agent *agent = (*is_agents)[name];
-  SddNode* localstate = agent->project_local_state(state, manager, params);
+	SddNode* localstate = agent->project_local_state(state, manager, params);
   return sdd_conjoin(params->reach, localstate, manager);
 }
 /*
@@ -382,6 +403,25 @@ get_DK_states(BDD aset1, BDD * state, string name, bdd_parameters * para)
 }
 */
 
+SddNode*
+check_EG_fair(SddNode* p, SddManager* manager, struct parameters* params)
+{
+	SddNode* tmp = sdd_manager_false(manager);
+	SddNode* q = sdd_manager_true(manager);
+	SddNode* fc_sdd = sdd_manager_true(manager);
+	while (q != tmp) {
+		tmp = q;
+		for (vector <fairness_expression*>::iterator fi = is_fairness->begin(); fi != is_fairness->end(); fi++) {
+			SddNode* hf = (*fi)->get_sdd_representation();
+			SddNode* tmp1 = check_EU(p, sdd_conjoin(q, hf, manager), manager, params);
+			fc_sdd = sdd_conjoin(fc_sdd, check_EX(tmp1, manager, params), manager);		
+		}
+
+    q = sdd_conjoin(p, fc_sdd, manager);
+	}
+  return q;
+}
+
 void 
 get_literals(SddNode* node, vector<SddLiteral>* literals) {
 	if(sdd_node_is_literal(node)) {
@@ -390,10 +430,12 @@ get_literals(SddNode* node, vector<SddLiteral>* literals) {
 			literal = -literal;
 		bool found = false;
 		for(unsigned int i = 0; i < literals->size(); i++)
-			if((*literals)[i] = literal)
+			if((*literals)[i] == literal) {
 				found = true;
-		if(!found)
+			}
+		if(!found) {
 			literals->push_back(literal);
+		}
 	}
 	else if(sdd_node_is_decision(node)) {
 		SddNodeSize size = sdd_node_size(node);
@@ -402,5 +444,36 @@ get_literals(SddNode* node, vector<SddLiteral>* literals) {
 			get_literals(children[i], literals);
 	}
 }
+
+string
+to_string(SddNode* node) {
+	string alphabet[] = {"n", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R"} ;
+	if(sdd_node_is_true(node))
+			return "1";
+		if(sdd_node_is_false(node))
+		return "0";
+ 	if(sdd_node_is_literal(node)) {
+		int n = sdd_node_literal(node);
+		if (n < 0) {
+ 			return "(~" + alphabet[-n] + ")";  
+		}
+
+		return alphabet[n]; // set 'Re
+	}
+	string result = "";
+	for (unsigned int i = 0; i < sdd_node_size(node); i++) {
+		result = (result != "" ? (result + "|((") : "((") + to_string((sdd_node_elements(node))[2*i]) 
+									+ ")&(" + to_string((sdd_node_elements(node))[2*i + 1]) + "))"; 
+	}
+	return result;
+}
+
+void 
+save_to_string(SddNode* node) {
+	string s = to_string(node);
+	ofstream out("sdd_output.txt");
+	out << s;
+}
+
 
 
