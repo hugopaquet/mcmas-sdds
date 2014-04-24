@@ -103,7 +103,6 @@ check_EX(SddNode* next, SddManager* manager, struct parameters* params)
       para->calReachRT = false;
     }
   } */
-	cout << "calling EX" << endl;
 	unsigned int v = params->variable_sdds->size(); // number of state variables
 	unsigned int a = params->action_variable_sdds->size(); // number of action variables		
 	SddLiteral map[2 * v + a + 1]; 
@@ -178,35 +177,21 @@ SddNode*
 check_GCK(SddNode* next, string name, SddManager* manager, struct parameters* params)
 {
   // GCK p = GK(p * GCK(p)) see fhmv:rak, section 11.5
-	cout << "calling GCK on name " << name << endl;
   SddNode* tmp = params->reach;
   SddNode* tmp2 = next;
-	sdd_save_as_dot("next.dot", next);
   set < string > gi = (*is_groups)[name];
-	int iter = 0;
   while (tmp != tmp2) {
     tmp2 = tmp;
     tmp = sdd_conjoin(next, tmp, manager);
     SddNode* ntmp = sdd_conjoin(params->reach, sdd_negate(tmp, manager), manager);	
-		if(iter == 1) {
-			sdd_save_as_dot("tmp.dot", tmp);
-			sdd_save_as_dot("reach.dot", params->reach);
-			sdd_save_as_dot("ntmp.dot", ntmp);
-		}
     tmp = sdd_manager_false(manager);
-		int itera = 0;
     for (set < string >::iterator igs = gi.begin(); igs != gi.end(); igs++) {
       basic_agent *agent = (*is_agents)[*igs];
 			SddNode* projection = agent->project_local_state(ntmp, manager, params);
-			if(iter == 0 && itera == 0)
-				sdd_save_as_dot("proj.dot", projection);
       tmp = sdd_disjoin(tmp, projection, manager);
-			itera++;
     }
     tmp = sdd_conjoin(params->reach, sdd_negate(tmp, manager), manager);
-		iter++;
   }
-	cout << "iterated " << iter << " times" << endl;
   return tmp;
 }
 

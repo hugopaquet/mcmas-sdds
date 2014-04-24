@@ -960,45 +960,36 @@ basic_agent::get_var_def(string varname) {
 SddNode*
 basic_agent::project_local_state(SddNode * state, SddManager* manager, struct parameters* params)
 {
-	cout << "PROJECT LOCAL STATE" << endl;
   SddNode* tmp = sdd_manager_true(manager); // Always true
 	vector<SddNode*>* v = params->variable_sdds;
   if (lobsvars != NULL && lobsvars->size() > 0) {
-	cout << "A" << endl;
     map< string, basictype * >*envars = (*agents)[0]->get_vars();
     for (map< string, basictype * >::iterator i = envars->begin();
          i != envars->end(); i++) {
-	cout << "B" << endl;
       if (lobsvars->find(i->first) == lobsvars->end()) {  // i->first is not local observable variable 
-	cout << "C" << endl;
         basictype *bt = i->second;
         int index_begin = bt->get_index_begin();
         int index_end = bt->get_index_end();
         for (int j = index_begin; j <= index_end; j++) {
           tmp = sdd_conjoin(tmp, (*v)[j], manager);
-					cout << "adding: " << sdd_node_literal((*v)[j]) << endl;
+	//				cout << "adding: " << sdd_node_literal((*v)[j]) << endl;
 				}
-	cout << "D" << endl;
       }
     }
-	cout << "E" << endl;
+//	cout << "envars_bdd_length: " <<  envars_bdd_length << ". get_var_index_begin(): " << get_var_index_begin() << endl;
     for (int j = envars_bdd_length; j < get_var_index_begin(); j++) {
       tmp = sdd_conjoin(tmp, (*v)[j], manager);
-					cout << "adding: " << sdd_node_literal((*v)[j]) << endl;
+//					cout << "adding: " << sdd_node_literal((*v)[j]) << endl;
     }
-	cout << "F" << endl;
   } else {
-	cout << "G" << endl;
-		  for (int j = obsvars_bdd_length; j < get_var_index_begin(); j++) 				{
+		for (int j = obsvars_bdd_length; j < get_var_index_begin(); j++) 				{
 		    tmp = sdd_conjoin(tmp, (*v)[j], manager);
-					cout << "adding: " << sdd_node_literal((*v)[j]) << endl;
+//					cout << "adding: " << sdd_node_literal((*v)[j]) << endl;
 		  }
-	cout << "H" << endl;
   }
-	cout << "I" << endl;
   for (unsigned int j = get_var_index_end() + 1; j < v->size(); j++) {
     tmp = sdd_conjoin(tmp, (*v)[j], manager);
-					cout << "adding: " << sdd_node_literal((*v)[j]) << endl;
+//					cout << "adding: " << sdd_node_literal((*v)[j]) << endl;
   }
 
 	cout << "dotting" << endl;

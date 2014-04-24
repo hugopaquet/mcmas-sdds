@@ -184,7 +184,8 @@ append_variable_BDDs(Cudd * bddmgr, vector<BDD> * v, BDD a)
 {
   for (unsigned int j = 0; j < agents->size(); j++) {
     map< string, basictype * >*obsvars = (*agents)[j]->get_obsvars();
-    if (obsvars != NULL && obsvars->size() > 0)
+    if (
+vars != NULL && obsvars->size() > 0)
       for (map< string, basictype * >::iterator i =
              obsvars->begin(); i != obsvars->end(); i++)
         if ((*i).second->get_type() == 3)
@@ -259,25 +260,23 @@ void free_mcmas_memory(bdd_parameters *para) {
 */
 
 SddNode* 
-compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, SddNode* full_transition_relation) {
+compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, vector<SddNode*>* transition_relation_sdds) {
  
 
 	SddNode* reach = sdd_manager_false(manager);
   SddNode* q1 = in_st;
   SddNode* next1 = sdd_manager_false(manager);
 
-	SddNode* iff = sdd_disjoin(
-										sdd_conjoin(sdd_negate(q1, manager), sdd_negate(reach, manager), manager), 
-										sdd_conjoin(q1, reach, manager), 
-										manager);
-
 	unsigned int v = params->variable_sdds->size(); // number of state variables
 	unsigned int a = params->action_variable_sdds->size(); // number of action variables
-//	while (!sdd_node_is_true(iff)) { // until reach stops changing 
+
 	while(q1 != reach) {
       reach = q1;
       next1 = q1;
-			next1 = sdd_conjoin(next1, full_transition_relation, manager);
+
+			for(unsigned int i = 0; i < transition_relation_sdds->size(); i++)
+				next1 = sdd_conjoin(next1, (*transition_relation_sdds)[i], manager);
+
 			// compute 1 step
 			for(unsigned int i = 0; i < v; i++) {
 				next1 = sdd_exists(sdd_node_literal((*params->variable_sdds)[i]), next1, manager);
@@ -300,10 +299,6 @@ compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, S
 			} 
 
  			q1 = sdd_disjoin(q1, next1, manager);
-			iff = sdd_disjoin(
-								sdd_conjoin(sdd_negate(q1, manager), sdd_negate(reach, manager), manager), 
-								sdd_conjoin(q1, reach, manager), 
-								manager);
 
   }
 		
@@ -375,23 +370,6 @@ int
 main(int argc, char *argv[])
 {
 
-/*	SddLiteral vv = 3;
-	int aa = 0; //1=yes
-	SddManager* m = sdd_manager_create(vv, aa);
-	
-	SddNode* A = sdd_manager_literal(1, m);
-	SddNode* B = sdd_manager_literal(2, m);
-	SddNode* t = sdd_manager_true(m);
-	SddNode* c1 = sdd_disjoin(A, B, m);
-	SddNode* c2 = sdd_disjoin(B, A, m);
-	sdd_save_as_dot("trivial.dot", c1);
-	sdd_save_as_dot("trivial2.dot", c2);
-	if(c1 == t) {
-		cout << "same" << endl;
-	} else 
-		cout << "no." << endl;
-	return 0;
-*/
 
   struct timeb tmb;
   ftime(&tmb);
@@ -457,7 +435,6 @@ main(int argc, char *argv[])
   }
 
 	// Count number of boolean variables needed to encode the model (states and actions)
-	// TODO rename BDD functions
 	for (unsigned int i = 0; i < agents->size(); i++) {
  	  states_count += (*agents)[i]->state_BDD_length();
     actions_count += (*agents)[i]->actions_BDD_length();
@@ -476,7 +453,7 @@ main(int argc, char *argv[])
 	SddLiteral* var_order = new SddLiteral[var_count];
 	for(int i = 1; i <= var_count; i++)
 		var_order[i-1] = i;
-	Vtree* vtree = sdd_vtree_new_with_var_order(var_count, var_order, "right");
+	Vtree* vtree = sdd_vtree_new_with_var_order(var_count, var_order, "vertical");
 
 	// Create and setup SDD manager
 	int auto_gc_and_minimize = 0; //1=yes
@@ -487,7 +464,12 @@ main(int argc, char *argv[])
 	params->action_variable_sdds = compute_action_variable_sdds(manager); 
 	params->variable_sdds = compute_variable_sdds(manager);
 	params->primed_variable_sdds = compute_primed_variable_sdds(manager);
-	
+
+	//what is this doing?	
+  obsvars_bdd_length = (*agents)[0]->obsvars_BDD_length();
+  envars_bdd_length = (*agents)[0]->get_var_index_end() + 1;
+
+
 	print_params(params);
 
 	// Compute transition relation SDD for each agent
@@ -509,11 +491,6 @@ main(int argc, char *argv[])
 
 		// add (protocol_sdd && evolution_sdd) to transition_relation_vector
 		SddNode* agent_transition_relation_sdd = sdd_conjoin(protocol_sdd, evolution_sdd, manager);
-		if(i == 3) {
-			cout << "crash test" << endl;				
-		//	save_to_string(agent_transition_relation_sdd);
-			cout << "end" << endl;	
-		}
 		transition_relation_sdds->push_back(agent_transition_relation_sdd);
 	}
 	params->transitions = transition_relation_sdds;	
@@ -526,16 +503,21 @@ main(int argc, char *argv[])
 
 
 	// Compute full transition relation
-	cout << "Computing full transition relation";
+/*	cout << "Computing full transition relation";
 	SddNode* full_transition_relation = sdd_manager_true(manager);	
+	cout << "A" << endl;
 	for(unsigned int i = 0; i < transition_relation_sdds->size(); i++) {
+		cout << "B" << endl;
 		full_transition_relation = sdd_conjoin(full_transition_relation, (*transition_relation_sdds)[i], manager);
 	}
+	cout << "C" << endl;
 	cout << "- Done." << endl;
+*/
+	
 
 	// Compute Reachable States
-	cout << "Computing reachable state space" << endl;
-	SddNode* reachable_state_sdd = compute_reach(initial_states_sdd, manager, params, full_transition_relation);
+	cout << "Computing reachable state space";
+	SddNode* reachable_state_sdd = compute_reach(initial_states_sdd, manager, params, transition_relation_sdds);
 	params->reach = reachable_state_sdd;
 	cout << " - Done." << endl;
 
@@ -563,17 +545,20 @@ main(int argc, char *argv[])
     modal_formula *init = new modal_formula(new atomic_proposition(&str));
 
    for (unsigned int i = 0; i < is_formulae->size(); i++) {
-			cout << "Checking  " << ((*is_formulae)[i]).to_string() << endl;
+			cout << "Checking  " << ((*is_formulae)[i]).to_string() << "..." << endl;
      
       modal_formula f(4, init, &((*is_formulae)[i]));
 			SddNode* result = f.check_formula(manager, params);
-			sdd_save_as_dot("result.dot", result);
 			bool satisfaction = result == params->reach;
-			cout << "formula " << i+1 << " is " << (satisfaction ? "TRUE" : "FALSE") << endl;
+			cout << "Formula " << i+1 << " is " << (satisfaction ? "TRUE" : "FALSE") << " in the model." << endl;
 	} 
 
 
 	sdd_manager_free(manager);
+
+    struct timeb tmb1;
+    ftime(&tmb1);
+    cout << "execution time = " << ((tmb1.time-tmb.time) + (tmb1.millitm-tmb.millitm)/1000.0) << endl;
 
   cout << "THE END" << endl;
 
