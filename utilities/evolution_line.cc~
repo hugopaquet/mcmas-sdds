@@ -205,10 +205,13 @@ SddNode*
 evolution_line::encode_sdd_assignments(SddManager * manager, struct parameters* params) 
 {
   SddNode* encoding = sdd_manager_true(manager);
+	SddNode* tmp;
   for (vector< assignment * >::iterator i = assignments->begin();
-       i != assignments->end(); i++)
-    encoding = (*i)->encode_sdd(manager, params, encoding);
-	cout << "finished encoding assignments" << endl;
+       i != assignments->end(); i++) {
+    encoding = (*i)->encode_sdd(manager, params, tmp = encoding);
+		sdd_ref(encoding, manager);
+		sdd_deref(tmp);		
+	}
   return encoding;
 
 }

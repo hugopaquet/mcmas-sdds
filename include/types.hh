@@ -238,8 +238,8 @@ public:
 		     ADD > *ADD_cache);
 */  bool equal_to(variable * expr);
   bool equal_to(expression * expr);
-/*  BDD encode_BDD_true(Cudd * bddmgr, vector<BDD> * v);
-  BDD encode_BDD_false(Cudd * bddmgr, vector<BDD> * v); */
+  SddNode* encode_sdd_true(SddManager* manager, vector<SddNode*> * v);
+  SddNode* encode_sdd_false(SddManager* manager, vector<SddNode*> * v);
 };
 
 class basic_agent;

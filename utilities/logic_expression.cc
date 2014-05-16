@@ -1041,6 +1041,7 @@ logic_expression::encode_sdd(SddManager* manager, struct parameters* params) {
   int rhstype = operands[1]->get_type();
 	int begin, end, begin1;
 	SddNode* encoding = sdd_manager_true(manager);
+	SddNode* tmp;
 
 	if (lhstype == 4) { // LHS is an action - not sure when this case can happen?
 		laction *la = (laction *) operands[0];
@@ -1051,9 +1052,11 @@ logic_expression::encode_sdd(SddManager* manager, struct parameters* params) {
     map< string, vector< bool > *>::iterator k =
       ba->get_action_indices()->find(act_name);
     vector< bool > *b = (*k).second;
-    for (int i = begin; i <= end; i++)
-      encoding = sdd_conjoin(encoding, ((*b)[i - begin] ? (*(params->action_variable_sdds))[i] : sdd_negate((*(params->action_variable_sdds))[i], manager)), manager);
-
+    for (int i = begin; i <= end; i++) {
+      encoding = sdd_conjoin(tmp = encoding, ((*b)[i - begin] ? (*(params->action_variable_sdds))[i] : sdd_negate((*(params->action_variable_sdds))[i], manager)), manager);
+			sdd_ref(encoding, manager);
+			sdd_deref(tmp, manager);
+		}
 	}  else if (lhstype == 0 && rhstype == 0) { // both RHS and LHS are variables
 
 		  basictype *var_type_lhs = ((variable *) operands[0])->get_var_type();
@@ -1075,10 +1078,15 @@ logic_expression::encode_sdd(SddManager* manager, struct parameters* params) {
 																sdd_disjoin(sdd_negate((*params->variable_sdds)[begin], manager), (*params->variable_sdds)[begin1], manager), 
 																sdd_disjoin((*params->variable_sdds)[begin1], sdd_negate((*params->variable_sdds)[begin], manager), manager), 
 																	 manager); 
+				sdd_ref(iff_sdd, manager);
 		    if (op == 1)
-		      encoding = sdd_conjoin(encoding, sdd_negate(iff_sdd, manager), manager);
+		      encoding = sdd_conjoin(tmp = encoding, sdd_negate(iff_sdd, manager), manager);
 		    else
-		      encoding = sdd_conjoin(encoding, iff_sdd, manager);
+		      encoding = sdd_conjoin(tmp = encoding, iff_sdd, manager);
+				sdd_ref(encoding, manager);
+				sdd_deref(iff_sdd, manager);
+				sdd_deref(tmp, manager);
+			
 		  } else if (var_type_lhs->get_type() == 2) { // rangedint 
 		    /*ADD rhs =
 		      ((rangedint *) var_type_rhs)->build_ADD_tree(para->bddmgr, para->addv,
@@ -1137,22 +1145,32 @@ logic_expression::encode_sdd(SddManager* manager, struct parameters* params) {
 							SddNode * tmpsdd3 = sdd_manager_true(manager);
 				      for (int i = end; i >= begin; i--) {
 				        if ((*vb)[i - begin])
-									tmpsdd3 = sdd_conjoin(tmpsdd3, (*params->variable_sdds)[i], manager);
+									tmpsdd3 = sdd_conjoin(tmp = tmpsdd3, (*params->variable_sdds)[i], manager);
 				        else
-									tmpsdd3 = sdd_conjoin(tmpsdd3, sdd_negate((*params->variable_sdds)[i], manager), manager); 
+									tmpsdd3 = sdd_conjoin(tmp = tmpsdd3, sdd_negate((*params->variable_sdds)[i], manager), manager); 
+								sdd_ref(tmpsdd3, manager);
+								sdd_deref(tmp, manager);
 							}
 				      for (int i = end1; i >= begin1; i--) {
 				        if ((*vb1)[i - begin1])
-									tmpsdd3 = sdd_conjoin(tmpsdd3, (*params->variable_sdds)[i], manager);
+									tmpsdd3 = sdd_conjoin(tmp = tmpsdd3, (*params->variable_sdds)[i], manager);
 				        else
-									tmpsdd3 = sdd_conjoin(tmpsdd3, sdd_negate((*params->variable_sdds)[i], manager), manager);
+									tmpsdd3 = sdd_conjoin(tmp = tmpsdd3, sdd_negate((*params->variable_sdds)[i], manager), manager);
+								sdd_ref(tmpsdd3, manager);
+								sdd_deref(tmp, manager);
 							}
-				      tmpsdd2 = sdd_disjoin(tmpsdd2, tmpsdd3, manager);
+				      tmpsdd2 = sdd_disjoin(tmp = tmpsdd2, tmpsdd3, manager);
+							sdd_ref(tmpsdd2, manager);
+							sdd_deref(tmpsdd3, manager);
+							sdd_deref(tmp, manager);
 				    }
 				    if (op == 1)
-							encoding = sdd_conjoin(encoding, sdd_negate(tmpsdd2, manager), manager);
+							encoding = sdd_conjoin(tmp = encoding, sdd_negate(tmpsdd2, manager), manager);
 				    else
-				      encoding = sdd_conjoin(encoding, tmpsdd2, manager);
+				      encoding = sdd_conjoin(tmp = encoding, tmpsdd2, manager);
+						sdd_ref(encoding, manager);
+						sdd_deref(tmpsdd2, manager);
+						sdd_deref(tmp, manager);
 				  }
 		  } 
 	} else  if (lhstype == 1 || rhstype == 1) { // one of LHS, RHS is Bool
@@ -1167,10 +1185,14 @@ logic_expression::encode_sdd(SddManager* manager, struct parameters* params) {
 			temp = (*params->variable_sdds)[begin];
     else
 			temp = sdd_negate((*params->variable_sdds)[begin], manager);
+		sdd_ref(temp, manager);
     if (op == 1)
-			encoding = sdd_conjoin(encoding, sdd_negate(temp, manager), manager);
+			encoding = sdd_conjoin(tmp = encoding, sdd_negate(temp, manager), manager);
     else
-			encoding = sdd_conjoin(encoding, temp, manager);
+			encoding = sdd_conjoin(tmp = encoding, temp, manager);
+		sdd_ref(encoding, manager);
+		sdd_deref(tmp, manager);
+		sdd_deref(temp, manager);
 
   } else if (lhstype == 3 || rhstype == 3) {  // one of LHS, RHS is enumerate value
     variable *var =
@@ -1187,16 +1209,20 @@ logic_expression::encode_sdd(SddManager* manager, struct parameters* params) {
 
     for (int i = end; i >= begin; i--) {
       if ((*vb)[i - begin])
-				temp = sdd_conjoin(temp, (*params->variable_sdds)[i], manager);
+				temp = sdd_conjoin(tmp = temp, (*params->variable_sdds)[i], manager);
 			else
-				temp = sdd_conjoin(temp, sdd_negate((*params->variable_sdds)[i], manager), manager);
+				temp = sdd_conjoin(tmp = temp, sdd_negate((*params->variable_sdds)[i], manager), manager);
+			sdd_ref(temp, manager);
+			sdd_deref(tmp, manager);
 		}
 
     if (op == 1)
-			encoding = sdd_conjoin(encoding, sdd_negate(temp, manager), manager);
+			encoding = sdd_conjoin(tmp = encoding, sdd_negate(temp, manager), manager);
     else
-			encoding = sdd_conjoin(encoding, temp, manager);
-
+			encoding = sdd_conjoin(tmp = encoding, temp, manager);
+		sdd_ref(encoding, manager);
+		sdd_deref(tmp, manager);
+		sdd_deref(temp, manager);
 
 	} else { // arithmetic expression
 

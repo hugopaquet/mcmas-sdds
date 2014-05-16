@@ -27,13 +27,13 @@ expression::to_string()
 
 SddNode* 
 expression::encode_sdd_true(SddManager* manager, vector<SddNode*> * v) {
-	cout << "Not yet supported: encode_sdd_true() in class expression!" << endl;
-	return sdd_manager_true(manager);
+	cout << "calling encode_sdd_true" << endl;
+	return sdd_manager_false(manager);
 }
 
 
 SddNode* 
 expression::encode_sdd_false(SddManager* manager, vector<SddNode*> * v) {
-	cout << "Not yet supported: encode_sdd_true() in class expression!" << endl;
+	cout << "calling encode_sdd_false" << endl;
 	return sdd_manager_false(manager);
 }

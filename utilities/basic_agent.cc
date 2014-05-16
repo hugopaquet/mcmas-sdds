@@ -363,6 +363,7 @@ basic_agent::encode_action(SddManager * manager, string action_name, vector<SddN
 SddNode* 
 basic_agent::encode_protocol(SddManager * manager, struct parameters* params) 
 {
+	SddNode* tmp;
 	SddNode* protocol_sdd = sdd_manager_false(manager);
   for (vector<protocol_line *>::iterator i = protocol->begin(); i != protocol->end(); i++) {
 		SddNode* condition_sdd = sdd_manager_false(manager);
@@ -372,19 +373,24 @@ basic_agent::encode_protocol(SddManager * manager, struct parameters* params)
 		} else {
 			condition_sdd = sdd_manager_true(manager);
 		}	
-
+		sdd_ref(condition_sdd, manager);
 		SddNode* actions_sdd = sdd_manager_false(manager); // start from condition rather than false? 
 		for(set<string>::iterator j = (*i)->get_actions()->begin(); j != (*i)->get_actions()->end(); j++) {
 			string action_name = (*j);
-			//sdd_manager_auto_gc_and_minimize_off(manager);
-			actions_sdd = sdd_disjoin(actions_sdd, encode_action(manager, action_name, params->action_variable_sdds), manager);
-			//sdd_manager_auto_gc_and_minimize_on(manager);
+			actions_sdd = sdd_disjoin(tmp = actions_sdd, encode_action(manager, action_name, params->action_variable_sdds), manager);
+			sdd_ref(actions_sdd, manager);
+			sdd_deref(tmp, manager);
 		}
 
 		SddNode* line = sdd_conjoin(condition_sdd, actions_sdd, manager);
-		protocol_sdd = sdd_disjoin(protocol_sdd, line, manager);			
+		sdd_ref(line, manager);
+		sdd_deref(condition_sdd, manager);
+		sdd_deref(actions_sdd, manager);
+		protocol_sdd = sdd_disjoin(tmp = protocol_sdd, line, manager);	
+		sdd_ref(protocol_sdd, manager);
+		sdd_deref(line, manager);
+		sdd_deref(tmp, manager);
 	}
-
 
 	return protocol_sdd;
 }
@@ -393,9 +399,10 @@ basic_agent::encode_protocol(SddManager * manager, struct parameters* params)
 SddNode* 
 basic_agent::encode_evolution(SddManager * manager, struct parameters * params) 
 {
+	SddNode * tmp;
 	SddNode * evolution_sdd = sdd_manager_false(manager);
 	SddNode * lastcond_sdd = sdd_manager_true(manager);
-	int w = 0;
+
   for (vector< evolution_line * >::iterator i = evolution->begin();
        i != evolution->end(); i++) {
     vector< assignment * >*assignments = (*i)->get_assignments();
@@ -431,19 +438,20 @@ basic_agent::encode_evolution(SddManager * manager, struct parameters * params)
         if (!found)   // we add this variable to both sides
           mp->insert(*j);
       }
-    SddNode* assignment_sdd = (*i)->encode_sdd_assignments(manager, params);
 
+    SddNode* assignment_sdd = (*i)->encode_sdd_assignments(manager, params);
+		sdd_ref(assignment_sdd, manager);
     SddNode* condition_sdd = (*i)->encode_sdd_condition(manager, params);
+		sdd_ref(condition_sdd, manager);
 
 		for (map< string, basictype * >::iterator j = mp->begin();
          j != mp->end(); j++) {
       int begin = j->second->get_index_begin();
       int end = j->second->get_index_end();
-		//	sdd_manager_auto_gc_and_minimize_off(manager);
       for (int k = begin; k <= end; k++) {
 				
 				assignment_sdd = sdd_conjoin(
-															assignment_sdd, 
+															tmp = assignment_sdd, 
 															sdd_conjoin(
 																	sdd_disjoin(
 																			sdd_negate((*params->variable_sdds)[k], manager),
@@ -455,14 +463,21 @@ basic_agent::encode_evolution(SddManager * manager, struct parameters * params)
 																			manager),
 																  manager), 
 															manager);
-
+				sdd_ref(assignment_sdd, manager);
+				sdd_deref(tmp, manager);
+		
       }
-		//	sdd_manager_auto_gc_and_minimize_on(manager);
 
     }
-		lastcond_sdd = sdd_conjoin(lastcond_sdd, sdd_negate(condition_sdd, manager), manager);
-		evolution_sdd = sdd_disjoin(evolution_sdd, sdd_conjoin(assignment_sdd, condition_sdd, manager), manager);	
-		 w++;
+		lastcond_sdd = sdd_conjoin(tmp = lastcond_sdd, sdd_negate(condition_sdd, manager), manager);
+		sdd_ref(lastcond_sdd, manager);
+		sdd_deref(tmp, manager);
+		
+		evolution_sdd = sdd_disjoin(tmp = evolution_sdd, sdd_conjoin(assignment_sdd, condition_sdd, manager), manager);	
+		sdd_ref(evolution_sdd, manager);
+		sdd_deref(tmp, manager);
+		sdd_deref(assignment_sdd, manager);
+		sdd_deref(condition_sdd, manager);
 	}
 	
 
@@ -476,11 +491,11 @@ basic_agent::encode_evolution(SddManager * manager, struct parameters * params)
       begin = var_type->get_index_begin();
       end = var_type->get_index_end();	
       for (int j = begin; j <= end; j++) {
-		//	sdd_manager_auto_gc_and_minimize_off(manager);
-				dnc = sdd_conjoin(dnc, sdd_conjoin(sdd_disjoin(sdd_negate((*params->variable_sdds)[j], manager), 
+				dnc = sdd_conjoin(tmp = dnc, sdd_conjoin(sdd_disjoin(sdd_negate((*params->variable_sdds)[j], manager), 
 											(*params->primed_variable_sdds)[j], manager), sdd_disjoin((*params->variable_sdds)[j], 
 											sdd_negate((*params->primed_variable_sdds)[j], manager), manager), manager), manager);
-		//	sdd_manager_auto_gc_and_minimize_on(manager);
+				sdd_ref(dnc, manager);
+				sdd_deref(tmp, manager);
 			}
     }
   if (vars != NULL) {
@@ -490,19 +505,31 @@ basic_agent::encode_evolution(SddManager * manager, struct parameters * params)
       begin = var_type->get_index_begin();
       end = var_type->get_index_end();
       for (int j = begin; j <= end; j++) {
-	//			sdd_manager_auto_gc_and_minimize_off(manager);
-				dnc = sdd_conjoin(dnc, sdd_conjoin(sdd_disjoin(sdd_negate((*params->variable_sdds)[j], manager), 
-											(*params->primed_variable_sdds)[j], manager), sdd_disjoin((*params->variable_sdds)[j], 
-											sdd_negate((*params->primed_variable_sdds)[j], manager), manager), manager), manager);
-	//			sdd_manager_auto_gc_and_minimize_on(manager);
-				}
+				SddNode* tmp3 = sdd_disjoin((*params->variable_sdds)[j], 
+											sdd_negate((*params->primed_variable_sdds)[j], manager), manager);
+				sdd_ref(tmp3, manager);
+				SddNode* tmp2 = sdd_disjoin(sdd_negate((*params->variable_sdds)[j], manager), 
+											(*params->primed_variable_sdds)[j], manager);
+				sdd_ref(tmp2, manager);
+				SddNode* tmp1 = sdd_conjoin(tmp2, tmp3, manager);
+				sdd_ref(tmp1, manager);
+				sdd_deref(tmp2, manager);
+				sdd_deref(tmp3, manager);
+				dnc = sdd_conjoin(tmp = dnc, tmp1, manager);
+				sdd_ref(dnc, manager);
+				sdd_deref(tmp, manager);
+				sdd_deref(tmp1, manager);
 			}
 		}
+	}
   
-	lastcond_sdd = sdd_conjoin(lastcond_sdd, dnc, manager);
-
-  evolution_sdd =  sdd_disjoin(evolution_sdd, lastcond_sdd, manager);
-	
+	lastcond_sdd = sdd_conjoin(tmp = lastcond_sdd, dnc, manager);
+	sdd_ref(lastcond_sdd, manager);
+	sdd_deref(tmp, manager);
+  evolution_sdd =  sdd_disjoin(tmp = evolution_sdd, lastcond_sdd, manager);
+	sdd_ref(evolution_sdd, manager);
+	sdd_deref(lastcond_sdd, manager);
+	sdd_deref(tmp, manager);
 	return evolution_sdd;
 }
  

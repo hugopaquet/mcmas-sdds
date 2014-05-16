@@ -238,8 +238,8 @@ public:
 		     ADD > *ADD_cache);
 */  bool equal_to(variable * expr);
   bool equal_to(expression * expr);
-/*  BDD encode_BDD_true(Cudd * bddmgr, vector<BDD> * v);
-  BDD encode_BDD_false(Cudd * bddmgr, vector<BDD> * v); */
+  SddNode* encode_sdd_true(SddManager* manager, vector<SddNode*> * v);
+  BDD encode_BDD_false(Cudd * bddmgr, vector<BDD> * v); 
 };
 
 class basic_agent;
@@ -477,7 +477,7 @@ public:
 		      modal_formula * f2);
   fairness_expression(unsigned char o, modal_formula * f1,
 		      modal_formula * f2, modal_formula * f3);
-  SddNode* get_bdd_representation();
+  SddNode* get_sdd_representation();
   void set_sdd_representation(SddNode* sddrep);
   void delete_sdd_representation(SddManager* manager);
 };

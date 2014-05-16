@@ -120,24 +120,23 @@ variable::build_ADD_tree(Cudd * bddmgr, vector<ADD> * addv, map< string,
   else
     return bddmgr->addZero();
 }
-
-BDD
-variable::encode_BDD_true(Cudd * bddmgr, vector<BDD> * v)
+*/
+SddNode*
+variable::encode_sdd_true(SddManager* manager, vector<SddNode*> * v)
 {
   if (var_type->get_type() == 1) {
     int begin = ((rangedint *) var_type)->get_index_begin();
     return (*v)[begin];
   }
-  return bddmgr->bddZero();
+  return sdd_manager_false(manager);
 }
 
-BDD
-variable::encode_BDD_false(Cudd * bddmgr, vector<BDD> * v)
+SddNode*
+variable::encode_sdd_false(SddManager* manager, vector<SddNode*> * v)
 {
   if (var_type->get_type() == 1) {
     int begin = ((rangedint *) var_type)->get_index_begin();
-    return !(*v)[begin];
+    return sdd_negate((*v)[begin], manager);
   }
-  return bddmgr->bddZero();
+  return sdd_manager_false(manager);
 }
-*/

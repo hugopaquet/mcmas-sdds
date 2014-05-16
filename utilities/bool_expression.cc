@@ -229,6 +229,7 @@ bool_expression::collect_exprs(vector< bool_expression * >*expr_vector,
 
 SddNode*
 bool_expression::encode_sdd(SddManager* manager, struct parameters* params) {
+	SddNode* tmp;
   if (op == 0) {    // logic_expression
 			return ((logic_expression *) operands[0])->encode_sdd(manager, params); 
   } else if (op == 3) {   // not operaror
@@ -240,7 +241,9 @@ bool_expression::encode_sdd(SddManager* manager, struct parameters* params) {
 		  ((bool_expression *) operands[1])->collect_exprs(expr_vector, op);
 		  SddNode* result = sdd_manager_true(manager);
 		  for (unsigned int i = 0; i < expr_vector->size(); i++) {
-		    result = sdd_conjoin(result, (*expr_vector)[i]->encode_sdd(manager, params), manager);
+		    result = sdd_conjoin(tmp = result, (*expr_vector)[i]->encode_sdd(manager, params), manager);
+				sdd_ref(result, manager);
+				sdd_deref(tmp, manager);
 		  }	
 		  return result;
   } else if (op == 2) {   // or operaror
@@ -250,7 +253,9 @@ bool_expression::encode_sdd(SddManager* manager, struct parameters* params) {
     ((bool_expression *) operands[1])->collect_exprs(expr_vector, op);
     SddNode* result = sdd_manager_false(manager);
     for (unsigned int i = 0; i < expr_vector->size(); i++) {
-      result = sdd_disjoin(result, (*expr_vector)[i]->encode_sdd(manager, params), manager);
+      result = sdd_disjoin(tmp = result, (*expr_vector)[i]->encode_sdd(manager, params), manager);
+			sdd_ref(result, manager);
+			sdd_deref(tmp, manager);
     }
     return result;
   } else if (op == 5) {   // true
