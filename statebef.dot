@@ -6,8 +6,8 @@ overlap=false
 {rank=same; n2475 n2469 }
 {rank=same; n17471 }
 {rank=same; n17276 n43 n56 }
-{rank=same; n22256 n22228 }
-{rank=same; n22257 }
+{rank=same; n22267 n22266 }
+{rank=same; n22268 }
 
 n2475 [label= "31",style=filled,fillcolor=gray95,shape=circle,height=.25,width=.25]; 
 n2475e0
@@ -176,8 +176,8 @@ n56e1
       width=.65];
 
 n56->n56e1 [arrowsize=.50];
-n22256 [label= "21",style=filled,fillcolor=gray95,shape=circle,height=.25,width=.25]; 
-n22256e0
+n22267 [label= "21",style=filled,fillcolor=gray95,shape=circle,height=.25,width=.25]; 
+n22267e0
       [label= "<L>C|<R>",
       shape=record,
       fontsize=20,
@@ -188,9 +188,9 @@ n22256e0
       height=.30, 
       width=.65];
 
-n22256->n22256e0 [arrowsize=.50];
-n22256e0:R:c->n17471 [arrowsize=.50,tailclip=false,arrowtail=dot,dir=both];
-n22256e1
+n22267->n22267e0 [arrowsize=.50];
+n22267e0:R:c->n17471 [arrowsize=.50,tailclip=false,arrowtail=dot,dir=both];
+n22267e1
       [label= "<L>&not;C|<R>&#8869;",
       shape=record,
       fontsize=20,
@@ -201,9 +201,9 @@ n22256e1
       height=.30, 
       width=.65];
 
-n22256->n22256e1 [arrowsize=.50];
-n22228 [label= "21",style=filled,fillcolor=gray95,shape=circle,height=.25,width=.25]; 
-n22228e0
+n22267->n22267e1 [arrowsize=.50];
+n22266 [label= "21",style=filled,fillcolor=gray95,shape=circle,height=.25,width=.25]; 
+n22266e0
       [label= "<L>C|<R>",
       shape=record,
       fontsize=20,
@@ -214,9 +214,9 @@ n22228e0
       height=.30, 
       width=.65];
 
-n22228->n22228e0 [arrowsize=.50];
-n22228e0:R:c->n2475 [arrowsize=.50,tailclip=false,arrowtail=dot,dir=both];
-n22228e1
+n22266->n22266e0 [arrowsize=.50];
+n22266e0:R:c->n2475 [arrowsize=.50,tailclip=false,arrowtail=dot,dir=both];
+n22266e1
       [label= "<L>&not;C|<R>&#8869;",
       shape=record,
       fontsize=20,
@@ -227,9 +227,9 @@ n22228e1
       height=.30, 
       width=.65];
 
-n22228->n22228e1 [arrowsize=.50];
-n22257 [label= "1",style=filled,fillcolor=gray95,shape=circle,height=.25,width=.25]; 
-n22257e0
+n22266->n22266e1 [arrowsize=.50];
+n22268 [label= "1",style=filled,fillcolor=gray95,shape=circle,height=.25,width=.25]; 
+n22268e0
       [label= "<L>&not;D|<R>",
       shape=record,
       fontsize=20,
@@ -240,9 +240,9 @@ n22257e0
       height=.30, 
       width=.65];
 
-n22257->n22257e0 [arrowsize=.50];
-n22257e0:R:c->n22256 [arrowsize=.50,tailclip=false,arrowtail=dot,dir=both];
-n22257e1
+n22268->n22268e0 [arrowsize=.50];
+n22268e0:R:c->n22267 [arrowsize=.50,tailclip=false,arrowtail=dot,dir=both];
+n22268e1
       [label= "<L>D|<R>",
       shape=record,
       fontsize=20,
@@ -253,8 +253,8 @@ n22257e1
       height=.30, 
       width=.65];
 
-n22257->n22257e1 [arrowsize=.50];
-n22257e1:R:c->n22228 [arrowsize=.50,tailclip=false,arrowtail=dot,dir=both];
+n22268->n22268e1 [arrowsize=.50];
+n22268e1:R:c->n22266 [arrowsize=.50,tailclip=false,arrowtail=dot,dir=both];
 
 
 }

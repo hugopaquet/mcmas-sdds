@@ -449,21 +449,29 @@ basic_agent::encode_evolution(SddManager * manager, struct parameters * params)
       int begin = j->second->get_index_begin();
       int end = j->second->get_index_end();
       for (int k = begin; k <= end; k++) {
-				
-				assignment_sdd = sdd_conjoin(
-															tmp = assignment_sdd, 
-															sdd_conjoin(
-																	sdd_disjoin(
-																			sdd_negate((*params->variable_sdds)[k], manager),
-																		  (*params->primed_variable_sdds)[k],
-																			manager), 
-																  sdd_disjoin(
+				SddNode* tmp4 = sdd_disjoin(
 																			(*params->variable_sdds)[k],
 																			sdd_negate((*params->primed_variable_sdds)[k], manager),
-																			manager),
-																  manager), 
+																			manager);
+				sdd_ref(tmp4, manager);
+				SddNode* tmp3 = sdd_disjoin(
+																			sdd_negate((*params->variable_sdds)[k], manager),
+																		  (*params->primed_variable_sdds)[k],
+																			manager);
+				sdd_ref(tmp3, manager);
+				SddNode* tmp2 = sdd_conjoin(
+																	tmp3, 
+																  tmp4,
+																  manager);
+				sdd_ref(tmp2, manager);
+				sdd_deref(tmp3, manager);
+				sdd_deref(tmp4, manager);
+				assignment_sdd = sdd_conjoin(
+															tmp = assignment_sdd, 
+															tmp2,
 															manager);
 				sdd_ref(assignment_sdd, manager);
+				sdd_deref(tmp2, manager);
 				sdd_deref(tmp, manager);
 		
       }
@@ -987,7 +995,9 @@ basic_agent::get_var_def(string varname) {
 SddNode*
 basic_agent::project_local_state(SddNode * state, SddManager* manager, struct parameters* params)
 {
-  SddNode* tmp = sdd_manager_true(manager); // Always true
+	sdd_ref(state, manager);
+  SddNode* tmp = sdd_manager_true(manager); 
+	SddNode* gc;
 	vector<SddNode*>* v = params->variable_sdds;
   if (lobsvars != NULL && lobsvars->size() > 0) {
     map< string, basictype * >*envars = (*agents)[0]->get_vars();
@@ -998,38 +1008,40 @@ basic_agent::project_local_state(SddNode * state, SddManager* manager, struct pa
         int index_begin = bt->get_index_begin();
         int index_end = bt->get_index_end();
         for (int j = index_begin; j <= index_end; j++) {
-          tmp = sdd_conjoin(tmp, (*v)[j], manager);
-	//				cout << "adding: " << sdd_node_literal((*v)[j]) << endl;
+          tmp = sdd_conjoin(gc = tmp, (*v)[j], manager);
+					sdd_ref(tmp, manager);
+					sdd_deref(gc, manager);
 				}
       }
     }
-//	cout << "envars_bdd_length: " <<  envars_bdd_length << ". get_var_index_begin(): " << get_var_index_begin() << endl;
     for (int j = envars_bdd_length; j < get_var_index_begin(); j++) {
-      tmp = sdd_conjoin(tmp, (*v)[j], manager);
-//					cout << "adding: " << sdd_node_literal((*v)[j]) << endl;
+      tmp = sdd_conjoin(gc = tmp, (*v)[j], manager);
+			sdd_ref(tmp, manager);
+			sdd_deref(gc, manager);
     }
   } else {
 		for (int j = obsvars_bdd_length; j < get_var_index_begin(); j++) 				{
-		    tmp = sdd_conjoin(tmp, (*v)[j], manager);
-//					cout << "adding: " << sdd_node_literal((*v)[j]) << endl;
+		    tmp = sdd_conjoin(gc = tmp, (*v)[j], manager);
+				sdd_ref(tmp, manager);
+				sdd_deref(gc, manager);
 		  }
   }
   for (unsigned int j = get_var_index_end() + 1; j < v->size(); j++) {
-    tmp = sdd_conjoin(tmp, (*v)[j], manager);
-//					cout << "adding: " << sdd_node_literal((*v)[j]) << endl;
+    tmp = sdd_conjoin(gc = tmp, (*v)[j], manager);
+		sdd_ref(tmp, manager);
+		sdd_deref(gc, manager);
   }
 
-//	cout << "dotting" << endl;
 
- 	sdd_save_as_dot("statebef.dot", state);
-	sdd_save_as_dot("tmp2.dot", tmp);
 	// computing state->ExistAbstract(tmp)
 	vector<SddLiteral>* literals = new vector<SddLiteral>;
 	get_literals(tmp, literals);
+	sdd_deref(tmp, manager);
 	for(unsigned int k = 0; k < literals->size(); k++) {
-		state = sdd_exists((*literals)[k], state, manager);		
+		state = sdd_exists((*literals)[k], gc = state, manager);		
+		sdd_ref(state, manager);
+		sdd_deref(gc, manager);
 	}
-	sdd_save_as_dot("stateaft.dot", state);
 
   return state;
 

@@ -59,12 +59,18 @@ check_EG(SddNode* p, SddManager* manager, struct parameters* params)
 {
   // Computes the fixpoint iterating false
   if(is_fairness->empty()) {
-		SddNode* tmp = sdd_manager_false(manager);
+		SddNode* node = sdd_manager_false(manager);
 		SddNode* q = sdd_manager_true(manager);
- 		while (q != tmp) {
-      tmp = q;
-      SddNode* x = check_EX(tmp, manager, params);
+ 		while (q != node) {
+			sdd_deref(node, manager);
+      node = q;
+			sdd_ref(node, manager);
+			sdd_deref(q, manager);
+      SddNode* x = check_EX(node, manager, params);
+			sdd_ref(x, manager);
       q = sdd_conjoin(p, x, manager);
+			sdd_ref(q, manager);
+			sdd_deref(x, manager);
     } 
     return q;
   }  else
@@ -78,13 +84,13 @@ check_EF(SddNode* p, SddManager* manager, struct parameters* params)
   // Computes the fixpoint iterating false
 	SddNode* tmp = sdd_manager_true(manager);
   SddNode* q = sdd_manager_false(manager);
-	int iter = 0;
   while (q != tmp) {
-		if(iter == 1)
-			sdd_save_as_dot("q.dot", q);
+		sdd_deref(tmp, manager);
     tmp = q;
+		sdd_ref(tmp, manager);
+		sdd_deref(q, manager);
     q = sdd_disjoin(p, check_EX(tmp, manager, params), manager);
-		iter++;
+		sdd_ref(q, manager);
   }
   return sdd_conjoin(q, params->reach, manager);
 }
@@ -103,7 +109,7 @@ check_EX(SddNode* next, SddManager* manager, struct parameters* params)
       para->calReachRT = false;
     }
   } */
-	cout << "calling EX" << endl;
+	SddNode* tmp;
 	unsigned int v = params->variable_sdds->size(); // number of state variables
 	unsigned int a = params->action_variable_sdds->size(); // number of action variables		
 	SddLiteral map[2 * v + a + 1]; 
@@ -118,32 +124,55 @@ check_EX(SddNode* next, SddManager* manager, struct parameters* params)
 	}
 
 	SddNode* result = sdd_rename_variables(next, map, manager);
+	sdd_ref(result, manager);
 /*  if(options["nobddcache"] == 0)
     result = result * (*para->reachRT);
   else { */
-    for (unsigned int i = 0; i < agents->size(); i++)
-      result = sdd_conjoin(result, (*params->transitions)[i], manager);
+    for (unsigned int i = 0; i < agents->size(); i++) {
+      result = sdd_conjoin(tmp = result, (*params->transitions)[i], manager);
+			sdd_ref(result, manager);
+			sdd_deref(tmp, manager);		
+		}
 //  }
 	for(unsigned int i = 0; i < v; i++) {
-		result = sdd_exists(sdd_node_literal((*params->primed_variable_sdds)[i]), result, manager);
+		result = sdd_exists(sdd_node_literal((*params->primed_variable_sdds)[i]), tmp = result, manager);
+		sdd_ref(result, manager);
+		sdd_deref(tmp, manager);		
 	}
 	for(unsigned int i = 0; i < a; i++) {
-	  result = sdd_exists(sdd_node_literal((*params->action_variable_sdds)[i]), result, manager);
+	  result = sdd_exists(sdd_node_literal((*params->action_variable_sdds)[i]), tmp = result, manager);
+		sdd_ref(result, manager);
+		sdd_deref(tmp, manager);		
 	}
-	result = sdd_conjoin(result, params->reach, manager);
+	result = sdd_conjoin(tmp = result, params->reach, manager);
+	sdd_ref(result, manager);
+	sdd_deref(tmp, manager);		
   return result;
 }
 
 SddNode*
 check_EU(SddNode* p, SddNode* q, SddManager* manager, struct parameters* params)
-{                               // See Huth-Ryan, pag. 180
+{              
+  // See Huth-Ryan, pag. 180    
+	SddNode* tmp;
   SddNode* W = p;
+	sdd_ref(W, manager);
   SddNode* X = params->reach;
+	sdd_ref(X, manager);
   SddNode* Y = q;
+	sdd_ref(Y, manager);
   while (X != Y) {
+		sdd_deref(X, manager);
     X = Y;
-    Y = sdd_disjoin(Y, sdd_conjoin(W,  check_EX(Y, manager, params), manager), manager);
+		sdd_ref(X, manager);
+		SddNode* node = sdd_conjoin(W,  check_EX(Y, manager, params), manager);
+		sdd_ref(node, manager);
+    Y = sdd_disjoin(tmp = Y, node, manager);
+		sdd_ref(Y, manager);
+		sdd_deref(tmp, manager);
+		sdd_deref(node, manager);
   }
+	sdd_deref(W, manager);
   return Y;
 }
 
@@ -152,9 +181,14 @@ SddNode*
 check_AU(SddNode* p, SddNode* q, SddManager* manager, struct parameters* params)
 {                               // Tricky one, see Huth Ryan pag. 167 and 179
 	SddNode* notq = sdd_negate(q, manager);
+	sdd_ref(notq, manager);
 	SddNode* notp = sdd_negate(p, manager);
+	sdd_ref(notp, manager);
   SddNode* result =
     sdd_conjoin(sdd_negate(sdd_disjoin(check_EU(notq, sdd_conjoin(notp, notq, manager), manager, params), check_EG(notq, manager, params), manager), manager), params->reach, manager);
+	sdd_ref(result, manager);
+	sdd_deref(notp, manager);
+	sdd_deref(notq, manager);
   return result;
 }
 
@@ -163,14 +197,22 @@ SddNode*
 check_GK(SddNode* next, string name, SddManager* manager, struct parameters* params)
 {
   set < string > gi = (*is_groups)[name];
-  SddNode* tmp = sdd_manager_false(manager);
-	SddNode* ntmp = sdd_conjoin(params->reach, sdd_negate(next, manager), manager); // possible problem: check "-" = "and not"
+  SddNode* node = sdd_manager_false(manager);
+	SddNode* tmp;
+	SddNode* ntmp = sdd_conjoin(params->reach, sdd_negate(next, manager), manager); 
+	sdd_ref(ntmp, manager);
   for (set < string >::iterator igs = gi.begin(); igs != gi.end(); igs++) {
     basic_agent *agent = (*is_agents)[*igs];
-    tmp = sdd_disjoin(tmp, agent->project_local_state(ntmp, manager, params), manager);
+    node = sdd_disjoin(tmp = node, agent->project_local_state(ntmp, manager, params), manager);
+		sdd_ref(node, manager);
+		sdd_deref(tmp, manager);
+		
   }
-  tmp = sdd_conjoin(params->reach, sdd_negate(tmp, manager), manager);
-  return tmp;
+  node = sdd_conjoin(params->reach, sdd_negate(tmp = node, manager), manager);
+	sdd_ref(node, manager);
+	sdd_deref(tmp, manager);
+	sdd_deref(ntmp, manager);
+  return node;
 }
 
 
@@ -178,21 +220,36 @@ SddNode*
 check_GCK(SddNode* next, string name, SddManager* manager, struct parameters* params)
 {
   // GCK p = GK(p * GCK(p)) see fhmv:rak, section 11.5
+	SddNode* gc;
   SddNode* tmp = params->reach;
+	sdd_ref(tmp, manager);
   SddNode* tmp2 = next;
+	sdd_ref(tmp2, manager);
   set < string > gi = (*is_groups)[name];
   while (tmp != tmp2) {
     tmp2 = tmp;
+		sdd_ref(tmp2, manager);
     tmp = sdd_conjoin(next, tmp, manager);
+		sdd_ref(tmp, manager);
     SddNode* ntmp = sdd_conjoin(params->reach, sdd_negate(tmp, manager), manager);	
+		sdd_ref(ntmp, manager);
+		sdd_deref(tmp, manager);
     tmp = sdd_manager_false(manager);
     for (set < string >::iterator igs = gi.begin(); igs != gi.end(); igs++) {
       basic_agent *agent = (*is_agents)[*igs];
 			SddNode* projection = agent->project_local_state(ntmp, manager, params);
-      tmp = sdd_disjoin(tmp, projection, manager);
+			sdd_ref(projection, manager);
+      tmp = sdd_disjoin(gc = tmp, projection, manager);
+			sdd_ref(tmp, manager);
+			sdd_deref(gc, manager);
+			sdd_deref(projection, manager);
     }
-    tmp = sdd_conjoin(params->reach, sdd_negate(tmp, manager), manager);
+    tmp = sdd_conjoin(params->reach, sdd_negate(gc = tmp, manager), manager);
+		sdd_ref(tmp, manager);
+		sdd_deref(gc, manager);
+		sdd_deref(ntmp, manager);
   }
+	sdd_deref(tmp2, manager);
   return tmp;
 }
 

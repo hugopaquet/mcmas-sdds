@@ -224,7 +224,10 @@ modal_formula::check_formula(SddManager * manager, struct parameters* params)
 //        return ((*para->BDD_cache)[name]);
     bool_expression *simple = is_evaluation->find(name)->second;
 		SddNode* node = simple->encode_sdd(manager, params);
+		sdd_ref(node, manager);
     result = sdd_conjoin(node, params->reach, manager);
+		sdd_ref(result, manager);
+		sdd_deref(node, manager);
 //    if(options["nobddcache"] == 0)
 //      (*para->BDD_cache)[name] = result;
     break;
@@ -232,79 +235,111 @@ modal_formula::check_formula(SddManager * manager, struct parameters* params)
   case 1:     // AND - done
     result = sdd_conjoin(((modal_formula *) obj[0])->check_formula(manager, params),
       ((modal_formula *) obj[1])->check_formula(manager, params), manager);
+		sdd_ref(result, manager);
     break;
   case 2:     // OR - done
     result = sdd_disjoin(((modal_formula *) obj[0])->check_formula(manager, params),
       ((modal_formula *) obj[1])->check_formula(manager, params), manager);
+		sdd_ref(result, manager);
     break;
   case 3:     // NOT -done
-    result = sdd_negate(((modal_formula *) obj[0])->check_formula(manager, params), manager);
+    result = sdd_negate(((modal_formula *) obj[0])->check_formula(manager, params), manager);	
+		sdd_ref(result, manager);
     break;
   case 4:     // IMPLIES -done
     {
 
       SddNode* res1 = sdd_conjoin(sdd_negate((((modal_formula *) obj[0])->check_formula(manager, params)), manager), params->reach, manager);
-			if(((modal_formula *) obj[0])->to_string() != "_init") {
-			//	sdd_save_as_dot("init.dot", (((modal_formula *) obj[1])->check_formula(manager, params)));
-			//	save_to_string(((modal_formula *) obj[1])->check_formula(manager, params));
-			}
+			sdd_ref(res1, manager);
       SddNode* res2 = ((modal_formula *) obj[1])->check_formula(manager, params);
-
+			sdd_ref(res2, manager);
       result = sdd_disjoin(res1, res2, manager);
+			sdd_ref(result, manager);
+			sdd_deref(res1, manager);
+			sdd_deref(res2, manager);
       break;
     }
   case 10:      // AG p = !EF !p - done 	
 	{
 		SddNode* sdd = ((modal_formula *) obj[0])->check_formula(manager, params);
+		sdd_ref(sdd, manager);	
     phi1 = sdd_conjoin(sdd_negate(sdd, manager), params->reach, manager);	
+		sdd_ref(phi1, manager);
+		sdd_deref(sdd, manager);
     result = sdd_negate(check_EF(phi1, manager, params), manager);
+		sdd_ref(result, manager);
+		sdd_deref(phi1, manager);
     break;
 	}
   case 11:      // EG - done
     phi1 = ((modal_formula *) obj[0])->check_formula(manager, params);
+		sdd_ref(phi1, manager);
     result = check_EG(phi1, manager, params);
+		sdd_ref(result, manager);
+		sdd_deref(phi1, manager);
     break;
   case 12:      // AX p = ! EX !p - done
     phi1 = sdd_conjoin(sdd_negate(((modal_formula *) obj[0])->check_formula(manager, params), manager), params->reach, manager);
+		sdd_ref(phi1, manager);
     result = sdd_negate(check_EX(phi1, manager, params), manager);
+		sdd_ref(result, manager);
+		sdd_deref(phi1, manager);
     break;
   case 13:      // EX - done
     phi1 = ((modal_formula *) obj[0])->check_formula(manager, params);
+		sdd_ref(phi1, manager);
     result = check_EX(phi1, manager, params);
+		sdd_ref(result, manager);
+		sdd_deref(phi1, manager);
     break;
   case 14: // AF p = !EG !p - done
 	{   
     phi1 = sdd_conjoin(sdd_negate(((modal_formula *) obj[0])->check_formula(manager, params), manager), params->reach, manager);
-
+		sdd_ref(phi1, manager);
 		SddNode* node = check_EG(phi1, manager, params);
-		if(sdd_node_is_false(node)) {
-			cout << "node is false " << endl;
-			result = sdd_manager_true(manager); 
-		}
-		else     
-			result = sdd_negate(node, manager);
+		sdd_ref(node, manager);
+		sdd_deref(phi1, manager);
+		result = sdd_negate(node, manager);
+		sdd_ref(result, manager);
+		sdd_deref(node, manager);
     break; 
 	}
   case 15:      // EF p = p \lor EX EF p - done
     phi1 = ((modal_formula *) obj[0])->check_formula(manager, params);
+		sdd_ref(phi1, manager);
     result = check_EF(phi1, manager, params);
+		sdd_ref(result, manager);
+		sdd_deref(phi1, manager);
     break;
   case 16:      // AU (see check_AU) - done 
     phi1 = ((modal_formula *) obj[0])->check_formula(manager, params);
+		sdd_ref(phi1, manager);
     phi2 = ((modal_formula *) obj[1])->check_formula(manager, params);
+		sdd_ref(phi2, manager);
     result = check_AU(phi1, phi2, manager, params);
+		sdd_ref(result, manager);
+		sdd_deref(phi1, manager);
+		sdd_deref(phi2, manager);
     break;
   case 17:      // EU - done
     phi1 = ((modal_formula *) obj[0])->check_formula(manager, params);
+		sdd_ref(phi1, manager);
     phi2 = ((modal_formula *) obj[1])->check_formula(manager, params);
+		sdd_ref(phi2, manager);
     result = check_EU(phi1, phi2, manager, params);
+		sdd_ref(result, manager);
+		sdd_deref(phi1, manager);
+		sdd_deref(phi2, manager);
     break;
   case 30:      // K - done
     {
       id = ((modal_formula *) obj[0])->get_operand(0);
       name = ((atomic_proposition *) id)->get_proposition();
       af = sdd_conjoin(sdd_negate(((modal_formula *) obj[1])->check_formula(manager, params), manager), params->reach, manager);
+			sdd_ref(af, manager);
       result = sdd_conjoin(params->reach, sdd_negate(get_nK_states(af, name, manager, params), manager), manager);
+			sdd_ref(result, manager);
+//			sdd_deref(af, manager);
       break;
     }
 /*  case 31:      // Everybody knows - TODO
@@ -317,8 +352,10 @@ modal_formula::check_formula(SddManager * manager, struct parameters* params)
     id = ((modal_formula *) obj[0])->get_operand(0);
     name = ((atomic_proposition *) id)->get_proposition();
     af = ((modal_formula *) obj[1])->check_formula(manager, params);
-
+		sdd_ref(af, manager);
     result = check_GCK(af, name, manager, params);
+		sdd_ref(result, manager);
+		//sdd_deref(af, manager);
     break;
 /*  case 40:      // O - what is that?
     id = ((modal_formula *) obj[0])->get_operand(0);
@@ -364,7 +401,10 @@ modal_formula::check_formula(SddManager * manager, struct parameters* params)
 		cout << "Checking this formula is not yet supported." << endl;
   }
 	//cout << "FINISH " << to_string() << endl; 
-	return sdd_conjoin(result, params->reach, manager);
+	result = sdd_conjoin(rel = result, params->reach, manager);
+	sdd_ref(result, manager);
+	sdd_deref(rel, manager);
+	return result;
 }
 
 
