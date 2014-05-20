@@ -358,7 +358,8 @@ compute_primed_variable_sdds(SddManager* manager)
 	return pv;
 }
 
-void print_params(struct parameters * params) 
+void 
+print_params(struct parameters * params) 
 {
 	cout << "Params:" << endl;
 	cout << "No. of state variables: " << states_count << endl;
@@ -379,12 +380,99 @@ void print_params(struct parameters * params)
 
 }
 
+SddLiteral* 
+get_var_order(int ordering_type, vector< basic_agent * >* agents) 
+{
+	int var_count = 2 * states_count + actions_count;
+	SddLiteral* var_order = new SddLiteral[var_count];
+	switch(ordering_type) {
+	case 1: 
+	{
+		for(int i = 1; i <= var_count; i++)
+			var_order[i-1] = i;
+		break;
+	}
+	case 2:
+	{
+		int tmp_sum = 0;
+		int tmp_var = 0;
+		int tmp_acts = 0;
+		for (unsigned int i = 0; i < agents->size(); i++) {
+			for(int j = tmp_var; j < tmp_var + (*agents)[i]->state_BDD_length(); j++) {
+				var_order[tmp_sum + 2 * (j - tmp_var) ] = j + 1;
+				var_order[tmp_sum + 2 * (j - tmp_var) + 1] = states_count + j + 1; 
+			}
+			tmp_var += (*agents)[i]->state_BDD_length();
+			tmp_sum += (*agents)[i]->state_BDD_length() * 2;
+			for(unsigned int j = tmp_acts; j < tmp_acts + (*agents)[i]->actions_BDD_length(); j++) {
+				var_order[tmp_sum + j - tmp_acts] = 2 * states_count + j + 1;
+			}
+			tmp_acts += (*agents)[i]->actions_BDD_length();
+			tmp_sum += (*agents)[i]->actions_BDD_length();
+		}
+		break;
+	}
+	case 3: 
+	{
+		int tmp_sum = 0;
+		int tmp_var = 0;
+		int tmp_acts = 0;
+		for (unsigned int i = 0; i < agents->size(); i++) {
+			for(int j = tmp_var; j < tmp_var + (*agents)[i]->state_BDD_length(); j++) {
+				var_order[tmp_sum + (j - tmp_var)] = j + 1;
+			}
+			tmp_sum += (*agents)[i]->state_BDD_length();
+			for(unsigned int j = tmp_acts; j < tmp_acts + (*agents)[i]->actions_BDD_length(); j++) {
+				var_order[tmp_sum + j - tmp_acts] = 2 * states_count + j + 1;
+			}
+			tmp_acts += (*agents)[i]->actions_BDD_length();
+			tmp_sum += (*agents)[i]->actions_BDD_length();
+			for(int j = tmp_var; j < tmp_var + (*agents)[i]->state_BDD_length(); j++) {
+				var_order[tmp_sum + (j - tmp_var)] = states_count + j + 1; 
+			}	
+			tmp_var += (*agents)[i]->state_BDD_length();
+			tmp_sum += (*agents)[i]->state_BDD_length();
+		}
+		break;
+	}
+	case 4: 
+	{
+		int tmp_sum = 0;
+		int tmp_var = 0;
+		int tmp_acts = 0;
+		for (unsigned int i = 0; i < agents->size(); i++) {
+			for(int j = tmp_var; j < tmp_var + (*agents)[i]->state_BDD_length(); j++) {
+				var_order[tmp_sum + (j - tmp_var)] = j + 1;
+			}
+			tmp_sum += (*agents)[i]->state_BDD_length();
+			for(int j = tmp_var; j < tmp_var + (*agents)[i]->state_BDD_length(); j++) {
+				var_order[tmp_sum + (j - tmp_var)] = states_count + j + 1; 
+			}	
+			tmp_var += (*agents)[i]->state_BDD_length();
+			tmp_sum += (*agents)[i]->state_BDD_length();
+			for(unsigned int j = tmp_acts; j < tmp_acts + (*agents)[i]->actions_BDD_length(); j++) {
+				var_order[tmp_sum + j - tmp_acts] = 2 * states_count + j + 1;
+			}
+			tmp_acts += (*agents)[i]->actions_BDD_length();
+			tmp_sum += (*agents)[i]->actions_BDD_length();
+		}
+		break;
+	
+	}
+	default:
+		cout << "There is no ordering of type " << ordering_type << endl;
+		exit(0);
+	}
+
+	return var_order;
+
+}
+
 
 int
 main(int argc, char *argv[])
 {
-
-
+	
   struct timeb tmb;
   ftime(&tmb);
 
@@ -449,12 +537,13 @@ main(int argc, char *argv[])
     exit(-1);
   }
 
+
 	// Count number of boolean variables needed to encode the model (states and actions)
 	for (unsigned int i = 0; i < agents->size(); i++) {
  	  states_count += (*agents)[i]->state_BDD_length();
     actions_count += (*agents)[i]->actions_BDD_length();
   }
-
+	
 	// Allocate variables to each agent (states/variables + actions). This is setting the indices in each agent
   int k1 = 0;
   int k2 = 0;
@@ -465,11 +554,26 @@ main(int argc, char *argv[])
 
 	// Create Vtree
 	SddLiteral var_count = 2 * states_count + actions_count;
-	SddLiteral* var_order = new SddLiteral[var_count];
-	for(int i = 1; i <= var_count; i++)
-		var_order[i-1] = i;
-	Vtree* vtree = sdd_vtree_new_with_var_order(var_count, var_order, "right");
-	//sdd_vtree_save_as_dot("vtree.dot", vtree);
+	SddLiteral* var_order = get_var_order(options["ordering"], agents);
+
+	Vtree* vtree;
+	switch(options["vtree"]) {
+		case 1:
+			vtree = sdd_vtree_new_with_var_order(var_count, var_order, "right");
+			break;
+		case 2:
+			vtree = sdd_vtree_new_with_var_order(var_count, var_order, "left");
+			break;
+		case 3:
+			vtree = sdd_vtree_new_with_var_order(var_count, var_order, "balanced");
+			break;	
+		default: 
+			cout << "Vtree of type " << options["vtree"] << " is not specified." << endl;
+			exit(0);
+	}
+
+
+	sdd_vtree_save_as_dot("vtree.dot", vtree);
 	
 	// Create and setup SDD manager
 	int auto_gc_and_minimize = 1; //1=yes
@@ -477,7 +581,8 @@ main(int argc, char *argv[])
 	sdd_manager_auto_gc_and_minimize_on(manager);
 
 	//SddManager* manager = sdd_manager_create(var_count, auto_gc_and_minimize);
-	
+	cout << "The manager has size " << sdd_manager_size(manager) << "(dead " << sdd_manager_live_size(manager) <<  ", live " << sdd_manager_dead_size(manager) << ")" << endl;
+	cout << "The manager has count " << sdd_manager_count(manager)  << "(dead " << sdd_manager_live_count(manager) <<  ", live " << sdd_manager_dead_count(manager) << ")" << endl;
 	
 	// Compute parameters
 	struct parameters* params = new parameters;	
@@ -504,11 +609,11 @@ main(int argc, char *argv[])
 
 		// encode evolution into SDD evolution_sdd
 		cout << "Encoding the evolution for " << (*agents)[i]->get_name() << endl;
-		SddNode* evolution_sdd = (*agents)[i]->encode_evolution(manager, params);
+		SddNode* evolution_sdd = (options["smv"] == 0) ?
+																 (*agents)[i]->encode_evolution(manager, params) : 
+																 (*agents)[i]->encode_evolution_smv(manager, params) ;
 		sdd_ref(evolution_sdd, manager);
 		cout << " - Done. " << endl;
-		if(((*agents)[i])->get_name() == "Environment")
-			sdd_save_as_dot("evol.dot", evolution_sdd);
 
 		// add (protocol_sdd && evolution_sdd) to transition_relation_vector
 		SddNode* agent_transition_relation_sdd = sdd_conjoin(protocol_sdd, evolution_sdd, manager);
@@ -518,7 +623,9 @@ main(int argc, char *argv[])
 		transition_relation_sdds->push_back(agent_transition_relation_sdd);
 	}
 	params->transitions = transition_relation_sdds;	
-
+	cout << "The manager has size " << sdd_manager_size(manager) << "(dead " << sdd_manager_live_size(manager) <<  ", live " << sdd_manager_dead_size(manager) << ")" << endl;
+	cout << "The manager has count " << sdd_manager_count(manager)  << "(dead " << sdd_manager_live_count(manager) <<  ", live " << sdd_manager_dead_count(manager) << ")" << endl;
+	
 
 	// Make SDD for initial states 
 	cout << "Computing initial states" << endl;
@@ -526,7 +633,9 @@ main(int argc, char *argv[])
 	sdd_ref(initial_states_sdd, manager);
 	cout << " - Done." << endl;
 
-
+	cout << "The manager has size " << sdd_manager_size(manager) << "(dead " << sdd_manager_live_size(manager) <<  ", live " << sdd_manager_dead_size(manager) << ")" << endl;
+	cout << "The manager has count " << sdd_manager_count(manager)  << "(dead " << sdd_manager_live_count(manager) <<  ", live " << sdd_manager_dead_count(manager) << ")" << endl;
+	
 	// Compute full transition relation
 /*	cout << "Computing full transition relation";
 	SddNode* full_transition_relation = sdd_manager_true(manager);	
@@ -546,6 +655,11 @@ main(int argc, char *argv[])
 	sdd_ref(reachable_state_sdd, manager);
 	params->reach = reachable_state_sdd;
 	cout << " - Done." << endl;
+	
+	cout << "Model count of reach SDD: " << sdd_model_count(reachable_state_sdd, manager) << endl;
+	
+	cout << "The manager has size " << sdd_manager_size(manager) << "(dead " << sdd_manager_live_size(manager) <<  ", live " << sdd_manager_dead_size(manager) << ")" << endl;
+	cout << "The manager has count " << sdd_manager_count(manager)  << "(dead " << sdd_manager_live_count(manager) <<  ", live " << sdd_manager_dead_count(manager) << ")" << endl;
 	
 	// Deal with fairness constraints
   if (!is_fairness->empty()) {
@@ -580,13 +694,16 @@ main(int argc, char *argv[])
       modal_formula f(4, init, &((*is_formulae)[i]));
 			SddNode* result = f.check_formula(manager, params);
 			sdd_ref(result, manager);
+
 			bool satisfaction = result == params->reach;
 			cout << "Formula " << i+1 << " is " << (satisfaction ? "TRUE" : "FALSE") << " in the model." << endl;
 			sdd_deref(result, manager);
 	} 
+	cout << "The manager has size " << sdd_manager_size(manager) << "(dead " << sdd_manager_live_size(manager) <<  ", live " << sdd_manager_dead_size(manager) << ")" << endl;
+	cout << "The manager has count " << sdd_manager_count(manager)  << "(dead " << sdd_manager_live_count(manager) <<  ", live " << sdd_manager_dead_count(manager) << ")" << endl	;
+	sdd_manager_print(manager);
 
-
-
+	cout << "Freeing SDD manager." << endl;
 	sdd_manager_free(manager);
 
     struct timeb tmb1;

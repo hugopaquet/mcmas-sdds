@@ -26,6 +26,15 @@ Agent Environment
 (  DinCrypt1.Action=sayequal and  DinCrypt2.Action=sayequal and  DinCrypt3.Action=saydifferent )       or 
 (  DinCrypt1.Action=sayequal and  DinCrypt2.Action=saydifferent and  DinCrypt3.Action=sayequal )       or 
 (  DinCrypt1.Action=saydifferent and  DinCrypt2.Action=sayequal and  DinCrypt3.Action=sayequal )  ) );
+    say1 = false if numberofodd=none and DinCrypt1.Action=sayequal;
+    say1 = true if numberofodd=none and DinCrypt1.Action=saydifferent;
+    say2 = false if numberofodd=none and DinCrypt2.Action=sayequal;
+    say2 = true if numberofodd=none and DinCrypt2.Action=saydifferent;
+    say3 = false if numberofodd=none and DinCrypt3.Action=sayequal;
+    say3 = true if numberofodd=none and DinCrypt3.Action=saydifferent;
+    count = true if numberofodd=none and (DinCrypt1.Action=sayequal or DinCrypt1.Action=saydifferent);
+    numberofodd=even if numberofodd=none and count = true and (say1^say2^say3 = false);
+    numberofodd=odd if numberofodd=none and count = true and (say1^say2^say3 = true);
   end Evolution
 end Agent
 

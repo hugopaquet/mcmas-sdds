@@ -1042,6 +1042,7 @@ logic_expression::encode_sdd(SddManager* manager, struct parameters* params) {
 	int begin, end, begin1;
 	SddNode* encoding = sdd_manager_true(manager);
 	SddNode* tmp;
+	SddNode* node = sdd_manager_true(manager);
 
 	if (lhstype == 4) { // LHS is an action - not sure when this case can happen?
 		laction *la = (laction *) operands[0];
@@ -1173,8 +1174,10 @@ logic_expression::encode_sdd(SddManager* manager, struct parameters* params) {
 						sdd_deref(tmp, manager);
 				  }
 		  } 
-	} else  if (lhstype == 1 || rhstype == 1) { // one of LHS, RHS is Bool
-		SddNode* temp = sdd_manager_false(manager);
+
+
+
+  } else if ((lhstype == 1 && rhstype < 9) || (rhstype == 1 && lhstype < 9)) {  // bool value
     variable *var =
       lhstype == 0 ? (variable *) operands[0] : (variable *) operands[1];
     bool_value *value =
@@ -1182,17 +1185,81 @@ logic_expression::encode_sdd(SddManager* manager, struct parameters* params) {
     basictype *var_type = var->get_var_type();
     begin = var_type->get_index_begin();
     if (value->get_value())
-			temp = (*params->variable_sdds)[begin];
+      node = sdd_conjoin(node, (*params->variable_sdds)[begin], manager);
     else
-			temp = sdd_negate((*params->variable_sdds)[begin], manager);
-		sdd_ref(temp, manager);
+      node = sdd_conjoin(node, sdd_negate((*params->variable_sdds)[begin], manager), manager);
+		sdd_ref(node, manager);
     if (op == 1)
-			encoding = sdd_conjoin(tmp = encoding, sdd_negate(temp, manager), manager);
+			encoding = sdd_conjoin(encoding, sdd_negate(node, manager), manager);
     else
-			encoding = sdd_conjoin(tmp = encoding, temp, manager);
+			encoding = sdd_conjoin(encoding, node, manager);
 		sdd_ref(encoding, manager);
+		sdd_deref(node, manager);
+
+
+  } else if ((lhstype >= 9 && lhstype <= 12) || (rhstype >= 9 && rhstype <= 12)) {  // bit expression
+			cout << "We have a bit expression: " << to_string() << endl;
+		if (lhstype == 1) { // lhs is a constant
+			bool_value *value = (bool_value *) operands[0];
+			if(value->get_value())
+				node = ((bit_expression *) operands[1])->encode_sdd_true(manager, params->variable_sdds);
+			else
+				node = ((bit_expression *) operands[1])->encode_sdd_false(manager, params->variable_sdds);
+			sdd_ref(node, manager);
+		} else if (rhstype == 1) { // rhs is a constant
+			cout << "we are in the case where rhs is a constant";
+			bool_value *value = (bool_value *) operands[1];
+			cout << ". this constant is " << value->get_value() << endl;
+			if(value->get_value())
+				node = ((bit_expression *) operands[0])->encode_sdd_true(manager, params->variable_sdds);
+			else
+				node = ((bit_expression *) operands[0])->encode_sdd_false(manager, params->variable_sdds);
+			sdd_save_as_dot(value->get_value() ? "true.dot" : "false.dot", node);
+			sdd_ref(node, manager);
+		} else if (lhstype == 0) { // lhs is a variable
+			variable *var = (variable *) operands[0];
+			basictype *var_type = var->get_var_type();
+			begin = var_type->get_index_begin();
+			SddNode* node1 = sdd_conjoin((*params->variable_sdds)[begin] , ((bit_expression *) operands[1])->encode_sdd_true(manager, params->variable_sdds), manager);
+			sdd_ref(node1, manager);
+			SddNode* node2 = sdd_conjoin(sdd_negate((*params->variable_sdds)[begin], manager), ((bit_expression *) operands[1])->encode_sdd_false(manager, params->variable_sdds), manager);
+			sdd_ref(node2, manager);
+			node = sdd_disjoin(node1,	node2, manager);
+			sdd_ref(node, manager);
+			sdd_deref(node1, manager);
+			sdd_deref(node2, manager);
+		} else if (rhstype == 0) { // rhs is a variable
+			variable *var = (variable *) operands[1];
+			basictype *var_type = var->get_var_type();
+			begin = var_type->get_index_begin();
+			SddNode* node1 = sdd_conjoin((*params->variable_sdds)[begin] , ((bit_expression *) operands[0])->encode_sdd_true(manager, params->variable_sdds), manager);
+			sdd_ref(node1, manager);
+			SddNode* node2 = sdd_conjoin(sdd_negate((*params->variable_sdds)[begin], manager), ((bit_expression *) operands[0])->encode_sdd_false(manager, params->variable_sdds), manager);
+			sdd_ref(node2, manager);
+			node = sdd_disjoin(node1,	node2, manager);
+			sdd_ref(node, manager);
+			sdd_deref(node1, manager);
+			sdd_deref(node2, manager);
+		} else { // both lhs and rhs are bit expressions
+			SddNode* node1 = sdd_conjoin(((bit_expression *) operands[0])->encode_sdd_true(manager, params->variable_sdds), ((bit_expression *) operands[1])->encode_sdd_true(manager, params->variable_sdds), manager);
+			sdd_ref(node1, manager);
+			SddNode* node2 = sdd_conjoin(((bit_expression *) operands[0])->encode_sdd_false(manager, params->variable_sdds), ((bit_expression *) operands[1])->encode_sdd_false(manager, params->variable_sdds), manager);
+			sdd_ref(node2, manager);
+			node = sdd_disjoin(node1,	node2, manager);
+			sdd_ref(node, manager);
+			sdd_deref(node1, manager);
+			sdd_deref(node2, manager);		
+		}
+
+    if (op == 1)
+      encoding = sdd_conjoin(tmp = encoding, sdd_negate(node, manager), manager);
+    else
+      encoding = sdd_conjoin(tmp = encoding, node, manager);
+		sdd_ref(encoding, manager);
+		sdd_deref(node, manager);
 		sdd_deref(tmp, manager);
-		sdd_deref(temp);
+		cout << "for the expression " << to_string() << " we are saving the file." << endl;
+		sdd_save_as_dot("logic.dot", encoding);
 
   } else if (lhstype == 3 || rhstype == 3) {  // one of LHS, RHS is enumerate value
     variable *var =

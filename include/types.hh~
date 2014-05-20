@@ -239,7 +239,7 @@ public:
 */  bool equal_to(variable * expr);
   bool equal_to(expression * expr);
   SddNode* encode_sdd_true(SddManager* manager, vector<SddNode*> * v);
-  BDD encode_BDD_false(Cudd * bddmgr, vector<BDD> * v); 
+  SddNode* encode_sdd_false(SddManager* manager, vector<SddNode*> * v);
 };
 
 class basic_agent;

@@ -71,6 +71,7 @@ read_options(int argc, char *argv[]) {
   options["deadlock"] = 0;
   options["overflow"] = 0;
   options["nobddcache"] = 0;
+	options["vtree"] = 1; //default vtree is right-linear
 
   bool wrongpara = false;
 
@@ -92,6 +93,7 @@ read_options(int argc, char *argv[]) {
   std::string bddgroup("-bddgroup");
   std::string deadlock("-k");
   std::string overflow("-a");
+	std::string vtree("-vtree");
 
   std::string binfo1("-u");
   std::string cexoutdir1("-p");
@@ -152,12 +154,23 @@ read_options(int argc, char *argv[]) {
     } else if (atlnewstate == argv[i] || atlnewstate1 == argv[i]) {
       options["atlnewstate"] = 1;
     } else if (ordering == argv[i]) {
+			cout << "ordering being changed" << endl;
       string s;
       s = argv[++i];
       options["ordering"] = atoi(s.c_str());
       if (options["ordering"] < 1 || options["ordering"] > 4) {
         cout << "Parameter " << options["ordering"] <<
           " is not allowed in -o option." << endl;
+        wrongpara = true;
+      }
+    } else if (vtree == argv[i]) {
+			cout << "vtree being changed" << endl;
+      string s;
+      s = argv[++i];
+      options["vtree"] = atoi(s.c_str());
+      if (options["vtree"] < 1 || options["vtree"] > 3) {
+        cout << "Vtree of type " << options["vtree"] <<
+          " is not specified by -v option." << endl;
         wrongpara = true;
       }
     } else if (subset == argv[i] || subset1 == argv[i]) {

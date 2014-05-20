@@ -169,42 +169,62 @@ assignment::encode_sdd(SddManager * manager, struct parameters * params, SddNode
   int begin = var_type->get_index_begin();
   int end = var_type->get_index_end();
   SddNode * encoding = base;
+	SddNode* gc;
+	sdd_ref(encoding, manager);
   unsigned char var_value_type = var_value->get_type();
 
   if (value_type == 1) {  // boolean type
     if (var_value_type == 1) {
-      if (((bool_value *) var_value)->get_value())
-				encoding = sdd_conjoin(encoding, (*params->primed_variable_sdds)[begin], manager);
-      else
-				encoding = sdd_conjoin(encoding, sdd_negate((*params->primed_variable_sdds)[begin], manager), manager);
+      if (((bool_value *) var_value)->get_value()) {
+				encoding = sdd_conjoin(gc = encoding, (*params->primed_variable_sdds)[begin], manager);
+				sdd_ref(encoding, manager);
+				sdd_deref(gc, manager);
+			}
+      else {
+				encoding = sdd_conjoin(gc = encoding, sdd_negate((*params->primed_variable_sdds)[begin], manager), manager);	
+				sdd_ref(encoding, manager);
+				sdd_deref(gc, manager);
+			}
     } else if (var_value_type == 0) {
       basictype *var_type1 = ((variable *) var_value)->get_var_type();
       int begin1 = var_type1->get_index_begin();
       // be careful here. rhs is in v and lhs is in pv
-			encoding = sdd_conjoin(
-															encoding, 
-															sdd_conjoin(
-																	sdd_disjoin(
-																			sdd_negate((*params->primed_variable_sdds)[begin], manager),
-																		  (*params->variable_sdds)[begin1],
-																			manager), 
-																  sdd_disjoin(
-																			(*params->primed_variable_sdds)[begin],
+			SddNode* node1 = sdd_disjoin(sdd_negate((*params->primed_variable_sdds)[begin], manager),
+																		  (*params->variable_sdds)[begin1],	manager);
+			sdd_ref(node1, manager);
+			SddNode* node2  = sdd_disjoin((*params->primed_variable_sdds)[begin],
 																			sdd_negate((*params->variable_sdds)[begin1], manager),
-																			manager),
-																  manager), 
-															manager);
+																			manager);
+			sdd_ref(node2, manager);
+			encoding = sdd_conjoin(gc = encoding, sdd_conjoin(node1, node2, manager), manager);
+			sdd_ref(encoding, manager);
+			sdd_deref(node1, manager);
+			sdd_deref(node2, manager);
+			sdd_deref(gc, manager);
 
     } else {      // bit_operation
       SddNode * rhstrue =
         ((bit_expression *) var_value)->encode_sdd_true(manager,
                                                         params->variable_sdds);
+			sdd_ref(rhstrue, manager);
       SddNode * rhsfalse =
         ((bit_expression *) var_value)->encode_sdd_false(manager,
                                                         params->variable_sdds);
-      SddNode * result =
-        sdd_conjoin(sdd_negate(sdd_disjoin((*params->primed_variable_sdds)[begin] , rhstrue, manager), manager) , sdd_disjoin((*params->primed_variable_sdds)[begin], rhsfalse, manager), manager);
-      encoding = sdd_conjoin(encoding, result, manager);
+			sdd_ref(rhsfalse, manager);
+			SddNode* node1 = sdd_negate(sdd_disjoin((*params->primed_variable_sdds)[begin] , rhstrue, manager), manager);
+			sdd_ref(node1, manager);
+			sdd_deref(rhstrue, manager);
+			SddNode* node2 = sdd_disjoin((*params->primed_variable_sdds)[begin], rhsfalse, manager);
+			sdd_ref(node2, manager);
+			sdd_deref(rhsfalse, manager);
+      SddNode * result = sdd_conjoin(node1, node2, manager);
+			sdd_ref(result, manager);
+			sdd_deref(node1, manager);
+			sdd_deref(node2, manager);
+      encoding = sdd_conjoin(gc = encoding, result, manager);
+			sdd_ref(encoding, manager);
+			sdd_deref(gc, manager);
+			sdd_deref(result, manager);
     }
   } else if (value_type == 2) { /* // rangedint
     int upperbound = ((rangedint *) var_type)->get_upperbound();
@@ -287,8 +307,10 @@ assignment::encode_sdd(SddManager * manager, struct parameters * params, SddNode
 					encoding = sdd_conjoin(encoding, (*params->primed_variable_sdds)[i], manager);
         else
 					encoding = sdd_conjoin(encoding, sdd_negate((*params->primed_variable_sdds)[i], manager), manager);
+				sdd_ref(encoding, manager);
     } else {
-		cout << "NOT YET SUPPORTED - (TODO) " << endl;
+			cout << "This type of assignment is not supported." << endl;
+			exit(0);
    /*   basictype *var_type1 = ((variable *) var_value)->get_var_type();
       ADD rhs =
         ((enumerate *) var_type1)->build_ADD_tree(para->bddmgr, para->addv,

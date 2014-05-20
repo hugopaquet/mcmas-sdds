@@ -604,7 +604,7 @@ public:
 	SddNode* encode_action(SddManager * manager, string action_name, vector<SddNode*>* action_variable_sdds);
 	SddNode * encode_protocol(SddManager * manager, struct parameters* params);
 	SddNode * encode_evolution(SddManager * manager, struct parameters * params);
-
+	SddNode* encode_evolution_smv(SddManager * manager, struct parameters * params);
 /*  BDD encode_action(bdd_parameters * para, string act);
   BDD encode_protocol(bdd_parameters * para);
   BDD encode_evolution(bdd_parameters * para);

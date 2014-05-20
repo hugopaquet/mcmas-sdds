@@ -402,7 +402,7 @@ basic_agent::encode_evolution(SddManager * manager, struct parameters * params)
 	SddNode * tmp;
 	SddNode * evolution_sdd = sdd_manager_false(manager);
 	SddNode * lastcond_sdd = sdd_manager_true(manager);
-
+	int k = 0;
   for (vector< evolution_line * >::iterator i = evolution->begin();
        i != evolution->end(); i++) {
     vector< assignment * >*assignments = (*i)->get_assignments();
@@ -486,6 +486,7 @@ basic_agent::encode_evolution(SddManager * manager, struct parameters * params)
 		sdd_deref(tmp, manager);
 		sdd_deref(assignment_sdd, manager);
 		sdd_deref(condition_sdd, manager);
+
 	}
 	
 
@@ -499,10 +500,19 @@ basic_agent::encode_evolution(SddManager * manager, struct parameters * params)
       begin = var_type->get_index_begin();
       end = var_type->get_index_end();	
       for (int j = begin; j <= end; j++) {
-				dnc = sdd_conjoin(tmp = dnc, sdd_conjoin(sdd_disjoin(sdd_negate((*params->variable_sdds)[j], manager), 
-											(*params->primed_variable_sdds)[j], manager), sdd_disjoin((*params->variable_sdds)[j], 
-											sdd_negate((*params->primed_variable_sdds)[j], manager), manager), manager), manager);
+				SddNode* node3 =  sdd_disjoin((*params->variable_sdds)[j], 
+											sdd_negate((*params->primed_variable_sdds)[j], manager), manager);
+				sdd_ref(node3, manager);
+				SddNode* node2 = sdd_disjoin(sdd_negate((*params->variable_sdds)[j], manager), 
+											(*params->primed_variable_sdds)[j], manager);
+				sdd_ref(node2, manager);
+				SddNode* node1 = sdd_conjoin(node2, node3, manager);
+				sdd_ref(node1, manager);
+				sdd_deref(node2, manager);
+				sdd_deref(node3, manager);
+				dnc = sdd_conjoin(tmp = dnc, node1, manager);
 				sdd_ref(dnc, manager);
+				sdd_deref(node1, manager);
 				sdd_deref(tmp, manager);
 			}
     }
@@ -541,168 +551,14 @@ basic_agent::encode_evolution(SddManager * manager, struct parameters * params)
 	return evolution_sdd;
 }
  
-/*
-BDD
-basic_agent::encode_action(bdd_parameters * para, string act)
+
+SddNode* 
+basic_agent::encode_evolution_smv(SddManager * manager, struct parameters * params) 
 {
-  map< string, vector< bool > *>::iterator k = action_indices->find(act);
-  if (k != action_indices->end()) {
-    BDD temp = para->bddmgr->bddOne();
-    vector< bool > *b = (*k).second;
-    for (int i = action_index_begin; i <= action_index_end; i++)
-      temp = temp * ((*b)[i - action_index_begin] ? (*para->a)[i] : !(*para->a)[i]);
-    return temp;
-  }			condition_sdd = sdd_manager_true(manager);
-  return para->bddmgr->bddZero();
-}
-
-BDD
-basic_agent::encode_protocol(bdd_parameters * para)
-{
-  BDD bddprot = para->bddmgr->bddZero();
-  BDD nullaction = para->bddmgr->bddOne();
-  if (protocol->size() == 0)
-    return para->bddmgr->bddOne();
-  if (protocol->back()->get_condition()->is_other_branch())
-  {
-    for (vector< protocol_line * >::iterator i = protocol->begin(); i != protocol->end(); i++) {
-      bool_expression *condition = (*i)->get_condition();
-      BDD tmpcond = para->bddmgr->bddOne();
-      if (!condition->is_other_branch()) {
-				tmpcond = condition->encode_bdd_flat(para, para->bddmgr->bddOne());
-				nullaction = nullaction * !tmpcond;
-      } else
-				tmpcond =	 nullaction;
-		  BDD tmpact = para->bddmgr->bddZero();
-		  set< string > *actions = (*i)->get_actions();
-      for (set< string >::iterator j = actions->begin(); j != actions->end(); j++) {
-				tmpact = tmpact + encode_action(para, *j);
-      }
-      BDD oneline = tmpcond * tmpact;
-      bddprot = bddprot + oneline;
-    }
-  } 
-	else 
-	{
-    for (vector< protocol_line * >::iterator i = protocol->begin(); i != protocol->end(); i++) {
-      bool_expression *condition = (*i)->get_condition();
-      BDD tmpcond = para->bddmgr->bddOne();
-      tmpcond = condition->encode_bdd_flat(para, para->bddmgr->bddOne());
-      
-      BDD tmpact = para->bddmgr->bddZero();
-      set< string > *actions = (*i)->get_actions();
-      for (set< string >::iterator j = actions->begin(); j != actions->end(); j++) {
-				tmpact = tmpact + encode_action(para, *j);
-      }
-      
-      BDD oneline = tmpcond * tmpact;
-      
-      bddprot = bddprot + oneline;
-    }
-  }
-  return bddprot;
-}
-
-BDD
-basic_agent::encode_evolution(bdd_parameters * para)
-{
-  BDD bddevol = para->bddmgr->bddZero();
-  BDD lastcond = para->bddmgr->bddOne();
-
-  for (vector< evolution_line * >::iterator i = evolution->begin();
-       i != evolution->end(); i++) {
-    vector< assignment * >*assignments = (*i)->get_assignments();
-    map< string, basictype * >*mp = new map< string, basictype * >;
-    if (obsvars != NULL)
-      for (map< string, basictype * >::iterator j = obsvars->begin();
-           j != obsvars->end(); j++) {
-        bool found = false;
-        for (unsigned int k = 0; k < assignments->size(); k++) {
-          variable *var = (*assignments)[k]->get_var();
-          string varname = var->get_variable_name();
-          if (varname == j->first) {
-            found = true;
-            break;
-          }
-        }
-
-        if (!found)   // we add this variable to both sides
-          mp->insert(*j);
-      }
-
-    if (vars != NULL)
-      for (map< string, basictype * >::iterator j = vars->begin();
-           j != vars->end(); j++) {
-        bool found = false;
-        for (unsigned int k = 0; k < assignments->size(); k++) {
-          variable *var = (*assignments)[k]->get_var();
-          string varname = var->get_variable_name();
-          if (varname == j->first) {
-            found = true;
-            break;
-          }
-        }
-
-        if (!found)   // we add this variable to both sides
-          mp->insert(*j);
-      }
-
-    BDD bddassignment = (*i)->encode_bdd_assignements(para);
-    BDD bddcondition = (*i)->encode_bdd_condition(para);
- 		vector<BDD> x, y;
-		for (map< string, basictype * >::iterator j = mp->begin();
-         j != mp->end(); j++) {
-      int begin = j->second->get_index_begin();
-      int end = j->second->get_index_end();
-      for (int k = begin; k <= end; k++) {
-        //bddassignment *=
-        //  ((!(*para->v)[k] + (*para->pv)[k]) * ((*para->v)[k] + !(*para->pv)[k]));
-				x.push_back((*para->v)[k]);
-				y.push_back((*para->pv)[k]);
-      }
-    }
-		if(x.size() > 0)
-			bddassignment *= para->bddmgr->Xeqy(x, y);
-    lastcond = lastcond * !bddcondition;
-
-    bddevol = bddevol + (bddassignment * bddcondition);
-  }
-
-  BDD dnc = para->bddmgr->bddOne();
-  int begin, end;
-  if (obsvars != NULL)
-    for (map< string, basictype * >::iterator i = obsvars->begin();
-         i != obsvars->end(); i++) {
-      basictype *var_type = (*i).second;
-      begin = var_type->get_index_begin();
-      end = var_type->get_index_end();
-      for (int j = begin; j <= end; j++)
-        dnc =
-          dnc * ((!(*para->v)[j] + (*para->pv)[j]) *
-                 ((*para->v)[j] + !(*para->pv)[j]));
-    }
-  if (vars != NULL) {
-    for (map< string, basictype * >::iterator i = vars->begin();
-         i != vars->end(); i++) {
-      basictype *var_type = (*i).second;
-      begin = var_type->get_index_begin();
-      end = var_type->get_index_end();
-      for (int j = begin; j <= end; j++)
-        dnc =
-          dnc * ((!(*para->v)[j] + (*para->pv)[j]) *
-                 ((*para->v)[j] + !(*para->pv)[j]));
-    }
-  }
-  lastcond *= dnc;
-  return bddevol + lastcond;
-}
-
-BDD
-basic_agent::encode_evolution_smv(bdd_parameters * para)
-{
+	SddNode* gc;
+	bool env = get_name() == "Environment";
   vector< evolution_line * >tmpevol(evolution->begin(), evolution->end());
-  map< string, BDD > tmpbdds;
-
+  map< string, SddNode* > tmpsdds;
   while (tmpevol.size() > 0) {
     evolution_line *evoline = tmpevol[0];
     tmpevol.erase(tmpevol.begin());
@@ -710,205 +566,118 @@ basic_agent::encode_evolution_smv(bdd_parameters * para)
     variable *var = (*assignments)[0]->get_var();
     string varname = var->get_variable_name();
 
-    BDD bddassignment = evoline->encode_bdd_assignements(para);
-    BDD bddcondition = evoline->encode_bdd_condition(para);
-    BDD tmplast = !bddcondition;
-    BDD linebdd = bddassignment * bddcondition;
-
+    SddNode* sddassignment = evoline->encode_sdd_assignments(manager, params);
+		sdd_ref(sddassignment, manager);
+    SddNode* sddcondition = evoline->encode_sdd_condition(manager, params);
+		sdd_ref(sddcondition, manager);
+    SddNode* tmplast = sdd_negate(sddcondition, manager);
+		sdd_ref(tmplast, manager);
+    SddNode* linesdd = sdd_conjoin(sddassignment, sddcondition, manager);
+		sdd_ref(linesdd, manager);
+		sdd_deref(sddassignment, manager);
+		sdd_deref(sddcondition, manager);
+	
     unsigned int i = 0;
     while (i < tmpevol.size()) {
       evolution_line *evoline1 = tmpevol[i];
       vector< assignment * >*assignments1 = evoline1->get_assignments();
       variable *var1 = (*assignments1)[0]->get_var();
       if (varname.compare(var1->get_variable_name()) == 0) {
-        BDD bddassignment1 = evoline1->encode_bdd_assignements(para);
-        BDD bddcondition1 = evoline1->encode_bdd_condition(para);
-        linebdd += bddassignment1 * bddcondition1;
-        tmplast *= !bddcondition1;
+        SddNode* sddassignment1 = evoline1->encode_sdd_assignments(manager, params);
+				sdd_ref(sddassignment1, manager);
+        SddNode* sddcondition1 = evoline1->encode_sdd_condition(manager, params);
+				sdd_ref(sddcondition1, manager);
+        linesdd = sdd_disjoin(gc = linesdd, sdd_conjoin(sddassignment1, sddcondition1, manager), manager);
+				sdd_ref(linesdd, manager);
+				sdd_deref(gc, manager);
+				sdd_deref(sddassignment1, manager);
+        tmplast = sdd_conjoin(gc = tmplast, sdd_negate(sddcondition1, manager), manager);
+				sdd_ref(tmplast, manager);
+				sdd_deref(gc, manager);
+				sdd_deref(sddcondition1, manager);
         tmpevol.erase(tmpevol.begin() + i);
       } else
         i++;
     }
 
+
     basictype *var_type = var->get_var_type();
     int begin = var_type->get_index_begin();
     int end = var_type->get_index_end();
-    for (int j = begin; j <= end; j++)
-      tmplast *=
-        ((!(*para->v)[j] + (*para->pv)[j]) * ((*para->v)[j] +
-                                              !(*para->pv)[j]));
+    for (int j = begin; j <= end; j++) {
+			SddNode* node1 = sdd_disjoin(sdd_negate((*params->variable_sdds)[j], manager), (*params->primed_variable_sdds)[j], manager);	
+			sdd_ref(node1, manager);
+			SddNode* node2 = sdd_disjoin((*params->variable_sdds)[j], sdd_negate((*params->primed_variable_sdds)[j], manager), manager);
+			sdd_ref(node2, manager);
+      tmplast = sdd_conjoin(gc = tmplast, sdd_conjoin(node1, node2, manager), manager);
+			sdd_ref(tmplast, manager);
+			sdd_deref(gc, manager);	
+			sdd_deref(node1, manager);
+			sdd_deref(node2, manager);
+		}
 
-    linebdd += tmplast;
-    tmpbdds[varname] = linebdd;
+    linesdd = sdd_disjoin(gc = linesdd, tmplast, manager);
+		sdd_ref(linesdd, manager);
+		sdd_deref(tmplast, manager);
+		sdd_deref(gc, manager);
+    tmpsdds[varname] = linesdd;
+
   }
 
-  BDD dnc = para->bddmgr->bddOne();
+	
+  SddNode* dnc = sdd_manager_true(manager);
   int begin, end;
   if (obsvars != NULL)
     for (map< string, basictype * >::iterator i = obsvars->begin();
          i != obsvars->end(); i++) {
-      if (tmpbdds.find(i->first) == tmpbdds.end()) {
+      if (tmpsdds.find(i->first) == tmpsdds.end()) {
         basictype *var_type = (*i).second;
         begin = var_type->get_index_begin();
         end = var_type->get_index_end();
-        for (int j = begin; j <= end; j++)
-          dnc =
-            dnc * ((!(*para->v)[j] + (*para->pv)[j]) *
-                   ((*para->v)[j] + !(*para->pv)[j]));
+        for (int j = begin; j <= end; j++) {
+					SddNode* node1 = sdd_disjoin(sdd_negate((*params->variable_sdds)[j], manager), (*params->primed_variable_sdds)[j], manager);
+					sdd_ref(node1, manager);
+					SddNode* node2 = sdd_disjoin((*params->variable_sdds)[j], sdd_negate((*params->primed_variable_sdds)[j], manager), manager);
+					sdd_ref(node2, manager);
+				  dnc = sdd_conjoin(gc = dnc, sdd_conjoin(node1, node2, manager), manager);
+					sdd_ref(dnc, manager);
+					sdd_deref(gc, manager);
+					sdd_deref(node1, manager);
+					sdd_deref(node2, manager);
+				}
       }
     }
   if (vars != NULL)
     for (map< string, basictype * >::iterator i = vars->begin();
          i != vars->end(); i++) {
-      if (tmpbdds.find(i->first) == tmpbdds.end()) {
+      if (tmpsdds.find(i->first) == tmpsdds.end()) {
         basictype *var_type = (*i).second;
         begin = var_type->get_index_begin();
         end = var_type->get_index_end();
-        for (int j = begin; j <= end; j++)
-          dnc =
-            dnc * ((!(*para->v)[j] + (*para->pv)[j]) *
-                   ((*para->v)[j] + !(*para->pv)[j]));
+        for (int j = begin; j <= end; j++) {
+					SddNode* node1 = sdd_disjoin(sdd_negate((*params->variable_sdds)[j], manager), (*params->primed_variable_sdds)[j], manager);
+					sdd_ref(node1, manager);
+					SddNode* node2 = sdd_disjoin((*params->variable_sdds)[j], sdd_negate((*params->primed_variable_sdds)[j], manager), manager);
+					sdd_ref(node2, manager);
+		      dnc = sdd_conjoin(gc = dnc, sdd_conjoin(node1, node2, manager), manager);
+					sdd_ref(dnc, manager);
+					sdd_deref(gc, manager);
+					sdd_deref(node1, manager);
+					sdd_deref(node2, manager);
+				}
       }
     }
 
-  for (map< string, BDD >::iterator i = tmpbdds.begin(); i != tmpbdds.end();
-       i++)
-    dnc *= i->second;
-
-  return dnc;
+  for (map< string, SddNode* >::iterator i = tmpsdds.begin(); i != tmpsdds.end();
+       i++) {
+ 	  dnc = sdd_conjoin(gc = dnc, i->second, manager);
+		sdd_ref(dnc, manager);
+		sdd_deref(gc, manager);
+	}
+  return dnc;	
 }
 
-BDD
-basic_agent::encode_greenstates(bdd_parameters * para)
-{
-  if (redstates == NULL)
-    return para->bddmgr->bddOne();
-  else {
-    BDD tmp = redstates->encode_bdd_flat(para, para->bddmgr->bddOne());
-    return (!tmp).SwapVariables(*para->v, *para->pv);
-  }
-}
 
-void
-basic_agent::print_variable_BDD_encoding()
-{
-  if (obsvars != NULL)
-    for (map< string, basictype * >::iterator i = obsvars->begin();
-         i != obsvars->end(); i++) {
-      int begin = i->second->get_index_begin();
-      int end = i->second->get_index_end();
-      cout << "----- " << i->
-        first << ": " << begin << " .. " << end << " -----" << endl;
-      basictype *b = i->second;
-      if (b->get_type() == 2) //rangeint
-        ((rangedint *) b)->print_value_index();
-      else if (b->get_type() == 3)  //enumerate
-        ((enumerate *) b)->print_value_index();
-      else
-        b->print_value_index();
-    }
-  if (vars != NULL)
-    for (map< string, basictype * >::iterator i = vars->begin();
-         i != vars->end(); i++) {
-      int begin = i->second->get_index_begin();
-      int end = i->second->get_index_end();
-      cout << "----- " << i->
-        first << ": " << begin << " .. " << end << " -----" << endl;
-      basictype *b = i->second;
-      if (b->get_type() == 2) //rangeint
-        ((rangedint *) b)->print_value_index();
-      else if (b->get_type() == 3)  //enumerate
-        ((enumerate *) b)->print_value_index();
-      else
-        b->print_value_index();
-    }
-}
-
-void
-basic_agent::print_state(string prefix, BDD state, vector<BDD> v)
-{
-  if (obsvars != NULL)
-    for (map< string, basictype * >::iterator i = obsvars->begin();
-         i != obsvars->end(); i++) {
-      i->second->print_state(prefix, state, v);
-      cout << endl;
-    }
-  if (vars != NULL)
-    for (map< string, basictype * >::iterator i = vars->begin();
-         i != vars->end(); i++) {
-      i->second->print_state(prefix, state, v);
-      cout << endl;
-    }
-}
-
-bool
-basic_agent::is_valid_state(BDD state, vector<BDD> v)
-{
-  if (obsvars != NULL)
-    for (map< string, basictype * >::iterator i = obsvars->begin();
-         i != obsvars->end(); i++) {
-      if (!i->second->is_valid_state(state, v))
-        return false;
-    }
-  if (vars != NULL)
-    for (map< string, basictype * >::iterator i = vars->begin();
-         i != vars->end(); i++) {
-      if (!i->second->is_valid_state(state, v))
-        return false;
-    }
-  return true;
-}
-
-void
-basic_agent::print_action(BDD state, vector<BDD> a)
-{
-  vector< bool > index;
-  for (int i = action_index_begin; i <= action_index_end; i++)
-    if (state <= a[i])
-      index.push_back(true);
-    else
-      index.push_back(false);
-  for (map< string, vector< bool > *>::iterator i = action_indices->begin();
-       i != action_indices->end(); i++) {
-    bool flag = true;
-    for (unsigned int j = 0; j < i->second->size(); j++)
-      if ((*(i->second))[j] != index[j]) {
-        flag = false;
-        break;
-      }
-    if (flag) {
-      cout << i->first;
-      return;
-    }
-  }
-}
-
-bool
-basic_agent::is_valid_action(BDD state, vector<BDD> a)
-{
-  if (action_indices->size() == 0)
-    return true;
-  vector< bool > index;
-  for (int i = action_index_begin; i <= action_index_end; i++)
-    if (state <= a[i])
-      index.push_back(true);
-    else
-      index.push_back(false);
-  for (map< string, vector< bool > *>::iterator i = action_indices->begin();
-       i != action_indices->end(); i++) {
-    bool flag = true;
-    for (unsigned int j = 0; j < i->second->size(); j++)
-      if ((*(i->second))[j] != index[j]) {
-        flag = false;
-        break;
-      }
-    if (flag) {
-      return true;
-    }
-  }
-  return false;
-}
-*/
 set< string > *basic_agent::get_obs_enum_values()
 {
   if (obsvars != NULL) {

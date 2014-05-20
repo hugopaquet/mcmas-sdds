@@ -232,46 +232,96 @@ bit_expression::encode_sdd_true(SddManager* manager, vector<SddNode*> * v)
 
   if (op == 9) {    // and "&"
     SddNode* lhs = operands[0]->encode_sdd_true(manager, v);
+		sdd_ref(lhs, manager);
     SddNode* rhs = operands[1]->encode_sdd_true(manager, v);
+		sdd_ref(rhs, manager);
 		res = sdd_conjoin(lhs, rhs, manager);
+		sdd_ref(res, manager);
+		sdd_deref(lhs, manager);
+		sdd_deref(rhs, manager);
   } else if (op == 10) {  // or "|"
     SddNode* lhs = operands[0]->encode_sdd_true(manager, v);
+		sdd_ref(lhs, manager);
     SddNode* rhs = operands[1]->encode_sdd_true(manager, v);
+		sdd_ref(rhs, manager);
 		res = sdd_disjoin(lhs, rhs, manager);
+		sdd_ref(res, manager);
+		sdd_deref(lhs, manager);
+		sdd_deref(rhs, manager);
   } else if (op == 11) {  // not "~"
     res = operands[0]->encode_sdd_false(manager, v);
+		sdd_ref(res, manager);
   } else {      // xor "^"
     SddNode* lhs1 = operands[0]->encode_sdd_true(manager, v);
+		sdd_ref(lhs1, manager);
     SddNode* rhs1 = operands[1]->encode_sdd_true(manager, v);
+		sdd_ref(rhs1, manager);
     SddNode* lhs2 = operands[0]->encode_sdd_false(manager, v);
+		sdd_ref(lhs2, manager);
     SddNode* rhs2 = operands[1]->encode_sdd_false(manager, v);
-    res = sdd_disjoin(sdd_conjoin(lhs1, rhs2, manager), sdd_disjoin(lhs2, rhs1, manager), manager);
+		sdd_ref(rhs2, manager);
+		SddNode* node1 = sdd_conjoin(lhs1, rhs2, manager);
+		sdd_ref(node1, manager);
+		SddNode* node2 = sdd_conjoin(lhs2, rhs1, manager);
+		sdd_ref(node2, manager);
+    res = sdd_disjoin(node1, node2, manager);
+		sdd_ref(res, manager);
+		sdd_deref(lhs1, manager);
+		sdd_deref(rhs1, manager);		
+		sdd_deref(lhs2, manager);
+		sdd_deref(rhs2, manager);
   }
   return res;
 }
 
 SddNode*
-bit_expression::encode_sdd_false(Cudd * bddmgr, vector<BDD> * v)
+bit_expression::encode_sdd_false(SddManager* manager, vector<SddNode*> * v)
 {
   unsigned char op = get_type();
   SddNode* res;
 
   if (op == 9) {    // and "&"
     SddNode* lhs = operands[0]->encode_sdd_false(manager, v);
+		sdd_ref(lhs, manager);
     SddNode* rhs = operands[1]->encode_sdd_false(manager, v);
+		sdd_ref(rhs, manager);
 		res = sdd_conjoin(lhs, rhs, manager);
+		sdd_ref(res, manager);
+		sdd_deref(lhs, manager);
+		sdd_deref(rhs, manager);
   } else if (op == 10) {  // or "|"
     SddNode* lhs = operands[0]->encode_sdd_false(manager, v);
+		sdd_ref(lhs, manager);
     SddNode* rhs = operands[1]->encode_sdd_false(manager, v);
+		sdd_ref(rhs, manager);
 		res = sdd_disjoin(lhs, rhs, manager);
+		sdd_ref(res, manager);
+		sdd_deref(lhs, manager);
+		sdd_deref(rhs, manager);
   } else if (op == 11) {  // not "~"
     res = operands[0]->encode_sdd_true(manager, v);
+		sdd_ref(res, manager);
   } else {      // xor "^"
-    SddNode* lhs1 = operands[0]->encode_sdd_false(manager, v);
-    SddNode* rhs1 = operands[1]->encode_sdd_false(manager, v);
-    SddNode* lhs2 = operands[0]->encode_sdd_true(manager, v);
-    SddNode* rhs2 = operands[1]->encode_sdd_true(manager, v);
-    res = sdd_disjoin(sdd_conjoin(lhs1, rhs2, manager), sdd_disjoin(lhs2, rhs1, manager), manager);
+    SddNode* lhs1 = operands[0]->encode_sdd_true(manager, v);
+		sdd_ref(lhs1, manager);
+    SddNode* rhs1 = operands[1]->encode_sdd_true(manager, v);
+		sdd_ref(rhs1, manager);
+    SddNode* lhs2 = operands[0]->encode_sdd_false(manager, v);
+		sdd_ref(lhs2, manager);
+    SddNode* rhs2 = operands[1]->encode_sdd_false(manager, v);
+		sdd_ref(rhs2, manager);
+		SddNode* node1 = sdd_conjoin(lhs1, rhs1, manager);
+		sdd_ref(node1, manager);
+		SddNode* node2 = sdd_conjoin(lhs2, rhs2, manager);
+		sdd_ref(node2, manager);
+    res = sdd_disjoin(node1, node2, manager);
+		sdd_ref(res, manager);
+		sdd_deref(lhs1, manager);
+		sdd_deref(rhs1, manager);		
+		sdd_deref(lhs2, manager);
+		sdd_deref(rhs2, manager);
+		sdd_deref(node1, manager);
+		sdd_deref(node2, manager);
   }
   return res;
 }
