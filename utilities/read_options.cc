@@ -66,7 +66,7 @@ read_options(int argc, char *argv[]) {
   options["atlcex"] = 0;
   options["subset"] = 1;
   options["ordering"] = 2;
-  options["dao"] = 3;
+  options["dao"] = 0;
   options["bddgroup"] = 3;
   options["deadlock"] = 0;
   options["overflow"] = 0;
@@ -154,7 +154,6 @@ read_options(int argc, char *argv[]) {
     } else if (atlnewstate == argv[i] || atlnewstate1 == argv[i]) {
       options["atlnewstate"] = 1;
     } else if (ordering == argv[i]) {
-			cout << "ordering being changed" << endl;
       string s;
       s = argv[++i];
       options["ordering"] = atoi(s.c_str());
@@ -164,7 +163,6 @@ read_options(int argc, char *argv[]) {
         wrongpara = true;
       }
     } else if (vtree == argv[i]) {
-			cout << "vtree being changed" << endl;
       string s;
       s = argv[++i];
       options["vtree"] = atoi(s.c_str());
@@ -176,15 +174,7 @@ read_options(int argc, char *argv[]) {
     } else if (subset == argv[i] || subset1 == argv[i]) {
       options["subset"] = 0;
     } else if (dao == argv[i] || dao1 == argv[i]) {
-      string s;
-      s = argv[++i];    // consume the argument
-      options["dao"] = atoi(s.c_str());
-
-      if (options["dao"] < 0 || options["dao"] > 3) {
-        cout << "Parameter " << options["verbosity"] <<
-          " is not allowed in -dao option." << endl;
-        wrongpara = true;
-      }
+      options["dao"] = 1;
     } else if (bddgroup == argv[i] || bddgroup1 == argv[i]) {
       string s;
       s = argv[++i];    // consume the argument

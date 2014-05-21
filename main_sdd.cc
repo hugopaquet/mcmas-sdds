@@ -263,59 +263,107 @@ SddNode*
 compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, vector<SddNode*>* transition_relation_sdds) {
  
 
-	SddNode* reach = sdd_manager_false(manager);
-  SddNode* q1 = in_st;
-	sdd_ref(q1, manager);
 	SddNode* tmp;
-  SddNode* next1 = sdd_manager_false(manager);
+	SddNode* rt = sdd_manager_true(manager);
 
+  SddNode* reach = in_st;
+  SddNode* next1 = in_st;
+  
 	unsigned int v = params->variable_sdds->size(); // number of state variables
 	unsigned int a = params->action_variable_sdds->size(); // number of action variables
+	SddLiteral map[2 * v + a + 1]; 
+  for(unsigned int i = 1; i <= v; i++) {	
+		map[i] = sdd_node_literal((*params->variable_sdds)[i-1]); 
+	}
+	for(unsigned int i = v + 1; i <= 2 * v; i++) {
+		map[i] = sdd_node_literal((*params->variable_sdds)[i - v - 1]); 
+	}
+	for(unsigned int i = 2 * v + 1; i <= 2 * v + a; i++) {
+		map[i] = sdd_node_literal((*params->action_variable_sdds)[i - 2 * v - 1]); 
+	}
+  while (true) {
+      struct timeb tmb;
+    ftime(&tmb);
+     cout << "iter" << endl;
+     cout << "\tA";
+     struct timeb tmb2;
+    ftime(&tmb2);
+     	  if(options["dao"])
+		  sdd_manager_auto_gc_and_minimize_off(manager);
+    for(unsigned int i = 0; i < agents->size(); i++) {
+         cout << ".";
+         cout.flush();
+      next1 = sdd_conjoin((*transition_relation_sdds)[i], next1, manager);
+	    sdd_ref(next1, manager);
+			//sdd_deref(tmp, manager);
+	  }
+	   	  if(options["dao"])
+		  sdd_manager_auto_gc_and_minimize_on(manager);
+	  struct timeb tmb3;
+    ftime(&tmb3);
+    cout << "  (" << ((tmb3.time-tmb2.time) + (tmb3.millitm-tmb2.millitm)/1000.0) << ")" << endl;
+	  cout << "\tB";
+	   ftime(&tmb2);
+ 	  if(options["dao"])
+		  sdd_manager_auto_gc_and_minimize_off(manager);
+		for(unsigned int i = 0; i < v; i++) {
+		  cout << ".";
+		  cout.flush();
+			next1 = sdd_exists(sdd_node_literal((*params->variable_sdds)[i]), tmp = next1, manager);
+			sdd_ref(next1, manager);
+			sdd_deref(tmp, manager);
+		} 
+		    ftime(&tmb3);
+    cout << "  (" << ((tmb3.time-tmb2.time) + (tmb3.millitm-tmb2.millitm)/1000.0) << ")" << endl;
+		if(options["dao"])
+			sdd_manager_auto_gc_and_minimize_on(manager);
+    cout << "\tC";
+    cout.flush();
+    	   ftime(&tmb2);
+		next1 = sdd_rename_variables(tmp = next1, map, manager);
+		sdd_ref(next1, manager);
+		sdd_deref(tmp, manager);
+		if(options["dao"])
+	  	sdd_manager_auto_gc_and_minimize_off(manager);
+	  	    ftime(&tmb3);
+    cout << "  (" << ((tmb3.time-tmb2.time) + (tmb3.millitm-tmb2.millitm)/1000.0) << ")" << endl;
+	  cout << "\tD";
+	  	   ftime(&tmb2);
+		for(unsigned int i = 0; i < a; i++) {
+			cout << ".";
+			cout.flush();
+			next1 = sdd_exists(sdd_node_literal((*params->action_variable_sdds)[i]), tmp = next1, manager);
+			sdd_ref(next1, manager);
+			sdd_deref(tmp, manager);
+		}	  	    
+		ftime(&tmb3);
+    cout << "  (" << ((tmb3.time-tmb2.time) + (tmb3.millitm-tmb2.millitm)/1000.0) << ")" << endl;
 
-	while(q1 != reach) {
-      reach = q1;
+    cout << "\tE" ;
+    cout.flush();
+    	   ftime(&tmb2);
+		next1 = sdd_conjoin(tmp = next1, sdd_negate(reach, manager), manager);
+		sdd_ref(next1, manager);
+		sdd_deref(tmp, manager);
+
+    if (sdd_node_is_false(next1))
+      break;
+    else {
+		  reach = sdd_disjoin(tmp = reach, next1, manager);
 			sdd_ref(reach, manager);
-      next1 = q1;
-			sdd_ref(next1, manager);
-			for(unsigned int i = 0; i < transition_relation_sdds->size(); i++) {
-				next1 = sdd_conjoin(tmp = next1, (*transition_relation_sdds)[i], manager);
-				sdd_ref(next1, manager);
-				sdd_deref(tmp, manager);
-			}
-			// compute 1 step
-			for(unsigned int i = 0; i < v; i++) {
-				next1 = sdd_exists(sdd_node_literal((*params->variable_sdds)[i]), tmp = next1, manager);
-				sdd_ref(next1, manager);
-				sdd_deref(tmp, manager);
-			} 
-			// un-prime variables
-			SddLiteral map[2 * v + a + 1]; 
-			for(unsigned int i = 1; i <= v; i++) {	
-				map[i] = sdd_node_literal((*params->variable_sdds)[i-1]); 
-			}
-			for(unsigned int i = v + 1; i <= 2 * v; i++) {
-				map[i] = sdd_node_literal((*params->variable_sdds)[i - v - 1]); 
-			}
-			for(unsigned int i = 2 * v + 1; i <= 2 * v + a; i++) {
-				map[i] = sdd_node_literal((*params->action_variable_sdds)[i - 2 * v - 1]); 
-			}
-			next1 = sdd_rename_variables(tmp = next1, map, manager);
-			sdd_ref(next1, manager);
 			sdd_deref(tmp, manager);
-			// clear actions
-			for(unsigned int i = 0; i < params->action_variable_sdds->size(); i++) {
-				next1 = sdd_exists(sdd_node_literal((*params->action_variable_sdds)[i]), tmp = next1, manager);
-				sdd_ref(next1, manager);
-				sdd_deref(tmp, manager);
-			} 
 
- 			q1 = sdd_disjoin(tmp = q1, next1, manager);
-			sdd_ref(q1, manager);
-			sdd_deref(tmp, manager);
-			sdd_deref(next1, manager);
-
-  }
-		
+		}
+		if(options["dao"])
+	  	sdd_manager_auto_gc_and_minimize_on(manager); 
+				ftime(&tmb3);
+    cout << "  (" << ((tmb3.time-tmb2.time) + (tmb3.millitm-tmb2.millitm)/1000.0) << ")" << endl;
+		sdd_manager_garbage_collect(manager);
+		struct timeb tmb1;
+    ftime(&tmb1);
+    cout << "\t iteration time = " << ((tmb1.time-tmb.time) + (tmb1.millitm-tmb.millitm)/1000.0) << endl;
+  }	
+    
   return reach;
 }
 
@@ -456,7 +504,31 @@ get_var_order(int ordering_type, vector< basic_agent * >* agents)
 			tmp_acts += (*agents)[i]->actions_BDD_length();
 			tmp_sum += (*agents)[i]->actions_BDD_length();
 		}
-		break;
+    break;	
+	}	
+	case 5:
+	{
+	  int tmp_sum = 0;
+		int tmp_var = 0;
+		int tmp_acts = 0;
+		for (unsigned int i = 0; i < agents->size(); i++) {
+			for(int j = tmp_var; j < tmp_var + (*agents)[i]->state_BDD_length(); j++) {
+				var_order[tmp_sum + (j - tmp_var)] = j + 1;
+			}
+			tmp_sum += (*agents)[i]->state_BDD_length();
+			for(int j = tmp_var; j < tmp_var + (*agents)[i]->state_BDD_length(); j++) {
+				var_order[tmp_sum + (j - tmp_var)] = states_count + j + 1; 
+			}	
+			tmp_var += (*agents)[i]->state_BDD_length();
+			tmp_sum += (*agents)[i]->state_BDD_length();
+			for(unsigned int j = tmp_acts; j < tmp_acts + (*agents)[i]->actions_BDD_length(); j++) {
+				var_order[tmp_sum + j - tmp_acts] = 2 * states_count + j + 1;
+			}
+			tmp_acts += (*agents)[i]->actions_BDD_length();
+			tmp_sum += (*agents)[i]->actions_BDD_length();
+		}	
+		
+	  break;
 	
 	}
 	default:
@@ -573,16 +645,20 @@ main(int argc, char *argv[])
 	}
 
 
-	sdd_vtree_save_as_dot("vtree.dot", vtree);
+//	sdd_vtree_save_as_dot("vtree.dot", vtree);
 	
 	// Create and setup SDD manager
 	int auto_gc_and_minimize = 1; //1=yes
 	SddManager* manager = sdd_manager_new(vtree);
-	sdd_manager_auto_gc_and_minimize_on(manager);
-
+	if(options["dao"])
+		sdd_manager_auto_gc_and_minimize_on(manager);
+	/*sdd_manager_set_lr_size_limit(1.1, manager);
+	sdd_manager_set_rr_size_limit(1.1, manager);
+	sdd_manager_set_sw_size_limit(1.1, manager);
+	*/
 	//SddManager* manager = sdd_manager_create(var_count, auto_gc_and_minimize);
-	cout << "The manager has size " << sdd_manager_size(manager) << "(dead " << sdd_manager_live_size(manager) <<  ", live " << sdd_manager_dead_size(manager) << ")" << endl;
-	cout << "The manager has count " << sdd_manager_count(manager)  << "(dead " << sdd_manager_live_count(manager) <<  ", live " << sdd_manager_dead_count(manager) << ")" << endl;
+//	cout << "The manager has size " << sdd_manager_size(manager) << "(dead " << sdd_manager_live_size(manager) <<  ", live " << sdd_manager_dead_size(manager) << ")" << endl;
+//	cout << "The manager has count " << sdd_manager_count(manager)  << "(dead " << sdd_manager_live_count(manager) <<  ", live " << sdd_manager_dead_count(manager) << ")" << endl;
 	
 	// Compute parameters
 	struct parameters* params = new parameters;	
@@ -593,7 +669,6 @@ main(int argc, char *argv[])
 	//what is this doing?	
   obsvars_bdd_length = (*agents)[0]->obsvars_BDD_length();
   envars_bdd_length = (*agents)[0]->get_var_index_end() + 1;
-
 
 	print_params(params);
 
@@ -615,6 +690,10 @@ main(int argc, char *argv[])
 		sdd_ref(evolution_sdd, manager);
 		cout << " - Done. " << endl;
 
+
+			cout << "the count of  evolution is " << sdd_count(evolution_sdd) << endl;
+
+	
 		// add (protocol_sdd && evolution_sdd) to transition_relation_vector
 		SddNode* agent_transition_relation_sdd = sdd_conjoin(protocol_sdd, evolution_sdd, manager);
 		sdd_ref(agent_transition_relation_sdd, manager);
@@ -623,8 +702,8 @@ main(int argc, char *argv[])
 		transition_relation_sdds->push_back(agent_transition_relation_sdd);
 	}
 	params->transitions = transition_relation_sdds;	
-	cout << "The manager has size " << sdd_manager_size(manager) << "(dead " << sdd_manager_live_size(manager) <<  ", live " << sdd_manager_dead_size(manager) << ")" << endl;
-	cout << "The manager has count " << sdd_manager_count(manager)  << "(dead " << sdd_manager_live_count(manager) <<  ", live " << sdd_manager_dead_count(manager) << ")" << endl;
+//	cout << "The manager has size " << sdd_manager_size(manager) << "(dead " << sdd_manager_live_size(manager) <<  ", live " << sdd_manager_dead_size(manager) << ")" << endl;
+//	cout << "The manager has count " << sdd_manager_count(manager)  << "(dead " << sdd_manager_live_count(manager) <<  ", live " << sdd_manager_dead_count(manager) << ")" << endl;
 	
 
 	// Make SDD for initial states 
@@ -650,16 +729,19 @@ main(int argc, char *argv[])
 	
 
 	// Compute Reachable States
+	sdd_manager_garbage_collect(manager);
 	cout << "Computing reachable state space" << endl;
 	SddNode* reachable_state_sdd = compute_reach(initial_states_sdd, manager, params, transition_relation_sdds);
 	sdd_ref(reachable_state_sdd, manager);
 	params->reach = reachable_state_sdd;
 	cout << " - Done." << endl;
+
+	cout << "The count of reach is " << sdd_count(reachable_state_sdd) << endl; 
+
+//	cout << "Model count of reach SDD: " << sdd_model_count(reachable_state_sdd, manager) << endl;
 	
-	cout << "Model count of reach SDD: " << sdd_model_count(reachable_state_sdd, manager) << endl;
-	
-	cout << "The manager has size " << sdd_manager_size(manager) << "(dead " << sdd_manager_live_size(manager) <<  ", live " << sdd_manager_dead_size(manager) << ")" << endl;
-	cout << "The manager has count " << sdd_manager_count(manager)  << "(dead " << sdd_manager_live_count(manager) <<  ", live " << sdd_manager_dead_count(manager) << ")" << endl;
+//	cout << "The manager has size " << sdd_manager_size(manager) << "(dead " << sdd_manager_live_size(manager) <<  ", live " << sdd_manager_dead_size(manager) << ")" << endl;
+//	cout << "The manager has count " << sdd_manager_count(manager)  << "(dead " << sdd_manager_live_count(manager) <<  ", live " << sdd_manager_dead_count(manager) << ")" << endl;
 	
 	// Deal with fairness constraints
   if (!is_fairness->empty()) {
@@ -699,9 +781,10 @@ main(int argc, char *argv[])
 			cout << "Formula " << i+1 << " is " << (satisfaction ? "TRUE" : "FALSE") << " in the model." << endl;
 			sdd_deref(result, manager);
 	} 
-	cout << "The manager has size " << sdd_manager_size(manager) << "(dead " << sdd_manager_live_size(manager) <<  ", live " << sdd_manager_dead_size(manager) << ")" << endl;
-	cout << "The manager has count " << sdd_manager_count(manager)  << "(dead " << sdd_manager_live_count(manager) <<  ", live " << sdd_manager_dead_count(manager) << ")" << endl	;
-	sdd_manager_print(manager);
+//	cout << "The manager has size " << sdd_manager_size(manager) << "(dead " << sdd_manager_live_size(manager) <<  ", live " << sdd_manager_dead_size(manager) << ")" << endl;
+//	cout << "The manager has count " << sdd_manager_count(manager)  << "(dead " << sdd_manager_live_count(manager) <<  ", live " << sdd_manager_dead_count(manager) << ")" << endl	;
+	//sdd_manager_print(manager);
+	
 
 	cout << "Freeing SDD manager." << endl;
 	sdd_manager_free(manager);
