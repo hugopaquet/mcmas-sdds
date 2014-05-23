@@ -1,9 +1,0 @@
-
-digraph sdd {
-
-overlap=false
-
-n14 [label= "&not;F",shape=box]; 
-
-
-}

@@ -645,7 +645,7 @@ main(int argc, char *argv[])
 	}
 
 
-//	sdd_vtree_save_as_dot("vtree.dot", vtree);
+	sdd_vtree_save_as_dot("vtree.dot", vtree);
 	
 	// Create and setup SDD manager
 	int auto_gc_and_minimize = 1; //1=yes
@@ -738,6 +738,7 @@ main(int argc, char *argv[])
 
 	cout << "The count of reach is " << sdd_count(reachable_state_sdd) << endl; 
 
+
 //	cout << "Model count of reach SDD: " << sdd_model_count(reachable_state_sdd, manager) << endl;
 	
 //	cout << "The manager has size " << sdd_manager_size(manager) << "(dead " << sdd_manager_live_size(manager) <<  ", live " << sdd_manager_dead_size(manager) << ")" << endl;
@@ -783,7 +784,8 @@ main(int argc, char *argv[])
 	} 
 //	cout << "The manager has size " << sdd_manager_size(manager) << "(dead " << sdd_manager_live_size(manager) <<  ", live " << sdd_manager_dead_size(manager) << ")" << endl;
 //	cout << "The manager has count " << sdd_manager_count(manager)  << "(dead " << sdd_manager_live_count(manager) <<  ", live " << sdd_manager_dead_count(manager) << ")" << endl	;
-	//sdd_manager_print(manager);
+	sdd_manager_garbage_collect(manager);
+	sdd_manager_print(manager);
 	
 
 	cout << "Freeing SDD manager." << endl;

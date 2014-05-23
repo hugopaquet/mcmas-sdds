@@ -1,0 +1,120 @@
+\documentclass[12]{article}
+\begin{document}
+
+\section*{Abstract}
+
+\section{Introduction}
+
+\begin{itemize}
+\item Importance of autonomous systems and their verification
+\item The state explosion problem, summary of different approaches
+\item Our idea and contributions
+\end{itemize}
+
+\section{Background}
+
+\subsection{Logics for Multi-Agent Systems}
+
+\begin{itemize}
+\item Multi-Agent Systems and Interpreted Systems
+\item Temporal Epistemic Logics: (LTL,) CTL, CTLK
+\end{itemize}
+
+\subsection{Model Checking}
+
+\begin{itemize}
+\item Explicit Approach to Model Checking
+\item Symbolic Model Checking and state-space representations
+\end{itemize}
+
+
+\subsection{Knowledge Compilation}
+
+\begin{itemize}
+\item BDDs: BDTs, reduction, canonicity up to reordering
+\item \textit{A Knowledge Compilation Map}
+\item Negation Normal Forms and choice of SDDs for the project
+\end{itemize}
+
+\subsection{SDDs}
+
+\begin{itemize}
+\item Definitions and Construction
+\item Syntax and Semantics
+\item Canonicity 
+\item OBDDs are SDDs
+
+\end{itemize}
+
+\section{Technical Preliminaries}
+
+\subsection{MCMAS Specifics} 
+
+\begin{itemize}
+\item \textit{Some }implementation details (enough to understand the steps needed for replacing BDDs with SDDs). 
+\item Variable allocation and how we keep track of it
+\item Description of the 4 variable orderings available
+\item ADDs to represent algebraic expressions
+\end{itemize}
+
+\subsection{The SDD Package}
+
+\begin{itemize}
+\item Development, summary of features 
+\item Dynamic minimization and automatic garbage collection
+\item Algorithm for vtree search (and operations for navigating the space of vtrees)
+\end{itemize}
+
+
+\section{Contributions}
+
+
+\subsection{Implementation of a model checker based on SDDs}
+
+\begin{itemize}
+\item Functionality and limitations
+\end{itemize}
+
+
+\subsection{Some heuristics}
+(This is one of the most important sections - but heavily dependent on the next couple of weeks)
+
+
+
+\section{Evaluation} 
+
+\subsection{Models}
+\begin{itemize}
+\item Description of models used for quantitative analysis 
+
+\end{itemize}
+\subsection{Comparison without dynamic variable reordering}
+\begin{itemize}
+\item Comparison of various variable orderings with corresponding right-linear vtrees
+\item Comparison of various variable orderings with equivalent \textit{dissections} of these orderings (= vtrees), leading to SDDs non-equivalent to BDDs 
+\item Analysis of heuristics proposed in previous section
+
+\end{itemize}
+
+\subsection{Comparison using dynamic minimization algorithms}
+\begin{itemize}
+\item Experiments with different initial orderings and vtrees
+\item Analysis of heuristics proposed in previous section
+\item Comparison of different vtree minimization algorithms/settings (The SDD package allows the user to implement their own minimization function, or change the settings in the original functions. It would be interesting to find out what happens if we change the minimization thresholds for time and memory, or if we choose a different algorithm for searching the space of vtrees) 
+\end{itemize}
+
+
+\section{Conclusions and further work}
+
+\subsection{Review}
+
+\subsection{Future work}
+
+I will see what I don't have time to do before the deadline. 
+Potential missing features will be counterexample/witness generation, and checking for deadlock or model overflow. Also being able to check ATL formulas.
+At some point I would like to have a go at implementing an ADD equivalent for SDDs.
+
+\section{Bibliography}
+
+
+\end{document}{document}
