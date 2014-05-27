@@ -377,8 +377,11 @@ basic_agent::encode_protocol(SddManager * manager, struct parameters* params)
 		SddNode* actions_sdd = sdd_manager_false(manager); // start from condition rather than false? 
 		for(set<string>::iterator j = (*i)->get_actions()->begin(); j != (*i)->get_actions()->end(); j++) {
 			string action_name = (*j);
-			actions_sdd = sdd_disjoin(tmp = actions_sdd, encode_action(manager, action_name, params->action_variable_sdds), manager);
+			SddNode* node = encode_action(manager, action_name, params->action_variable_sdds);
+			sdd_ref(node, manager);
+			actions_sdd = sdd_disjoin(tmp = actions_sdd, node, manager);
 			sdd_ref(actions_sdd, manager);
+			sdd_deref(node, manager);
 			sdd_deref(tmp, manager);
 		}
 

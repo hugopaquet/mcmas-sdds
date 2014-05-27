@@ -9,6 +9,7 @@
 \item Importance of autonomous systems and their verification
 \item The state explosion problem, summary of different approaches
 \item Our idea and contributions
+\item Project objectives
 \end{itemize}
 
 \section{Background}
@@ -28,7 +29,7 @@
 \end{itemize}
 
 
-\subsection{Knowledge Compilation}
+\subsection{Symbolic Representations of State Spaces}
 
 \begin{itemize}
 \item BDDs: BDTs, reduction, canonicity up to reordering
@@ -89,12 +90,66 @@
 
 \end{itemize}
 \subsection{Comparison without dynamic variable reordering}
+\subsubsection{Comparison of various variable orderings with corresponding right-linear vtrees}
 \begin{itemize}
-\item Comparison of various variable orderings with corresponding right-linear vtrees
-\item Comparison of various variable orderings with equivalent \textit{dissections} of these orderings (= vtrees), leading to SDDs non-equivalent to BDDs 
-\item Analysis of heuristics proposed in previous section
+\item Built-in orderings
+
+Results in Table 1. Only need to do time comparisons since structures have the same size
+
+\item Orderings resulting from dynamic vtree search
+(TODO) 
+
+Results should be in Table 2.
 
 \end{itemize}
+
+\subsubsection{Observations}
+
+\begin{itemize}
+\item The environment generally contains the highest number of variables (and hence the largest evolution SDD). 
+\item Applying the transition relation in the state space generation represents a significant amount (think more than 80\%) of the overhead. In some cases \texttt{sdd\_exists()} is also very slow, but only in some cases, which can lead to thinking that significant improvements are possible.
+ 
+\end{itemize}
+
+\subsubsection{Comparison of various variable orderings with equivalent non-right-linear \textit{dissections} of these orderings}
+\begin{itemize}
+
+\item Built-in orderings with standard vtrees:
+
+Left-linear and vertical vtrees proved to be very bad, so we will focus on balanced vtrees. 
+
+\item `Clever' vtrees
+
+We aim to find an initial vtree leading to faster computations. We notice that whatever the initial vtree, dynamic reduction algorithms always result in a particular type of vtree, which we call \textit{pseudo-right-linear}. 
+All our experiments are with pseudo-right-linear vtrees.
+\begin{itemize}
+\item vtree experiment 1 (option 5): one balanced subtree per agent. 
+
+This does \textit{not} work well.
+\item vtree experiment 2 (option 6): We set a maximum size for agent subtrees. An upper bound of $\log_2(n^2)$ (where $n$ is the number of vars) has proved relatively efficient. If an agent has more variables then we create more subtrees for it. Variables of a subtree come from the same agent. Subtrees are balanced, and we experiment with different orderings for them. We observe that the best results are obtained when two principles are followed: action variables are close to each other in the subtree (i.e they alone form a balanced vtree of size \texttt{action\_count}) and states variables are 
+paired with their primed counterpart. (TODO: confirm this!)
+
+\item vtree experiment 3 (option 7): Each subtree contains one variable for each agent, as well as its corresponding primed variable. Action variables for each agent form their own subtree. We order state subtrees 'largest to smallest' and put action subtrees at the bottom. This seems to be the best ordering but TODO need to try: intercaler actions/states.
+
+\item vtree experiment 4 (option 8): Think of something! 
+
+
+\end{itemize}
+
+\end{itemize}
+\subsubsection{More suggestions for speed improvement} 
+\begin{itemize}
+\item Call \texttt{sdd\_apply()} on a reduced vtree
+\item Existentially quantify out variables in a smart order.
+
+The CUDD algorithm for this is recursive - need to sort sth out
+
+\end{itemize}
+
+
+\subsubsection{Analysis and conclusion}
+
+
 
 \subsection{Comparison using dynamic minimization algorithms}
 \begin{itemize}

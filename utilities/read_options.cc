@@ -157,20 +157,10 @@ read_options(int argc, char *argv[]) {
       string s;
       s = argv[++i];
       options["ordering"] = atoi(s.c_str());
-      if (options["ordering"] < 1 || options["ordering"] > 4) {
-        cout << "Parameter " << options["ordering"] <<
-          " is not allowed in -o option." << endl;
-        wrongpara = true;
-      }
     } else if (vtree == argv[i]) {
       string s;
       s = argv[++i];
       options["vtree"] = atoi(s.c_str());
-      if (options["vtree"] < 1 || options["vtree"] > 3) {
-        cout << "Vtree of type " << options["vtree"] <<
-          " is not specified by -v option." << endl;
-        wrongpara = true;
-      }
     } else if (subset == argv[i] || subset1 == argv[i]) {
       options["subset"] = 0;
     } else if (dao == argv[i] || dao1 == argv[i]) {

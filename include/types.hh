@@ -94,6 +94,14 @@ struct parameters {
 	vector<SddNode*>* transitions; 
 };
 
+struct vtree_node {
+  vtree_node * left;
+  vtree_node * right;
+  bool isleaf;
+  int id;
+  int size;
+};
+
 /*
 typedef BDD* BDD_ptr; 
 typedef BDD** BDD_ptr_ptr; 

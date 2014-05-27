@@ -1,4 +1,5 @@
 #define URL "http://vas.doc.ic.ac.uk/tools/mcmas/"
+#define VTREE_FILENAME "tmp_initial_vtree.txt"
 
 #include <unistd.h>
 //#include <sys/syscall.h>
@@ -48,7 +49,7 @@ int scount;     // a global counter for counterexamples.
 int states_count = 0;
 int actions_count = 0;
 //bdd_parameters * parameters; /* copy of the single parameters for the signal handler */
-
+int vtree_node_id_counter;
 bool global_consistency_check();
 bool read_options(int argc, char *argv[]);
 void print_help(void);
@@ -77,13 +78,6 @@ mcmas_signal_handler(int signal)
     break;
   }
 
-  /* check if we have bdd_stats */
-/*  if (options["bdd_stats"] == 1) {
-    // check if we have a single BDD parameter and a bddmgr 
-    if (parameters && (parameters->bddmgr))	{
-      parameters->bddmgr->info(); // print the current bdd stats 
-    }
-  } */
   exit(signal);
 }
 
@@ -100,164 +94,6 @@ print_banner(void)
        << endl << endl;
 }
 
-/*
-void
-print_state(BDD state, vector<BDD> v)
-{
-  for (unsigned int i = 0; i < agents->size(); i++) {
-    cout << "Agent " << (*agents)[i]->get_name() << endl;
-    (*agents)[i]->print_state("  ", state, v);
-  }
-}
-
-string
-state_to_str(BDD state, vector<BDD> v)
-{
-  ostringstream s;
-
-  for (unsigned int i = 0; i < agents->size(); i++) {
-    s << "  Agent " << (*agents)[i]->get_name() << "\n";
-    s << (*agents)[i]->state_to_str(state, v);
-
-  }
-  return s.str();
-}
-*/
-bool
-find_same_state(map< string, int >*statehash, string state)
-{
-  if (statehash != NULL) {
-    map< string, int >::iterator iter = statehash->find(state);
-    if (iter != statehash->end()) {
-      return true;
-    }
-  }
-  return false;
-}
-/*
-bool
-is_valid_state(BDD state, vector<BDD> v)
-{
-  for (unsigned int i = 0; i < agents->size(); i++) {
-    if (!(*agents)[i]->is_valid_state(state, v))
-      return false;
-  }
-  return true;
-}
-
-void
-print_action(BDD state, vector<BDD> a)
-{
-  for (unsigned int i = 0; i < agents->size(); i++) {
-    cout << (*agents)[i]->get_name() << " : ";
-    (*agents)[i]->print_action(state, a);
-    if (i < agents->size() - 1)
-      cout << "; ";
-    else
-      cout << endl;
-  }
-}
-
-void
-print_action_1(BDD state, vector<BDD> a)
-{
-  for (unsigned int i = 0; i < agents->size(); i++) {
-    cout << (*agents)[i]->get_name() << " : ";
-    (*agents)[i]->print_action(state, a);
-    cout << "; ";
-  }
-  cout << endl;
-}
-
-bool
-is_valid_action(BDD state, vector<BDD> a)
-{
-  for (unsigned int i = 0; i < agents->size(); i++) {
-    if (!(*agents)[i]->is_valid_action(state, a))
-      return false;
-  }
-  return true;
-}
-
-BDD
-append_variable_BDDs(Cudd * bddmgr, vector<BDD> * v, BDD a)
-{
-  for (unsigned int j = 0; j < agents->size(); j++) {
-    map< string, basictype * >*obsvars = (*agents)[j]->get_obsvars();
-    if (
-vars != NULL && obsvars->size() > 0)
-      for (map< string, basictype * >::iterator i =
-             obsvars->begin(); i != obsvars->end(); i++)
-        if ((*i).second->get_type() == 3)
-          a *= ((enumerate *) (*i).second)->build_all_BDDs(bddmgr, v);
-    map< string, basictype * >*vars = (*agents)[j]->get_vars();
-    if (vars != NULL && vars->size() > 0)
-      for (map< string, basictype * >::iterator i = vars->begin();
-           i != vars->end(); i++)
-        if ((*i).second->get_type() == 3)
-          a *= ((enumerate *) (*i).second)->build_all_BDDs(bddmgr, v);
-  }
-  return a;
-}
-
-BDD
-append_variable_BDD(Cudd * bddmgr, vector<BDD> * v, BDD a, int j)
-{
-  map< string, basictype * >*obsvars = (*agents)[j]->get_obsvars();
-  if (obsvars != NULL && obsvars->size() > 0)
-    for (map< string, basictype * >::iterator i = obsvars->begin();
-         i != obsvars->end(); i++)
-      if ((*i).second->get_type() == 3)
-        a *= ((enumerate *) (*i).second)->build_all_BDDs(bddmgr, v);
-  map< string, basictype * >*vars = (*agents)[j]->get_vars();
-  if (vars != NULL && vars->size() > 0)
-    for (map< string, basictype * >::iterator i = vars->begin();
-         i != vars->end(); i++)
-      if ((*i).second->get_type() == 3)
-        a *= ((enumerate *) (*i).second)->build_all_BDDs(bddmgr, v);
-  return a;
-}
-
-void free_mcmas_memory(bdd_parameters *para) {
-  for(unsigned int i=0; i<agents->size(); i++)
-    delete (*agents)[i];
-  delete agents;
-  delete is_agents;
-  for(map<string, bool_expression *>::iterator it = is_evaluation->begin(); it != is_evaluation->end(); it++) {
-    if((it->first).compare("_init") != 0 || it->second->get_op() != 0)
-      delete it->second;
-  }
-  delete is_evaluation;
-  delete is_groups;
-  delete is_formulae;
-  for(unsigned int i=0; i<is_fairness->size(); i++) {
-    (*is_fairness)[i]->delete_bdd_representation(para);
-    delete (*is_fairness)[i];
-  }
-  delete is_fairness;
-  for(unsigned int i=0; i<logic_expression_table->size(); i++) {
-    logic_expression *tmp = (logic_expression *)((*logic_expression_table)[i]->get_operand(0));
-    delete (*logic_expression_table)[i];
-    delete tmp;
-  }
-  delete logic_expression_table;
-  for(unsigned int i=0; i<logic_expression_table1->size(); i++) {
-    logic_expression *tmp = (logic_expression *)((*logic_expression_table1)[i]->get_operand(0));
-    delete (*logic_expression_table1)[i];
-    delete tmp;
-  }
-  delete logic_expression_table1;
-  for(unsigned int i=0; i<string_table->size(); i++) {
-    delete (*string_table)[i];
-  }
-  delete string_table;
-  for(unsigned int i=0; i<variable_table->size(); i++)
-    delete (*variable_table)[i];
-  delete variable_table;
-}
-
-
-*/
 
 SddNode* 
 compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, vector<SddNode*>* transition_relation_sdds) {
@@ -285,7 +121,7 @@ compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, v
       struct timeb tmb;
     ftime(&tmb);
      cout << "iter" << endl;
-     cout << "\tA";
+     cout << "\tApplying transition\t";
      struct timeb tmb2;
     ftime(&tmb2);
      	  if(options["dao"])
@@ -297,13 +133,15 @@ compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, v
 	    sdd_ref(next1, manager);
 			//sdd_deref(tmp, manager);
 	  }
+//	sdd_vtree_save_as_dot("t1.dot", sdd_manager_vtree(manager));
 	   	  if(options["dao"])
 		  sdd_manager_auto_gc_and_minimize_on(manager);
 	  struct timeb tmb3;
     ftime(&tmb3);
     cout << "  (" << ((tmb3.time-tmb2.time) + (tmb3.millitm-tmb2.millitm)/1000.0) << ")" << endl;
-	  cout << "\tB";
+	  cout << "\tExists non-primed vars\t";
 	   ftime(&tmb2);
+	   
  	  if(options["dao"])
 		  sdd_manager_auto_gc_and_minimize_off(manager);
 		for(unsigned int i = 0; i < v; i++) {
@@ -312,12 +150,14 @@ compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, v
 			next1 = sdd_exists(sdd_node_literal((*params->variable_sdds)[i]), tmp = next1, manager);
 			sdd_ref(next1, manager);
 			sdd_deref(tmp, manager);
-		} 
+		}
+//		sdd_vtree_save_as_dot("t2.dot", sdd_manager_vtree(manager));
+//		sdd_vtree_save("vtree.txt", sdd_manager_vtree(manager));
 		    ftime(&tmb3);
     cout << "  (" << ((tmb3.time-tmb2.time) + (tmb3.millitm-tmb2.millitm)/1000.0) << ")" << endl;
 		if(options["dao"])
 			sdd_manager_auto_gc_and_minimize_on(manager);
-    cout << "\tC";
+    cout << "\tRenaming vars\t";
     cout.flush();
     	   ftime(&tmb2);
 		next1 = sdd_rename_variables(tmp = next1, map, manager);
@@ -327,7 +167,7 @@ compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, v
 	  	sdd_manager_auto_gc_and_minimize_off(manager);
 	  	    ftime(&tmb3);
     cout << "  (" << ((tmb3.time-tmb2.time) + (tmb3.millitm-tmb2.millitm)/1000.0) << ")" << endl;
-	  cout << "\tD";
+	  cout << "\tExists action vars\t";
 	  	   ftime(&tmb2);
 		for(unsigned int i = 0; i < a; i++) {
 			cout << ".";
@@ -336,10 +176,11 @@ compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, v
 			sdd_ref(next1, manager);
 			sdd_deref(tmp, manager);
 		}	  	    
+//		sdd_vtree_save_as_dot("t3.dot", sdd_manager_vtree(manager));
 		ftime(&tmb3);
     cout << "  (" << ((tmb3.time-tmb2.time) + (tmb3.millitm-tmb2.millitm)/1000.0) << ")" << endl;
 
-    cout << "\tE" ;
+    cout << "\tEnding\t" ;
     cout.flush();
     	   ftime(&tmb2);
 		next1 = sdd_conjoin(tmp = next1, sdd_negate(reach, manager), manager);
@@ -508,26 +349,10 @@ get_var_order(int ordering_type, vector< basic_agent * >* agents)
 	}	
 	case 5:
 	{
-	  int tmp_sum = 0;
-		int tmp_var = 0;
-		int tmp_acts = 0;
-		for (unsigned int i = 0; i < agents->size(); i++) {
-			for(int j = tmp_var; j < tmp_var + (*agents)[i]->state_BDD_length(); j++) {
-				var_order[tmp_sum + (j - tmp_var)] = j + 1;
-			}
-			tmp_sum += (*agents)[i]->state_BDD_length();
-			for(int j = tmp_var; j < tmp_var + (*agents)[i]->state_BDD_length(); j++) {
-				var_order[tmp_sum + (j - tmp_var)] = states_count + j + 1; 
-			}	
-			tmp_var += (*agents)[i]->state_BDD_length();
-			tmp_sum += (*agents)[i]->state_BDD_length();
-			for(unsigned int j = tmp_acts; j < tmp_acts + (*agents)[i]->actions_BDD_length(); j++) {
-				var_order[tmp_sum + j - tmp_acts] = 2 * states_count + j + 1;
-			}
-			tmp_acts += (*agents)[i]->actions_BDD_length();
-			tmp_sum += (*agents)[i]->actions_BDD_length();
-		}	
-		
+		for(int i = 0; i < states_count + actions_count; i++)
+			var_order[i] = states_count + i + 1;
+		for(int i = states_count + actions_count; i < var_count; i++)
+			var_order[i] = i - states_count - actions_count + 1 ;
 	  break;
 	
 	}
@@ -535,8 +360,308 @@ get_var_order(int ordering_type, vector< basic_agent * >* agents)
 		cout << "There is no ordering of type " << ordering_type << endl;
 		exit(0);
 	}
+	for(int i = 0 ; i < var_count; i++)
+		cout << var_order[i] << " ";
 
+	cout << endl;
 	return var_order;
+
+}
+
+void
+print_order(SddManager* manager) {
+  SddLiteral* order = new SddLiteral[2 * states_count + actions_count];
+  sdd_manager_var_order(order, manager);
+  cout << "current order: ";
+  for(int i = 0; i < 2 * states_count + actions_count; i++)
+    cout << order[i] << " ";
+  cout << endl;
+  delete order;
+}
+
+string
+vtree_node_get_string(vtree_node * root) {
+
+  string result = "";
+  ostringstream ss;
+  if(root->isleaf) {
+    ss << "L " << root->id << " " << root->id + 1 << endl;  
+  }
+  else {
+    ss << vtree_node_get_string(root->left) << vtree_node_get_string(root->right);
+    ss << "I " << root->id << " " << root->left->id << " " << root->right->id << endl;
+  }
+  return ss.str();
+}
+
+vtree_node* make_balanced_vtree(vector<struct vtree_node*> leaves) {
+  int leaf_count = leaves.size();
+  if(leaf_count == 1)
+    return (leaves)[0];
+  int mid = ceil((double)leaf_count / 2.0);
+  if(mid == 0 || mid == leaf_count) {
+    cout << "recursion problem yo" << endl;
+    exit(0);
+  }
+  vector<struct vtree_node*> snd;
+  for (int i = mid; i < leaf_count; i++) 
+    snd.push_back((leaves)[i]);
+  leaves.erase(leaves.begin() + mid, leaves.end());
+  vtree_node* left = make_balanced_vtree(leaves);
+  vtree_node* right = make_balanced_vtree(snd);
+  struct vtree_node* balanced = new vtree_node;
+  balanced->left = left;
+  balanced->right = right;
+  balanced->id = vtree_node_id_counter++;
+  balanced->isleaf = false;
+  balanced->size = left->size + right->size + 1;
+  return balanced;
+}
+
+void recursive_delete_vtree_node(vtree_node* node) {
+	if(node == NULL) {
+		cout << "node is null " << endl;
+		return;
+	}
+  if(node->isleaf) {
+    delete node;
+		cout << "deleting leaf" << endl;
+    return;
+  }
+	if(node->left == NULL) {
+		cout << "left is null" << endl;
+		cout << "id is " << node->id << endl;
+	}
+  recursive_delete_vtree_node(node->left);
+	if(node->right == NULL)
+		cout << "right is null" << endl;
+  recursive_delete_vtree_node(node->right);  
+}
+
+Vtree* 
+create_vtree() {
+
+	SddLiteral var_count = 2 * states_count + actions_count;
+	SddLiteral* var_order = get_var_order(options["ordering"], agents);
+	Vtree* vtree;
+	switch(options["vtree"]) {
+		case 1:
+			vtree = sdd_vtree_new_with_var_order(var_count, var_order, "right");
+			break;
+		case 2:
+			vtree = sdd_vtree_new_with_var_order(var_count, var_order, "vertical");
+			break;
+		case 3:
+			vtree = sdd_vtree_new_with_var_order(var_count, var_order, "balanced");
+			break;	
+		case 4:
+			vtree = sdd_vtree_new_with_var_order(var_count, var_order, "left");
+			break;	
+	  case 5: 
+	  {
+	    ofstream vout(VTREE_FILENAME);
+      vector<struct vtree_node*> leaves;
+      vtree_node_id_counter = 0;
+	    for(int i = 1; i <= var_count; i++) {
+        struct vtree_node* leaf = new struct vtree_node;
+	      leaf->id = vtree_node_id_counter++;
+	      leaf->isleaf = true;
+	      leaf->size = 1;
+	      leaves.push_back(leaf);
+	    }
+	    vector<struct vtree_node*> agent_nodes;
+	    for(unsigned int i = 0; i < agents->size(); i++) { 
+	      vector<struct vtree_node*> agent_vars; 
+		    for (int j = (*agents)[i]->get_var_index_begin(); 
+		                          j <= (*agents)[i]->get_var_index_end(); j++)
+			    agent_vars.push_back(leaves[j]);
+	    	for (int j = (*agents)[i]->get_var_index_begin(); 
+	    	                      j <= (*agents)[i]->get_var_index_end(); j++)
+			    agent_vars.push_back(leaves[states_count + j]);
+		    for (int j = (*agents)[i]->get_action_index_begin(); 
+		                          j <= (*agents)[i]->get_action_index_end(); j++)
+			    agent_vars.push_back(leaves[2*states_count + j]);
+	      vtree_node* agent_subtree = make_balanced_vtree(agent_vars); 
+	      cout << "make balanced_vtree has size " << agent_subtree->size << endl;
+	      agent_nodes.push_back(agent_subtree);  
+	    }
+	    
+	    struct vtree_node * root = agent_nodes[agent_nodes.size() - 1];
+ 	    for(unsigned int i = 0; i < agent_nodes.size() - 1; i++) {     
+        struct vtree_node* new_root = new vtree_node;
+        new_root->left = agent_nodes[i];
+        new_root->right = root;
+        new_root->id = vtree_node_id_counter++;
+        new_root->isleaf = false;
+        new_root->size = agent_nodes[i]->size;
+        new_root->size += root->size + 1 ;
+        root = new_root;
+	    }     
+	    
+	    string root_string = vtree_node_get_string(root);
+	    vout << "vtree " << root->size << endl;
+	    vout << root_string << endl;
+      vout.close();
+	    vtree = sdd_vtree_read(VTREE_FILENAME);
+	    recursive_delete_vtree_node(root);
+//	  sdd_vtree_save_as_dot("genvtree.dot", vtree);
+  	  remove(VTREE_FILENAME);
+	    break;
+	  }
+		case 6: 
+		{
+	    ofstream vout(VTREE_FILENAME);
+      vector<struct vtree_node*> leaves;
+      vtree_node_id_counter = 0;
+	    for(int i = 1; i <= var_count; i++) {
+        struct vtree_node* leaf = new struct vtree_node;
+	      leaf->id = vtree_node_id_counter++;
+	      leaf->isleaf = true;
+	      leaf->size = 1;
+	      leaves.push_back(leaf);
+	    }
+	    vector<vector<struct vtree_node*> > all_agent_vars;
+	    for(unsigned int i = 0; i < agents->size(); i++) { 
+	      vector<struct vtree_node*> agent_vars; 
+		    for (int j = (*agents)[i]->get_action_index_begin(); 
+		                          j <= (*agents)[i]->get_action_index_end(); j++) 
+			    agent_vars.push_back(leaves[2*states_count + j]);
+		    for (int j = (*agents)[i]->get_var_index_begin(); 
+		                          j <= (*agents)[i]->get_var_index_end(); j++) {
+			    agent_vars.push_back(leaves[j]);
+			    agent_vars.push_back(leaves[states_count + j]);
+	   }
+
+
+				all_agent_vars.push_back(agent_vars);
+	    }
+
+			vector<vtree_node*> subtrees;			
+			int subsize = ceil(log2(var_count)*2);
+			for(unsigned int i = 0; i < agents->size(); i++) {
+				int n = all_agent_vars[i].size();
+				int tmpsum = 0;
+				while(tmpsum < n) {
+					vector<vtree_node*> tmpvars;
+					if(tmpsum + subsize <= n) {	
+						for(int j = 0; j < subsize; j++) {
+							tmpvars.push_back(all_agent_vars[i][j + tmpsum]);
+						}
+					} else {
+						for(unsigned int j = tmpsum; j < all_agent_vars[i].size(); j++) {	
+							tmpvars.push_back(all_agent_vars[i][j]);
+						}
+					} 
+					if(tmpvars.size() != 0) {
+						vtree_node* balanced = make_balanced_vtree(tmpvars);
+						if(balanced != NULL)					
+							subtrees.push_back(balanced);
+					}		
+					tmpsum += subsize;
+				}
+			}
+	    /*
+				Here it would be good to do some experiments with ordering of subtrees - perhaps the ones with the highest number of variables should go first? 
+			*/
+	    struct vtree_node * root = subtrees[subtrees.size() - 1];
+ 	    for(int i = subtrees.size() - 2; i >= 0; i--) {     
+        struct vtree_node* new_root = new vtree_node;
+        new_root->left = subtrees[i];
+        new_root->right = root;
+        new_root->id = vtree_node_id_counter++;
+        new_root->isleaf = false;
+        new_root->size = subtrees[i]->size + root->size + 1 ;
+        root = new_root;
+	    }     
+	    string root_string = vtree_node_get_string(root);
+	    vout << "vtree " << root->size << endl;
+vout << root_string << endl;
+      vout.close();
+	    vtree = sdd_vtree_read(VTREE_FILENAME);
+	   	recursive_delete_vtree_node(root);
+//	    sdd_vtree_save_as_dot("genvtree.dot", vtree);
+  	  remove(VTREE_FILENAME);
+	    break;
+		}
+		case 7: 
+		{
+	    ofstream vout(VTREE_FILENAME);
+      vector<struct vtree_node*> leaves;
+      vtree_node_id_counter = 0;
+	    for(int i = 1; i <= var_count; i++) {
+        struct vtree_node* leaf = new struct vtree_node;
+	      leaf->id = vtree_node_id_counter++;
+	      leaf->isleaf = true;
+	      leaf->size = 1;
+	      leaves.push_back(leaf);
+	    }
+	    vector<vector<struct vtree_node*> > all_agent_vars;
+			vector<vector<struct vtree_node*> > all_agent_action_vars;
+	    for(unsigned int i = 0; i < agents->size(); i++) {
+	      vector<struct vtree_node*> agent_vars; 
+				vector<struct vtree_node*> agent_action_vars;
+		    for (int j = (*agents)[i]->get_action_index_begin(); 
+		                          j <= (*agents)[i]->get_action_index_end(); j++) 
+			    agent_action_vars.push_back(leaves[2*states_count + j]);
+		    for (int j = (*agents)[i]->get_var_index_begin(); 
+		                          j <= (*agents)[i]->get_var_index_end(); j++) {
+			    agent_vars.push_back(leaves[j]);
+			    agent_vars.push_back(leaves[states_count + j]);
+			  }
+				all_agent_vars.push_back(agent_vars);
+				all_agent_action_vars.push_back(agent_action_vars);
+	    }
+			vector<vtree_node*> subtrees;			
+
+			unsigned int maxvars = 0;
+			for (unsigned int i = 0; i < all_agent_vars.size(); i++) {
+				if (all_agent_vars[i].size() > maxvars) {
+					maxvars = all_agent_vars[i].size();
+				}
+			}
+			for(unsigned int i = 0; i+1 < maxvars; i+=2) {
+			//	cout << "i is " << i << endl;
+				vector<struct vtree_node*> tmp_vars;
+				for(unsigned int j = 0; j < agents->size(); j++) {
+					if(i < all_agent_vars[j].size() - 1) {
+						tmp_vars.push_back((all_agent_vars[j])[i]);
+						tmp_vars.push_back((all_agent_vars[j])[i+1]);
+					}
+				}
+				struct vtree_node* subtree = make_balanced_vtree(tmp_vars);
+				subtrees.push_back(subtree);
+			}
+			for(unsigned int i = 0; i < all_agent_action_vars.size(); i++) {
+					vtree_node* subtree = make_balanced_vtree(all_agent_action_vars[i]);
+					subtrees.push_back(subtree);
+			}
+			
+
+    struct vtree_node * root = subtrees[subtrees.size() - 1];
+ 	    for(int i = subtrees.size() - 2; i >= 0; i--) {     
+        struct vtree_node* new_root = new vtree_node;
+        new_root->left = subtrees[i];
+        new_root->right = root;
+        new_root->id = vtree_node_id_counter++;
+        new_root->isleaf = false;
+        new_root->size = subtrees[i]->size + root->size + 1 ;
+        root = new_root;
+	    }     
+	    string root_string = vtree_node_get_string(root);
+	    vout << "vtree " << root->size << endl;
+			vout << root_string << endl;
+      vout.close();
+	    vtree = sdd_vtree_read(VTREE_FILENAME);
+	   	recursive_delete_vtree_node(root);
+  	  remove(VTREE_FILENAME);
+	    break;
+		}
+		default: 
+			cout << "Vtree of type " << options["vtree"] << " is not specified." << endl;
+			exit(0);
+	}
+	
+	return vtree;
 
 }
 
@@ -625,40 +750,19 @@ main(int argc, char *argv[])
   }
 
 	// Create Vtree
-	SddLiteral var_count = 2 * states_count + actions_count;
-	SddLiteral* var_order = get_var_order(options["ordering"], agents);
-
-	Vtree* vtree;
-	switch(options["vtree"]) {
-		case 1:
-			vtree = sdd_vtree_new_with_var_order(var_count, var_order, "right");
-			break;
-		case 2:
-			vtree = sdd_vtree_new_with_var_order(var_count, var_order, "left");
-			break;
-		case 3:
-			vtree = sdd_vtree_new_with_var_order(var_count, var_order, "balanced");
-			break;	
-		default: 
-			cout << "Vtree of type " << options["vtree"] << " is not specified." << endl;
-			exit(0);
-	}
-
-
-	sdd_vtree_save_as_dot("vtree.dot", vtree);
+	Vtree* vtree = create_vtree();
 	
-	// Create and setup SDD manager
+	sdd_vtree_save_as_dot("test.dot", vtree);
+
+		// Create and setup SDD manager
 	int auto_gc_and_minimize = 1; //1=yes
 	SddManager* manager = sdd_manager_new(vtree);
 	if(options["dao"])
 		sdd_manager_auto_gc_and_minimize_on(manager);
-	/*sdd_manager_set_lr_size_limit(1.1, manager);
-	sdd_manager_set_rr_size_limit(1.1, manager);
-	sdd_manager_set_sw_size_limit(1.1, manager);
-	*/
-	//SddManager* manager = sdd_manager_create(var_count, auto_gc_and_minimize);
-//	cout << "The manager has size " << sdd_manager_size(manager) << "(dead " << sdd_manager_live_size(manager) <<  ", live " << sdd_manager_dead_size(manager) << ")" << endl;
-//	cout << "The manager has count " << sdd_manager_count(manager)  << "(dead " << sdd_manager_live_count(manager) <<  ", live " << sdd_manager_dead_count(manager) << ")" << endl;
+//	sdd_manager_set_lr_size_limit(1.01, manager);
+//	sdd_manager_set_rr_size_limit(1.01, manager);
+//	sdd_manager_set_sw_size_limit(1.01, manager);
+	
 	
 	// Compute parameters
 	struct parameters* params = new parameters;	
@@ -732,6 +836,7 @@ main(int argc, char *argv[])
 	sdd_manager_garbage_collect(manager);
 	cout << "Computing reachable state space" << endl;
 	SddNode* reachable_state_sdd = compute_reach(initial_states_sdd, manager, params, transition_relation_sdds);
+	sdd_vtree_save_as_dot("vtree.dot", sdd_manager_vtree(manager));
 	sdd_ref(reachable_state_sdd, manager);
 	params->reach = reachable_state_sdd;
 	cout << " - Done." << endl;
@@ -786,8 +891,30 @@ main(int argc, char *argv[])
 //	cout << "The manager has count " << sdd_manager_count(manager)  << "(dead " << sdd_manager_live_count(manager) <<  ", live " << sdd_manager_dead_count(manager) << ")" << endl	;
 	sdd_manager_garbage_collect(manager);
 	sdd_manager_print(manager);
+
+	for(unsigned int i = 0; i < agents->size(); i++) {
+		cout << "Agent " << (*agents)[i]->get_name() << ":" << endl;	
+		cout << "  -> State Vars: "; 
+		for (int j = (*agents)[i]->get_var_index_begin(); j <= (*agents)[i]->get_var_index_end(); j++)
+			cout << sdd_node_literal((*params->variable_sdds)[j]) << " ";
+		cout << "and ";
+		for (int j = (*agents)[i]->get_var_index_begin(); j <= (*agents)[i]->get_var_index_end(); j++)
+			cout << sdd_node_literal((*params->primed_variable_sdds)[j]) << " ";
+		cout << endl;
+		cout << "  -> Action Vars: ";
+		for (int j = (*agents)[i]->get_action_index_begin(); j <= (*agents)[i]->get_action_index_end(); j++)
+			cout << sdd_node_literal((*params->action_variable_sdds)[j]) << " ";
+		cout << endl;
+	}
+
+	cout << endl << endl;
+	for(int i = 1; i < 27; i++ )
+	cout << i << " ";
+	cout << endl << "A B C D E F G H I J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z " << endl;
 	
 
+//  print_order(manager);
+  
 	cout << "Freeing SDD manager." << endl;
 	sdd_manager_free(manager);
 
