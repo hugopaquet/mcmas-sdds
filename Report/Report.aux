@@ -1,26 +1,62 @@
 \relax 
-\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}}
-\@writefile{toc}{\contentsline {section}{\numberline {2}Background}{1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Logics for Multi-Agent Systems}{1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Model Checking}{1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Symbolic Representations of State Spaces}{1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}SDDs}{1}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Technical Preliminaries}{2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}MCMAS Specifics}{2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}The SDD Package}{2}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Contributions}{2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Implementation of a model checker based on SDDs}{2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Some heuristics}{2}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Evaluation}{2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Models}{2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Comparison without dynamic variable reordering}{2}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}Comparison of various variable orderings with corresponding right-linear vtrees}{2}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.2}Observations}{3}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.3}Comparison of various variable orderings with equivalent non-right-linear \textit  {dissections} of these orderings}{3}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.4}More suggestions for speed improvement}{4}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.5}Analysis and conclusion}{4}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Comparison using dynamic minimization algorithms}{4}}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusions and further work}{4}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Review}{4}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Future work}{4}}
-\@writefile{toc}{\contentsline {section}{\numberline {7}Bibliography}{4}}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{3}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Background}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Logics for Multi-Agent Systems}{4}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.1}Multi-Agent Systems}{4}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.2}Interpreted Systems}{4}}
+\newlabel{IS}{{2.1.2}{4}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.3}Linear Temporal Logic}{5}}
+\newlabel{LTL}{{2.1.3}{5}}
+\@writefile{toc}{\contentsline {paragraph}{Semantics}{5}}
+\newlabel{model_checking}{{2.1.3}{6}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.4}Computation Tree Logic}{6}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.5}The Epistemic Logic CTLK}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Model Checking}{8}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.1}Explicit Model Checking}{8}}
+\newlabel{explicit}{{2.2.1}{8}}
+\citation{need ref}
+\citation{logic_in_computer_science}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces A model}}{11}}
+\newlabel{fig:model_example}{{1}{11}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.2}Symbolic Model Checking}{11}}
+\@writefile{toc}{\contentsline {paragraph}{Symbolic Representation of Sets of States}{11}}
+\newlabel{symbolic}{{2.2.2}{11}}
+\@writefile{toc}{\contentsline {paragraph}{Symbolic Representation of the Transition Relation}{11}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Representing Boolean functions}{12}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.1}Ordered Binary Decision Diagrams}{12}}
+\@writefile{toc}{\contentsline {paragraph}{The Reduction Algorithm}{12}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces BDT for $f(x_1, x_2) = x_1 \land \lnot x_2$ under the ordering $[x_1, x_2]$}}{13}}
+\newlabel{fig:BDT}{{2}{13}}
+\newlabel{obdd_uniqueness}{{2.1}{13}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.2}Knowledge Compilation Map}{13}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.3}Project Directions}{14}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Sentential Decision Diagrams}{14}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.1}Preliminary Definitions}{14}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces An OBDD (left) and its corresponding NNF sentence (right). Although the former seems much more compact, the difference in size is only linear and both representations are essentially the same. TODO sort this oout}}{15}}
+\newlabel{nnf_obdd}{{3}{15}}
+\newlabel{theorem_apply}{{2.2}{16}}
+\@writefile{toc}{\contentsline {paragraph}{Vtrees}{17}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.2}Syntax and Semantics of SDDs}{17}}
+\citation{sdd_1}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.3}Construction of SDDs}{18}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.4}Canonicity of SDDs}{18}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.5}SDD Operations}{18}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Technical Preliminaries}{19}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}MCMAS Specifics}{19}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}The SDD Package}{19}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Contributions}{20}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Implementation of a model checker based on SDDs}{20}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Some heuristics}{20}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Evaluation}{21}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Models}{21}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Comparison without dynamic variable reordering}{21}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}Comparison of various variable orderings with corresponding right-linear vtrees}{21}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.2}Observations}{21}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.3}Comparison of various variable orderings with equivalent non-right-linear \textit  {dissections} of these orderings}{21}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.4}More suggestions for speed improvement}{22}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.5}Analysis and conclusion}{22}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Comparison using dynamic minimization algorithms}{22}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusions and further work}{23}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Review}{23}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Future work}{23}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Bibliography}{24}}
