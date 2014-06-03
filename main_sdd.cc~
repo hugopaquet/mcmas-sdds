@@ -104,7 +104,8 @@ compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, v
 
   SddNode* reach = in_st;
   SddNode* next1 = in_st;
-  
+	SddNode* q1 = sdd_manager_false(manager);
+
 	unsigned int v = params->variable_sdds->size(); // number of state variables
 	unsigned int a = params->action_variable_sdds->size(); // number of action variables
 	SddLiteral map[2 * v + a + 1]; 
@@ -120,7 +121,7 @@ compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, v
   while (true) {
       struct timeb tmb;
     ftime(&tmb);
-     cout << "iter" << endl;
+		 cout << "reach has count " << sdd_count(reach) << endl;
      cout << "\tApplying transition\t";
      struct timeb tmb2;
     ftime(&tmb2);
@@ -183,17 +184,16 @@ compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, v
     cout << "\tEnding\t" ;
     cout.flush();
     	   ftime(&tmb2);
-		next1 = sdd_conjoin(tmp = next1, sdd_negate(reach, manager), manager);
-		sdd_ref(next1, manager);
-		sdd_deref(tmp, manager);
+		q1 = sdd_disjoin(next1, reach, manager);
+		sdd_ref(q1, manager);
 
-    if (sdd_node_is_false(next1))
+    if (q1 == reach)
       break;
     else {
-		  reach = sdd_disjoin(tmp = reach, next1, manager);
+			sdd_deref(reach, manager);
+		  reach = q1;
 			sdd_ref(reach, manager);
-			sdd_deref(tmp, manager);
-
+			sdd_deref(q1, manager);
 		}
 		if(options["dao"])
 	  	sdd_manager_auto_gc_and_minimize_on(manager); 
@@ -442,19 +442,23 @@ Vtree*
 create_vtree() {
 
 	SddLiteral var_count = 2 * states_count + actions_count;
-	SddLiteral* var_order = get_var_order(options["ordering"], agents);
 	Vtree* vtree;
+	SddLiteral* var_order;
 	switch(options["vtree"]) {
 		case 1:
+			var_order = get_var_order(options["ordering"], agents);
 			vtree = sdd_vtree_new_with_var_order(var_count, var_order, "right");
 			break;
 		case 2:
+			var_order = get_var_order(options["ordering"], agents);
 			vtree = sdd_vtree_new_with_var_order(var_count, var_order, "vertical");
 			break;
 		case 3:
+			var_order = get_var_order(options["ordering"], agents);
 			vtree = sdd_vtree_new_with_var_order(var_count, var_order, "balanced");
 			break;	
 		case 4:
+			var_order = get_var_order(options["ordering"], agents);
 			vtree = sdd_vtree_new_with_var_order(var_count, var_order, "left");
 			break;	
 	  case 5: 
@@ -504,7 +508,6 @@ create_vtree() {
       vout.close();
 	    vtree = sdd_vtree_read(VTREE_FILENAME);
 	    recursive_delete_vtree_node(root);
-//	  sdd_vtree_save_as_dot("genvtree.dot", vtree);
   	  remove(VTREE_FILENAME);
 	    break;
 	  }
@@ -521,7 +524,7 @@ create_vtree() {
 	      leaves.push_back(leaf);
 	    }
 	    vector<vector<struct vtree_node*> > all_agent_vars;
-	    for(unsigned int i = 0; i < agents->size(); i++) { 
+	    for(unsigned int i = 0; i < agents->size(); i++) {
 	      vector<struct vtree_node*> agent_vars; 
 		    for (int j = (*agents)[i]->get_action_index_begin(); 
 		                          j <= (*agents)[i]->get_action_index_end(); j++) 
@@ -548,7 +551,7 @@ create_vtree() {
 							tmpvars.push_back(all_agent_vars[i][j + tmpsum]);
 						}
 					} else {
-						for(unsigned int j = tmpsum; j < all_agent_vars[i].size(); j++) {	
+						for(unsigned int j = tmpsum; j < all_agent_vars[i].size(); j++) {
 							tmpvars.push_back(all_agent_vars[i][j]);
 						}
 					} 
@@ -614,9 +617,9 @@ vout << root_string << endl;
 			vector<vtree_node*> subtrees;			
 
 			unsigned int maxvars = 0;
-			for(unsigned int i = 0; i < all_agent_vars.size(); i++) {
-				if(all_agent_vars[i].size() > maxvars) {
-					maxvars = all_agent_vars[i].size();
+			for (unsigned int i = 0; i < all_agent_vars.size(); i++) {
+				if (all_agent_vars[i].size() > maxvars) {
+					maxvars = all_agent_vars[i].size(); 
 				}
 			}
 			for(unsigned int i = 0; i+1 < maxvars; i+=2) {
@@ -638,6 +641,77 @@ vout << root_string << endl;
 			
 
     struct vtree_node * root = subtrees[subtrees.size() - 1];
+ 	    for(int i = subtrees.size() - 2; i >= 0; i--) {     
+        struct vtree_node* new_root = new vtree_node;
+        new_root->left = subtrees[i];
+        new_root->right = root;
+        new_root->id = vtree_node_id_counter++;
+        new_root->isleaf = false;
+        new_root->size = subtrees[i]->size + root->size + 1 ;
+        root = new_root;
+	    }     
+	    string root_string = vtree_node_get_string(root);
+	    vout << "vtree " << root->size << endl;
+			vout << root_string << endl;
+      vout.close();
+	    vtree = sdd_vtree_read(VTREE_FILENAME);
+	   	recursive_delete_vtree_node(root);
+  	  remove(VTREE_FILENAME);
+	    break;
+		} 
+		case 8: 
+		{
+	    ofstream vout(VTREE_FILENAME);
+      vector<struct vtree_node*> leaves;
+      vtree_node_id_counter = 0;
+	    for(int i = 1; i <= var_count; i++) {
+        struct vtree_node* leaf = new struct vtree_node;
+	      leaf->id = vtree_node_id_counter++;
+	      leaf->isleaf = true;
+	      leaf->size = 1;
+	      leaves.push_back(leaf);
+	    }
+
+			vector<vtree_node*> subtrees;			
+
+			for(int i = 0; i < agents->size(); i++) {
+				vector<struct vtree_node*> vars;
+				vector<struct vtree_node*> actions;
+		    for (int j = (*agents)[i]->get_action_index_begin(); 
+		                          j <= (*agents)[i]->get_action_index_end(); j++) 
+			    actions.push_back(leaves[2*states_count + j]);
+		    for (int j = (*agents)[i]->get_var_index_begin(); 
+		                          j <= (*agents)[i]->get_var_index_end(); j++) {
+			    vars.push_back(leaves[j]);
+			    vars.push_back(leaves[states_count + j]);
+			  }
+				vector<struct vtree_node*> var_subtrees;	
+				var_subtrees.push_back(make_balanced_vtree(actions));
+				for(int k = 0; k < vars.size(); k++) {
+					struct vtree_node * pair_sub =	new vtree_node;
+					pair_sub->left = vars[k];
+					pair_sub->right = vars[k+1];				
+					pair_sub->size = 3;
+					pair_sub->isleaf = false;
+					pair_sub->id = vtree_node_id_counter++;
+					k++;
+					var_subtrees.push_back(pair_sub);
+				}
+
+				struct vtree_node * agent_root = var_subtrees[0];
+				for(int k = 1; k < var_subtrees.size(); k++) {
+					struct vtree_node* agent_new_root = new vtree_node;
+        	agent_new_root->left = var_subtrees[k];
+        	agent_new_root->right = agent_root;
+        	agent_new_root->id = vtree_node_id_counter++;
+        	agent_new_root->isleaf = false;
+        	agent_new_root->size = var_subtrees[k]->size + agent_root->size + 1;
+        	agent_root = agent_new_root;
+				}
+				subtrees.push_back(agent_root);
+			}
+
+ 		  struct vtree_node * root = subtrees[subtrees.size() - 1];
  	    for(int i = subtrees.size() - 2; i >= 0; i--) {     
         struct vtree_node* new_root = new vtree_node;
         new_root->left = subtrees[i];
@@ -752,7 +826,7 @@ main(int argc, char *argv[])
 	// Create Vtree
 	Vtree* vtree = create_vtree();
 	
-	sdd_vtree_save_as_dot("test.dot", vtree);
+	sdd_vtree_save_as_dot("vtree.dot", vtree);
 
 		// Create and setup SDD manager
 	int auto_gc_and_minimize = 1; //1=yes
@@ -796,6 +870,7 @@ main(int argc, char *argv[])
 
 
 			cout << "the count of  evolution is " << sdd_count(evolution_sdd) << endl;
+			cout << "the count of  protocol is " << sdd_count(protocol_sdd) << endl;
 
 	
 		// add (protocol_sdd && evolution_sdd) to transition_relation_vector
@@ -836,7 +911,6 @@ main(int argc, char *argv[])
 	sdd_manager_garbage_collect(manager);
 	cout << "Computing reachable state space" << endl;
 	SddNode* reachable_state_sdd = compute_reach(initial_states_sdd, manager, params, transition_relation_sdds);
-	sdd_vtree_save_as_dot("vtree.dot", sdd_manager_vtree(manager));
 	sdd_ref(reachable_state_sdd, manager);
 	params->reach = reachable_state_sdd;
 	cout << " - Done." << endl;
@@ -875,8 +949,9 @@ main(int argc, char *argv[])
     string str = "_init";
     (*is_evaluation)[str] = is_istates;
     modal_formula *init = new modal_formula(new atomic_proposition(&str));
-
+	cout << "there are " << is_formulae->size() << " formulae to check" << endl;
    for (unsigned int i = 0; i < is_formulae->size(); i++) {
+			
 			cout << "Checking  " << ((*is_formulae)[i]).to_string() << "..." << endl;
      
       modal_formula f(4, init, &((*is_formulae)[i]));
@@ -885,12 +960,14 @@ main(int argc, char *argv[])
 
 			bool satisfaction = result == params->reach;
 			cout << "Formula " << i+1 << " is " << (satisfaction ? "TRUE" : "FALSE") << " in the model." << endl;
+			cout.flush();
 			sdd_deref(result, manager);
-	} 
+	}
 //	cout << "The manager has size " << sdd_manager_size(manager) << "(dead " << sdd_manager_live_size(manager) <<  ", live " << sdd_manager_dead_size(manager) << ")" << endl;
-//	cout << "The manager has count " << sdd_manager_count(manager)  << "(dead " << sdd_manager_live_count(manager) <<  ", live " << sdd_manager_dead_count(manager) << ")" << endl	;
+//	cout << "The manager has count " << sdd_manager_count(manager)  << "(dead " << sdd_manager_live_count(manager) <<  ", live " << sdd_manager_dead_count(manager) << ")" << endl;
 	sdd_manager_garbage_collect(manager);
-	sdd_manager_print(manager);
+	cout.flush();
+	//sdd_manager_print(manager);
 
 	for(unsigned int i = 0; i < agents->size(); i++) {
 		cout << "Agent " << (*agents)[i]->get_name() << ":" << endl;	

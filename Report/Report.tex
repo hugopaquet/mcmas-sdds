@@ -4,15 +4,17 @@
 \usepackage{graphicx}
 \usepackage{framed}
 \usepackage{listings}
-\usepackage{MnSymbol}
 \usepackage{titlesec}
 \usepackage{tikz}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{MnSymbol}
 \newcommand{\sectionbreak}{\clearpage}
 
 \lstset{frame=tb,
   language=Java,
   aboveskip=3mm,
-  belowskip=3mm,
+  belowskip=15mm,
   showstringspaces=false,
   columns=flexible,
   basicstyle={\small\ttfamily},
@@ -48,8 +50,6 @@
 
 
 
-
-
 \begin{document}
 
 \tableofcontents
@@ -57,11 +57,23 @@
 
 \section{Introduction}
 
+\subsection{The Problem}
+
+We are becoming increasingly dependent on computer systems. Not only are they an essential part of our lives, ...vital!
+
+
+
+\subsection{The Idea}
+
+\subsection{The Deliverables}
+
+
 \begin{itemize}
-\item Importance of autonomous systems and their verification
-\item The state explosion problem, summary of different approaches
+\item Autonomous systems, what they are, why they are useful, and why they are vulnerable but we need to make sure they are reliable.
+\item Verifying autonomous systems: what it entails, how we go about it (methods) and what are the challenges
+\item The state explosion problem
 \item Our idea and contributions
-\item Project objectives
+\item structure of the report
 \end{itemize}
 
 \section{Background}
@@ -391,12 +403,16 @@ $\{ s_0, s_1, s_2\}$ & $(x_1 \land \lnot x_2) \lor (\lnot x_1 \land  x_2) \lor (
 
 Note that for this representation to be unambiguous, we must ensure that no two states satisfy the same set of Boolean variables. If this is the case, new variables can be added which will be used to differenciate between the ambiguous states.
 
-\myparagraph{Symbolic Representation of the Transition Relation}
+\myparagraph{Symbolic Representation of a Transition Relation}
 
 The transition relation $\rightarrow$ of a model is a subset of $S \times S$. Taking two copies of our set of propositional variables, we can then associate a Boolean formula to the transition relation. In the example above, the transition relation $\rightarrow$ of the model is $\{(s_0, s_1), (s_1, s_2), (s_2, s_0), (s_2, s_2)\}$. 
 Using our Boolean representations for $s_0, s_1$, and $s_2$, we compute the representation of $\rightarrow$ to be $$(\lnot x_1 \land \lnot x_2 \land \lnot x'_1 \land \lnot x'_2 ) \lor (\lnot x_1 \land \lnot x_2 \land x'_1 \land \lnot x'_2 ) \lor ( x_1 \land \lnot x_2 \land \lnot x'_1 \land  x'_2 ) \lor (\lnot x_1 \land x_2 \land \lnot x'_1 \land \lnot x'_2 )$$
 
 [needs more details on the computation]\\\\
+
+\myparagraph{The case of Multi-Agent Systems}
+
+need to explain this
 
 How does this help us? Well, several techniques exist which allow us to represent these Boolean formulas in a very concise form. This is the topic of the next section.
 
@@ -459,7 +475,7 @@ OBDDs help us to manipulate Boolean functions with a high number of variables, a
 
 \noindent\textit{Note to the reader: throughout this report we often drop the `O' and refer to OBDDs as BDDs.}
 
-\subsubsection{Knowledge Compilation Map}
+\subsubsection{A Knowledge Compilation Map}
 
 In computer science, the field of \textit{knowledge compilation} is concerned with finding compact and efficient representations of propositional knowledge bases (such as symbolic representations of state-spaces, cf \ref{symbolic}).
  Such a representation is refered to as a \textit{target compilation language}, of which BDTs and OBDDs are examples. 
@@ -469,7 +485,7 @@ In computer science, the field of \textit{knowledge compilation} is concerned wi
  
  OBDDs satisfy these properties (with succintness remaining highly dependent on the variable order), and in fact a number of model checkers use them for state-space representation (e.g. NuSMV, MCMAS). 
  
- In 2002, A. Darwiche and P. Marquis published \ref{compilation_map} a comparative analysis of most existing DAG-based target compilation languages in terms of their succintness and the polytime operations they support. They show that all of these languages are a subset of a broad language called \textit{negation normal form} (NNF). 
+ In 2002, A. Darwiche and P. Marquis published \cite{compilation_map} a comparative analysis of most existing DAG-based target compilation languages in terms of their succintness and the polytime operations they support. They show that all of these languages are subsets of a broad language called \textit{negation normal form} (NNF). 
 
 \begin{definition}
 A sentence in \textit{NNF} is a rooted directed acyclic graph where each leaf node is labelled with $\top$, $\bot$, $X$ or $\lnot X$ for some propositional variable $X$, and each internal node is labelled with $\land$ or $\lor$ and can have arbitrarily many children. 
@@ -552,10 +568,10 @@ A sentence in \textit{NNF} is a rooted directed acyclic graph where each leaf no
 
  Taking into account the various criteria for suitable representations described above, we searched the literature aiming to find a good candidate to replace BDDs. 
 
-After considering a number of different representations including trees-of-BDDs \ref{}, BDD-trees \ref{}, and several other subsets of NNF described in \ref{compilation_map}, we opted for a relatively novel target compilation language called \textit{sentential decision diagram} (SDD). 
+After considering a number of different representations including tree-of-BDDs \cite{trees_of_bdds}, BDD-trees \cite{bdd_trees}, and several other subsets of NNF described in \cite{compilation_map}, we opted for a relatively novel target compilation language called \textit{sentential decision diagram} (SDD). 
 
 SDDs are a subset of NNF, possess the required properties, and had not yet been experimented with in the context of model checking and state-space representation. 
-Moreover, some of the experimental results presented in \ref{sdd1} and \ref{sdd2} demonstrate that SDDs can lead to a significant improvement on BDDs in terms of computation time and memory usage. 
+Moreover, some of the experimental results presented in \cite{sdd_1} and \cite{sdd_3} demonstrate that SDDs can lead to a significant improvement on BDDs in terms of computation time and memory usage. 
 
 In the next section we present SDDs in full details, delaying our own experimental results to the following chapters.
 
@@ -696,63 +712,196 @@ are normalised. See \cite{sdd_1} for details of the algorithm.
 The \texttt{exists} algorithm is the implementation of the $\exists X$ operator on function $f$ for variable $X$. Recall $$\exists X f = f[0/X] \lor f[1/X]$$
 This can be implemented using the \texttt{restrict} algorithm which returns the conditioning $f|_{\mbox{x}}$ for an instantiation x of $X$.  
 
-\section{Technical Preliminaries}
+\section{Implementation}
 
-\subsection{MCMAS Specifics} 
+This chapter is devoted to the implementation of the model checker itself. We start by giving an overview of the existing code base and libraries upon which it relies, before presenting the important design decisions and algorithms, and finally discussing the challenges that occured during the implementation of this new model checker. 
 
+\subsection{Preliminaries}
+\subsubsection{The SDD Package}
+
+\textit{The SDD Package} is a C library which can be used to create and manipulate SDDs. It was developed at UCLA by the Automated Reasoning group, who first introduced SDDs. Its current version is 1.1.  
+
+
+The SDD Package API contains most of the functions required for the use of SDDs in model checking. This includes basic manipulations such as conjunction, disjunction, and negation of Boolean functions represented by SDDs, conditioning a function on a literal, and quantifying out variables (the SDD equivalent of $\exists$ and $\forall$). Additionally, the API makes possible a number of operations on vtrees, including \textit{rotating }and \textit{swapping} (these are crucial for navigating the space of vtrees in the context of SDD minimisation, see below for details). 
+
+The \textit{SDD manager} is the focal point for all the SDD operations in the program. It is there to ensure that all SDDs in the program have been built with respect to the same vtree, and it handles SDD conversions in the case of a vtree modification. It also gives the user access to a number of statistics, helpful for tracking a program's memory usage or the size of some SDD nodes. 
+
+\myparagraph{Dynamic SDD Minimisation}
+
+One particularly important feature of the SDD Package is dynamic SDD minimisation. When enabled, this feature automatically attempts to minimise the size of a manager's SDD nodes by searching for a better vtree. Unfortunately this is not always a more efficient solution as searching the space of vtrees is a very lengthy process: there are $\frac{(2n -2)!}{(n-1)!}$ distinct vtrees over $n$ variables!
+
+An vtree search algorithm was proposed in \cite{sdd_3} for more efficient dynamic minimisation of SDDs. This algorithm relies on three standard binary tree operations: left-rotation, right-rotation, and swap; these operations are sufficient for navigating the space of all vtrees \cite{knuth}.
+The following example shows in what way these operations affect vtrees: 
+\begin{example}
+take a vtree with 4 nodes
+\end{example}
+
+We now give an informal description of the algorithm in \cite{sdd_3} (the one implemented in the SDD Package). We start with a vtree node $v$ (typically, the current vtree of the manager). The algorithm starts by making two recursive calls on $v_l$ and $v_r$. We then consider two subtrees of $v$: 
+
+\noindent TODO finish description of algorithm
+
+\myparagraph{CUDD}
+
+CUDD is the C$++$ BDD library used by MCMAS (see below) for BDD manipulation, and it is therefore our reference for all practical comparisons between SDDs and BDDs. 
+
+Here we simply give an account of the differences between  CUDD and the SDD package, in order for our comparisons to be fair: we are interested in the relative efficiency of the data structures, not the packages, and therefore it is important that we take into account any difference in design and implementation. 
+
+Fortunately, the libraries have a very similar design. Both are organised around a manager handling all internal operations. 
 \begin{itemize}
-\item \textit{Some }implementation details (enough to understand the steps needed for replacing BDDs with SDDs). 
-\item Variable allocation and how we keep track of it
-\item Description of the 4 variable orderings available
-\item ADDs to represent algebraic expressions
+\item garbage collection (reference counts handled by user in SDDs, by )
+\item memory management and cache
+\item reordering - mention that BDD research is more advanced (lots of reordering options)
+\item a few functions don't exist in SDD package in the same way: exists and swap variables
+\end{itemize}
+\label{gc}
+
+\subsubsection{MCMAS} 
+
+MCMAS (Model Checker for Multi-Agent Systems) is a BDD-based model checker developed at Imperial College. It was specifically designed for multi-agent systems, and users can write system descriptions in a language called ISPL (Interpreted System Programming Language), whose syntax is very much inspired from the definition of interpreted systems (\ref{IS}).
+
+The model checker built for this project is (for a large part) based on the MCMAS code base. In this section we outline some of the MCMAS internal implementation details in order to help the reader understand the steps undertaken when replacing BDDs with SDDs. Moreover, MCMAS will be the basis of our BDDs vs. SDDs comparisons in the next chapters so it is important that the reader understand the different configuration options.
+
+\myparagraph{Important Classes and Methods}
+
+The ISPL parser in MCMAS creates a model of the system using the following important classes: 
+\begin{itemize}
+\item \texttt{basic\_agent}: an agent in the system, consisting of a protocol, an evolution, a set of variables and a set of actions
+\item \texttt{evolution\_line} and \texttt{protocol\_line}: a line in the evolution or in the protocol of an agent, consisting of a Boolean expression and an assignment or (respectively) an action
+\item \texttt{bool\_expression} and \texttt{assignment}
+\item \texttt{variable}, \texttt{basic\_type}, \texttt{int\_value}, \texttt{enum\_value}, \texttt{bool\_value},  \texttt{rangedint}, \texttt{atomic\_proposition}, \texttt{laction}: agent variables, their types and their values
+\item \texttt{modal\_formula}: a CTLK formula to be checked in the model.
+\end{itemize}
+Throughout the model checking procedure the \textit{BDD parameters} are carried by the program and passed as argument to the various methods. They are encapsulated in a structure (\texttt{struct bdd\_parameters}) and contain all the important data required by the algorithm, in particular: 
+\begin{itemize}
+\item v, pv, a, ...
+\item vRT
+\item initial and reachable states
+\item bdd cache
+\item formulae
+\end{itemize}
+The main steps in the program are 
+\begin{enumerate}
+\item encode transition relation 
+\item encode reachable state space
+\item compute SAT on modal formulas and compare with reach
+\end{enumerate}
+
+encore quelques lignes
+encore quelques lignes
+encore quelques lignes
+encore quelques lignes
+encore quelques lignes
+encore quelques lignes
+encore quelques lignes
+encore quelques lignes
+encore quelques lignes
+encore quelques lignes
+encore quelques lignes
+
+\myparagraph{Variable Allocation}
+
+Variable allocation is the process of allocating manager variables (created with the manager) to agents and determining the various sets of variables needed for symbolic representation within each agent: state variables, primed state variables (a copy of the state variables representing the \textit{next }state), and action variables.
+
+For each agent, MCMAS first computes the number of variables needed in each of the aforementioned sets by calls to the functions \texttt{state\_BDD\_length()} and \texttt{action\_BDD\_length()}.
+
+The \texttt{basic\_agent} functions \texttt{allocate\_BDD\_2\_variables()} and \texttt{allocate\_BDD\_2\_actions()} are then used for variable allocation: they assign a portion of both \texttt{v} and \texttt{a} to each agent, giving them start and end \textit{indices}. Note that this forces all of an agent's state variables (and similarly, action variables) to be next to each other in \texttt{v} (and similarly, \texttt{a}). 
+
+It may seem confusing that variable allocation happens before the user has been able to select a particular variable order, but in fact no actual variables have yet been allocated, only their position in the arrays. The user's choice will then affect the way the \textit{manager}'s variables are dispatched across \texttt{a}, \texttt{v}, and \texttt{pv}. 
+
+In MCMAS, the user can choose between four \textit{standard} different variable orders. We take the time to present them here, not only because of the great impact that this choice has on the overall performance, but also for reference in the future chapters (where we compare these orders with various SDD vtrees).
+
+\myparagraph{Standard Variable Orders}
+ 
+Suppose MCMAS is running on an example requiring $n$ state variables denoted $x_1, ..., x_n$, and $m$ action variables denoted $a_1, ..., a_m$. By definition there are $n$ primed state variables (the next state is a state, so it can be represented with the $n$ state variables), these are denoted $x_1', ..., x_n'$. 
+Suppose also that there are $k$ agents, and that for each $i$, agent $i$ has been allocated variables $x_{i_1}, ..., x_{i_{n_i}}$, $x_{i_1}', ..., x_{i_{n_i}}'$ and $a_{j_1}, ..., a_{j_{m_i}}$, for some $n_i, m_i \in \mathbb{N}$ and where $i_1, ..., i_{n_i}$ and $j_i, ..., j_{m_i}$ are sequences of consecutive integers.
+
+
+
+The manager will then have $2n + m$ variables in total, and the following are the possible four ordering options with respect to which BDDs will be constructed throughout the process:
+\begin{itemize}
+\item Ordering option 1:
+$$x_1, ..., x_n, x_1', ..., x_n', a_1, ..., a_m$$
+\item Ordering option 2:
+\[
+\underbrace{x_1, ..., x_n}_{\text{agent $i$}}
+\]
+\item Ordering option 3:
+
+\item Ordering option 4:
 \end{itemize}
 
-\subsection{The SDD Package}
+\myparagraph{Algebraic Decision Diagrams}
 
+MCMAS supports bounded integer variables (e.g. \texttt{x : 0..3}), and allows Boolean conditions to be numeric identities (e.g. \texttt{(x > 2)} or \texttt{(x + y = 3)} for integer vars \texttt{x} and \texttt{y}). 
+
+If an agent has an integer variable with a large range of values, then the number of Boolean variables needed to represent its state is also large (if variable \texttt{x} has $n$ possible values, the corresponding agent needs at least $\log_2(n)$ state variables). 
+
+To avoid this, MCMAS uses alternative data structures called \textit{algebraic decision diagrams} (ADD, \cite{add}) to represent these variables and expressions. The CUDD manager also handles ADDs, and the ADD variables needed are stored in global vectors \texttt{addv} and \texttt{addpv}.
+
+As there is no SDD equivalent for ADDs (yet!), for this project we decided to exclude the examples containing numerical values and expressions. 
+Note that all these examples \textit{could} technically be implemented in ISPL so that our model checker supports them, by simply replacing an integer range by an \textit{enum} containing all the possible values that the variable can take: for example 
+$$\texttt{x : 0..3} $$
+could be declared as $$\texttt{x : \{zero, one, two, three\}}$$
+and expressions such as $$\texttt{if (x > 1)}$$ could be translated to $$\texttt{if (x = two) or (x = three)}.$$
+With ADDs being beyond the scope of this project, we did not study them further (in particular we did not look into the ADD reduction done by CUDD in the background), and therefore thought better not to implement this to keep the comparison fair between MCMAS and our model checker. 
+
+\subsection{Contributions}
+
+\subsubsection{A Model Checker Based on SDDs}
+
+Reference to code in appendix:
 \begin{itemize}
-\item Development, summary of features 
-\item Dynamic minimization and automatic garbage collection
-\item Algorithm for vtree search (and operations for navigating the space of vtrees)
+\item new variables and data structures (vtree, params)
+\item var\_order
+\item vtree construction 
 \end{itemize}
 
+\subsubsection{Challenges}
 
-\section{Contributions}
+Mainly due to the following two issues, the time spent implementing the model checker was much longer than expected.
 
+\myparagraph{Garbage Collection}
 
-\subsection{Implementation of a model checker based on SDDs}
+As described in \ref{gc}, the SDD Package has a automatic garbage collection feature based on reference counts, but it leaves the referencing and dereferencing of nodes to the user. 
 
+If not done properly, node referencing can lead to issues such as unwanted garbage collection, dead nodes kept in memory, or dead node dereferencing, all of which being very undesirable (but for different reasons).
+
+This forced the constant track-keeping of node reference counts and required more debugging time. 
+
+\myparagraph{Debugging and Comparing}
+
+The goal of this implementation was to build an SDD-based model checker which produced the same results as MCMAS in all circumstances. We needed to make sure that the Boolean representations of our sets of states and transition relations were the same at each step of our model checking algorithm. Unfortunately, there is no convenient and precise way of programmatically comparing an SDD with a BDD. 
+
+The only \textit{exact} method available is to look at the Boolean function corresponding to each data structure, and compare these using a SAT checker (we used \cite{minisat}). This is a good solution for small functions, but it becomes impractical very quickly when the number of variable exceeds about 10 (this happens in all non-trivial cases).  
+
+An useful alternative is to construct the SDD with respect to a right-linear vtree and the BDD with the equivalent variable ordering (see \ref{bdds_sdds} for details), to ensure that the resulting structures are comparable. We then have two options:
 \begin{itemize}
-\item Functionality and limitations
+
+\item Comparing the graphical representation of each data structure, provided by both APIs via a DOT file \cite{dot}. An image is often enough to tell if two representations are not equivalent, but in the case where they are, it can be a very long process to manually verify it.
+\item Comparing the size (i.e. the number of nodes) of each structure. Again, most of the time two non-equivalent representations will have very different sizes, but representations with comparable sizes are not necessarily equivalent (note that due to the way SDD and BDD nodes are represented, the size of a BDD will not be exactly the same as the size of the equivalent SDD so this method is not 100\% conclusive either).
+
 \end{itemize}
-
-
-\subsection{Some heuristics}
-(This is one of the most important sections - but heavily dependent on the next couple of weeks)
-
-
+ This second option is nonetheless the only available solution in the case of very large SDDs and BDDs, which explains the difficulty in debugging larger examples.
+ 
+  We were able to verify the correctness of our implementation by looking at the actual result of the execution. If our model checker yields the same answer as MCMAS on a large number of Boolean formulae, it is very likely that the encoding of the transition relation, the reachable state space, and the implementation of \texttt{SAT} are correct.  
 
 \section{Evaluation} 
 
-\subsection{Models}
+\subsection{Setup}
+
+\subsubsection{Example Models}
 \begin{itemize}
 \item Description of models used for quantitative analysis 
-
 \end{itemize}
-\subsection{Comparison without dynamic variable reordering}
-\subsubsection{Comparison of various variable orderings with corresponding right-linear vtrees}
-\begin{itemize}
-\item Built-in orderings
+\subsubsection{Machine and Configurations} 
 
-Results in Table 1. Only need to do time comparisons since structures have the same size
+\subsubsection{Outline}
 
-\item Orderings resulting from dynamic vtree search
-(TODO) 
+\subsection{Comparison with Right-Linear Vtrees}
 
-Results should be in Table 2.
+\subsection{Comparison with Standard Vtrees}
 
-\end{itemize}
-
-\subsubsection{Observations}
+\subsection{Towards a Better Vtree: Observations}
 
 \begin{itemize}
 \item The environment generally contains the highest number of variables (and hence the largest evolution SDD). 
@@ -760,14 +909,8 @@ Results should be in Table 2.
  
 \end{itemize}
 
-\subsubsection{Comparison of various variable orderings with equivalent non-right-linear \textit{dissections} of these orderings}
-\begin{itemize}
 
-\item Built-in orderings with standard vtrees:
-
-Left-linear and vertical vtrees proved to be very bad, so we will focus on balanced vtrees. 
-
-\item `Clever' vtrees
+\subsection{New Vtrees and Experiments}
 
 We aim to find an initial vtree leading to faster computations. We notice that whatever the initial vtree, dynamic reduction algorithms always result in a particular type of vtree, which we call \textit{pseudo-right-linear}. 
 All our experiments are with pseudo-right-linear vtrees.
@@ -782,11 +925,13 @@ paired with their primed counterpart. (TODO: confirm this!)
 
 \item vtree experiment 4 (option 8): Think of something! 
 
-
 \end{itemize}
 
-\end{itemize}
-\subsubsection{More suggestions for speed improvement} 
+\subsection{Comparisons with Dynamic Reordering and Minimisation}
+
+
+
+\subsection{More suggestions for speed improvement} 
 \begin{itemize}
 \item Call \texttt{sdd\_apply()} on a reduced vtree
 \item Existentially quantify out variables in a smart order.
@@ -794,19 +939,6 @@ paired with their primed counterpart. (TODO: confirm this!)
 The CUDD algorithm for this is recursive - need to sort sth out
 
 \end{itemize}
-
-
-\subsubsection{Analysis and conclusion}
-
-
-
-\subsection{Comparison using dynamic minimization algorithms}
-\begin{itemize}
-\item Experiments with different initial orderings and vtrees
-\item Analysis of heuristics proposed in previous section
-\item Comparison of different vtree minimization algorithms/settings (The SDD package allows the user to implement their own minimization function, or change the settings in the original functions. It would be interesting to find out what happens if we change the minimization thresholds for time and memory, or if we choose a different algorithm for searching the space of vtrees) 
-\end{itemize}
-
 
 \section{Conclusions and further work}
 
@@ -818,7 +950,56 @@ I will see what I don't have time to do before the deadline.
 Potential missing features will be counterexample/witness generation, and checking for deadlock or model overflow. Also being able to check ATL formulas.
 At some point I would like to have a go at implementing an ADD equivalent for SDDs.
 
-\section{Bibliography}
 
+\begin{thebibliography}{9}
+
+
+\bibitem{sdd_1}
+A. Darwiche:\emph{ SDD: A New Canonical Representation of Propositional Knowledge Bases}, 2011.
+
+\bibitem{sdd_2}
+A. Darwiche, A. Choi, Y. Xue: \emph{Basing Decisions on Sentences}, 2012.
+
+\bibitem{sdd_3}
+A. Darwiche, A. Choi: \textit{Dynamic Minimization of Sentential Decision Diagrams}, 2013.
+
+\bibitem{compilation_map}
+  A. Darwiche, P. Marquis:
+  \emph{A Knowledge Compilation Map}, 2002.
+
+\bibitem{trees_of_bdds}
+S. Subbarayan, L. Bordeaux, Y. Hamadi:\textit{
+Knowledge Compilation Properties of Tree-of-BDDs}, 2007.
+
+\bibitem{bdd_trees}
+K. L. McMillan:\textit{ Hierarchical representations of discrete functions, with application to model checking, 1994.
+}
+
+\bibitem{logic_in_computer_science}
+ M. Huth, M. Ryan, 
+\emph{Logic in Computer Science},
+Cambridge University Press, 2004.
+
+\bibitem{knuth} D. E. Knuth, \textit{The Art of Computer Programming, Volume
+4, Fascicle 2: Generating All Tuples and Permutations}, Addison-Wesley Professional, 2005.
+
+\bibitem{add}  R. I. Bahar, E. A. Frohm, C. M. Gaona, G. D. Hachtel, E. Macii, A. Pardo, F. Somenzi:\textit{
+Algebraic decision diagrams and their applications}, 1993.
+
+\bibitem{MCMAS_website} MCMAS webpage, http://vas.doc.ic.ac.uk/software/mcmas/
+
+\bibitem{CUDD_website} CUDD Package webpage, http://vlsi.colorado.edu/~fabio/CUDD/
+
+\bibitem{SDD_website} SDD Package webpage, http://reasoning.cs.ucla.edu/sdd/
+
+\bibitem{minisat} David A. Wheeler's MiniSAT solver,  http://www.dwheeler.com/essays/minisat-user-guide.html
+
+\bibitem{dot}Graphviz DOT, http://www.graphviz.org/Documentation.php
+
+\bibitem{notes_303} A. Lomuscio, Software Engineering: Software Verifications, lecture notes (as taught in 2012-13)
+
+\bibitem{notes_499} I. Hodkinson, Modal and Temporal logic, lecture notes (as taught in 2013-14)
+
+\end{thebibliography}
 
 \end{document}{document}

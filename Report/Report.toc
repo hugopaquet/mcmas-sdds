@@ -1,4 +1,7 @@
 \contentsline {section}{\numberline {1}Introduction}{3}
+\contentsline {subsection}{\numberline {1.1}The Problem}{3}
+\contentsline {subsection}{\numberline {1.2}The Idea}{3}
+\contentsline {subsection}{\numberline {1.3}The Deliverables}{3}
 \contentsline {section}{\numberline {2}Background}{4}
 \contentsline {subsection}{\numberline {2.1}Logics for Multi-Agent Systems}{4}
 \contentsline {subsubsection}{\numberline {2.1.1}Multi-Agent Systems}{4}
@@ -11,35 +14,46 @@
 \contentsline {subsubsection}{\numberline {2.2.1}Explicit Model Checking}{8}
 \contentsline {subsubsection}{\numberline {2.2.2}Symbolic Model Checking}{11}
 \contentsline {paragraph}{Symbolic Representation of Sets of States}{11}
-\contentsline {paragraph}{Symbolic Representation of the Transition Relation}{11}
+\contentsline {paragraph}{Symbolic Representation of a Transition Relation}{12}
+\contentsline {paragraph}{The case of Multi-Agent Systems}{12}
 \contentsline {subsection}{\numberline {2.3}Representing Boolean functions}{12}
 \contentsline {subsubsection}{\numberline {2.3.1}Ordered Binary Decision Diagrams}{12}
-\contentsline {paragraph}{The Reduction Algorithm}{12}
-\contentsline {subsubsection}{\numberline {2.3.2}Knowledge Compilation Map}{13}
+\contentsline {paragraph}{The Reduction Algorithm}{13}
+\contentsline {subsubsection}{\numberline {2.3.2}A Knowledge Compilation Map}{14}
 \contentsline {subsubsection}{\numberline {2.3.3}Project Directions}{14}
-\contentsline {subsection}{\numberline {2.4}Sentential Decision Diagrams}{14}
-\contentsline {subsubsection}{\numberline {2.4.1}Preliminary Definitions}{14}
+\contentsline {subsection}{\numberline {2.4}Sentential Decision Diagrams}{16}
+\contentsline {subsubsection}{\numberline {2.4.1}Preliminary Definitions}{16}
 \contentsline {paragraph}{Vtrees}{17}
 \contentsline {subsubsection}{\numberline {2.4.2}Syntax and Semantics of SDDs}{17}
 \contentsline {subsubsection}{\numberline {2.4.3}Construction of SDDs}{18}
 \contentsline {subsubsection}{\numberline {2.4.4}Canonicity of SDDs}{18}
 \contentsline {subsubsection}{\numberline {2.4.5}SDD Operations}{18}
-\contentsline {section}{\numberline {3}Technical Preliminaries}{19}
-\contentsline {subsection}{\numberline {3.1}MCMAS Specifics}{19}
-\contentsline {subsection}{\numberline {3.2}The SDD Package}{19}
-\contentsline {section}{\numberline {4}Contributions}{20}
-\contentsline {subsection}{\numberline {4.1}Implementation of a model checker based on SDDs}{20}
-\contentsline {subsection}{\numberline {4.2}Some heuristics}{20}
-\contentsline {section}{\numberline {5}Evaluation}{21}
-\contentsline {subsection}{\numberline {5.1}Models}{21}
-\contentsline {subsection}{\numberline {5.2}Comparison without dynamic variable reordering}{21}
-\contentsline {subsubsection}{\numberline {5.2.1}Comparison of various variable orderings with corresponding right-linear vtrees}{21}
-\contentsline {subsubsection}{\numberline {5.2.2}Observations}{21}
-\contentsline {subsubsection}{\numberline {5.2.3}Comparison of various variable orderings with equivalent non-right-linear \textit {dissections} of these orderings}{21}
-\contentsline {subsubsection}{\numberline {5.2.4}More suggestions for speed improvement}{22}
-\contentsline {subsubsection}{\numberline {5.2.5}Analysis and conclusion}{22}
-\contentsline {subsection}{\numberline {5.3}Comparison using dynamic minimization algorithms}{22}
-\contentsline {section}{\numberline {6}Conclusions and further work}{23}
-\contentsline {subsection}{\numberline {6.1}Review}{23}
-\contentsline {subsection}{\numberline {6.2}Future work}{23}
-\contentsline {section}{\numberline {7}Bibliography}{24}
+\contentsline {section}{\numberline {3}Implementation}{19}
+\contentsline {subsection}{\numberline {3.1}Preliminaries}{19}
+\contentsline {subsubsection}{\numberline {3.1.1}The SDD Package}{19}
+\contentsline {paragraph}{Dynamic SDD Minimisation}{19}
+\contentsline {paragraph}{CUDD}{20}
+\contentsline {subsubsection}{\numberline {3.1.2}MCMAS}{20}
+\contentsline {paragraph}{Important Classes and Methods}{20}
+\contentsline {paragraph}{Variable Allocation}{21}
+\contentsline {paragraph}{Standard Variable Orders}{22}
+\contentsline {paragraph}{Algebraic Decision Diagrams}{22}
+\contentsline {subsection}{\numberline {3.2}Contributions}{23}
+\contentsline {subsubsection}{\numberline {3.2.1}A Model Checker Based on SDDs}{23}
+\contentsline {subsubsection}{\numberline {3.2.2}Challenges}{23}
+\contentsline {paragraph}{Garbage Collection}{24}
+\contentsline {paragraph}{Debugging and Comparing}{24}
+\contentsline {section}{\numberline {4}Evaluation}{26}
+\contentsline {subsection}{\numberline {4.1}Setup}{26}
+\contentsline {subsubsection}{\numberline {4.1.1}Example Models}{26}
+\contentsline {subsubsection}{\numberline {4.1.2}Machine and Configurations}{26}
+\contentsline {subsubsection}{\numberline {4.1.3}Outline}{26}
+\contentsline {subsection}{\numberline {4.2}Comparison with Right-Linear Vtrees}{26}
+\contentsline {subsection}{\numberline {4.3}Comparison with Standard Vtrees}{26}
+\contentsline {subsection}{\numberline {4.4}Towards a Better Vtree: Observations}{26}
+\contentsline {subsection}{\numberline {4.5}New Vtrees and Experiments}{26}
+\contentsline {subsection}{\numberline {4.6}Comparisons with Dynamic Reordering and Minimisation}{27}
+\contentsline {subsection}{\numberline {4.7}More suggestions for speed improvement}{27}
+\contentsline {section}{\numberline {5}Conclusions and further work}{28}
+\contentsline {subsection}{\numberline {5.1}Review}{28}
+\contentsline {subsection}{\numberline {5.2}Future work}{28}

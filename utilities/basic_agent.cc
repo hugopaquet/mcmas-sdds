@@ -359,7 +359,7 @@ basic_agent::encode_action(SddManager * manager, string action_name, vector<SddN
 	return 0;
 }
 
-
+/*
 SddNode* 
 basic_agent::encode_protocol(SddManager * manager, struct parameters* params) 
 {
@@ -396,6 +396,78 @@ basic_agent::encode_protocol(SddManager * manager, struct parameters* params)
 	}
 
 	return protocol_sdd;
+}
+*/
+
+SddNode* 
+basic_agent::encode_protocol(SddManager * manager, struct parameters* params) 
+{
+  SddNode* sddprot = sdd_manager_false(manager);
+  SddNode* nullaction = sdd_manager_true(manager);
+	SddNode* gc;
+  if (protocol->size() == 0)
+    return sdd_manager_true(manager);
+  if(protocol->back()->get_condition()->is_other_branch()) {
+    for (vector< protocol_line * >::iterator i = protocol->begin();
+	 i != protocol->end(); i++) {
+      bool_expression *condition = (*i)->get_condition();
+      SddNode* tmpcond = sdd_manager_true(manager);
+      if (!condition->is_other_branch()) {
+				tmpcond = condition->encode_sdd(manager, params);
+				sdd_ref(tmpcond, manager);
+				nullaction = sdd_conjoin(gc = nullaction, sdd_negate(tmpcond, manager), manager);
+				sdd_ref(nullaction, manager);
+				sdd_deref(gc, manager);
+      } else {
+				tmpcond = nullaction;
+				sdd_ref(tmpcond, manager);      
+			}
+      SddNode* tmpact = sdd_manager_false(manager);
+      set< string > *actions = (*i)->get_actions();
+      for (set< string >::iterator j = actions->begin(); j != actions->end();
+	   j++) {
+				tmpact = sdd_disjoin(gc = tmpact, encode_action(manager, *j, params->action_variable_sdds), manager);
+				sdd_ref(tmpact, manager);
+				sdd_deref(gc, manager);
+      }
+      
+      SddNode* oneline = sdd_conjoin(tmpcond, tmpact, manager);
+			sdd_ref(oneline, manager);
+			sdd_deref(tmpcond, manager);
+			sdd_deref(tmpact, manager);
+      sddprot = sdd_disjoin(gc = sddprot, oneline, manager);
+			sdd_ref(sddprot, manager);
+			sdd_deref(gc, manager);
+			sdd_deref(oneline, manager);
+    }
+  } else {
+    for (vector< protocol_line * >::iterator i = protocol->begin();
+	 i != protocol->end(); i++) {
+      bool_expression *condition = (*i)->get_condition();
+      SddNode* tmpcond = sdd_manager_true(manager);
+      tmpcond = condition->encode_sdd(manager, params);
+      sdd_ref(tmpcond, manager);
+      SddNode* tmpact = sdd_manager_false(manager);
+      set< string > *actions = (*i)->get_actions();
+      for (set< string >::iterator j = actions->begin(); j != actions->end();
+	   j++) {
+			tmpact = sdd_disjoin(gc = tmpact, encode_action(manager, *j, params->action_variable_sdds), manager);
+			sdd_ref(tmpact, manager);
+			sdd_deref(gc, manager);
+      }	
+      
+      SddNode* oneline = sdd_conjoin(tmpcond, tmpact, manager);
+      sdd_ref(oneline, manager);
+			sdd_deref(tmpcond, manager);
+			sdd_deref(tmpact, manager);
+      sddprot = sdd_disjoin(gc = sddprot, oneline, manager);
+			sdd_ref(sddprot, manager);
+			sdd_deref(oneline, manager);
+			sdd_deref(gc, manager);
+
+    }
+  }
+  return sddprot;
 }
 
 

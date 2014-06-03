@@ -1120,7 +1120,7 @@ logic_expression::encode_sdd(SddManager* manager, struct parameters* params) {
 				  }
 				  set< string > *enums1 = ((enumerate *) var_type_lhs)->get_enumvalue();
 				  set< string > *enums2 = ((enumerate *) var_type_rhs)->get_enumvalue();
-				  if (enums1->size() == enums2->size()) { // TODO find out what this case is for
+				///  if (enums1->size() == enums2->size()) { // TODO find out what this case is for
 				    /* ADD rhs =
 				      ((enumerate *) var_type_rhs)->build_ADD_tree(para->bddmgr, para->addv,
 				                                                para->ADD_cache);
@@ -1131,9 +1131,9 @@ logic_expression::encode_sdd(SddManager* manager, struct parameters* params) {
 				      (op == 0) ? addEQ(para->bddmgr, lhs, rhs) : addNEQ(para->bddmgr,
 				                                                         lhs, rhs);
 				    tmpbdd *= result.BddThreshold(1); */ 
-						cout << "This type of logic condition is not supported." << endl;
-						exit(0);
-				  } else {
+		///				cout << "We are here: This type of logic condition is not supported." << endl;
+		///				exit(0);
+		///		  } else {
 				    end = var_type_lhs->get_index_end();
 				    int end1 = var_type_rhs->get_index_end();
 						SddNode * tmpsdd2 = sdd_manager_false(manager);
@@ -1172,7 +1172,7 @@ logic_expression::encode_sdd(SddManager* manager, struct parameters* params) {
 						sdd_ref(encoding, manager);
 						sdd_deref(tmpsdd2, manager);
 						sdd_deref(tmp, manager);
-				  }
+	///			  }
 		  } 
 
 
