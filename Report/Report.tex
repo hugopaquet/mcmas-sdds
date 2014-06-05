@@ -1,5 +1,5 @@
 
-\documentclass[12]{article}
+\documentclass[11pt]{article}
 
 \usepackage{graphicx}
 \usepackage{framed}
@@ -9,12 +9,14 @@
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{MnSymbol}
+\usepackage{stmaryrd}
+
 \newcommand{\sectionbreak}{\clearpage}
 
 \lstset{frame=tb,
   language=Java,
-  aboveskip=3mm,
-  belowskip=15mm,
+  aboveskip=5mm,
+  belowskip=5mm,
   showstringspaces=false,
   columns=flexible,
   basicstyle={\small\ttfamily},
@@ -172,7 +174,6 @@ Given LTL formulae $\varphi$ and $\psi$, a model $M$ and a state $s_0 \in W$, we
 \end{eqnarray*}
 
 \end{definition}
-
 The expressive power of LTL is limited to quantification over \textit{all} possible paths. For example: 
 
 \begin{itemize}
@@ -180,11 +181,11 @@ The expressive power of LTL is limited to quantification over \textit{all} possi
 
 In every possible execution, the system will be permanently deadlocked.
 
+
 \item $GF($crash$)$
 
 Whatever happens, the system will crash infinitely often.
 \end{itemize}
-
 Hence some properties cannot be expressed in LTL, as in certain applications we might want to quantify explicitely over paths. The Computation Tree Logic (CTL) can express this. 
 
 \subsubsection{Computation Tree Logic} 
@@ -215,23 +216,25 @@ Given CTL formulas $\varphi$ and $\psi$, a model $M = (W, R, \pi)$ and a state $
 
 The quantifiers allow for more properties to be expressed, for example:
 \begin{itemize}
-\item From any state it is possible to reboot the system.
 
-$AGEX($reboot$)$ \quad (not expressible in LTL)
+\item $EF(AG($deadlocked$))$
 
-\item example 2
+It is possibly to reach a point where the process will be permanently deadlocked.
+
+\item $AG(EX($reboot$))$ 
+
+From any state it is possible to reboot the system.
 
 
 \end{itemize}
-
 Again, some formulas can be expressed in LTL but not in CTL. For instance, the property that \textit{in every path where $p$ is true at some point then $q$ is also true at some point} is expressed in LTL as $Fp \rightarrow Fq $ but there is no equivalent CTL formula.
- The logic CTL* combines the syntax of LTL and CTL to provide a richer set of connectives. We will not go into any more details regarding CTL*, but we refer the reader to TODO for more information. 
+ The logic CTL* combines the syntax of LTL and CTL to provide a richer set of connectives. We will not go into any more details regarding CTL*, but we refer the reader to \cite{ctl*} for more information. 
 
 \subsubsection{The Epistemic Logic CTLK}
 
 In the case of multi-agent systems, we are interested in describing the system in terms of individual agents, and in particular their \textit{knowledge}. 
 
-For this reason, we add a family of unary operators $K_i$ for $i = 1, ..., n$ to the modal connectives defined previously. Each $K_i$ will represent the intuitive notion of knowledge for agent $i$. 
+For this reason, we can add \cite{ctlk} a family of unary operators $K_i$ for $i = 1, ..., n$ to the modal connectives defined previously. Each $K_i$ will represent the intuitive notion of knowledge for agent $i$. 
 This enables us to define the temporal-epistemic logics LTLK and CTLK, which are extensions of LTL and CTL, respectively. Here we leave out details about LTLK, as the practical applications we present later on only support CTLK. 
 
 
@@ -268,23 +271,23 @@ Model checking was briefly introduced in \ref{model_checking} as a automated ver
 The problem of verifying $P$ is then reduced to the problem of checking whether $L_S \vdash \varphi_P $. But we can now build a Kripke model $M_S = (W_S, R_S, \pi)$ such that $L_S$ is sound and complete over (the class of) $M_S$, so that $$L_S \vdash \varphi_P \Leftrightarrow M_S \models \varphi_P .$$ 
 $M_S$ is the Kripke model representing all possible computations of $S$, i.e. $W_S$ contains all the possible computational states of the system and the relation $R_S$ represents all temporal transitions in the system. 
 
-In the case of a multi-agent system as defined above, encoding $S$ as an interpreted systems of agents will satisfy the equivalence. 
+In the case of a multi-agent system as defined above, encoding $S$ as an interpreted systems of agents will satisfy the equivalence, and we can use CTLK to encode properties of the system to be checked. 
 
 \subsubsection{Explicit Model Checking}
 
 \label{explicit}
-In this section we introduce a basic approach to model checking, the so-called \textit{explicit} approach.
+In this section we present a first approach to model checking, the so-called \textit{explicit} approach.
 
 Suppose that we want to check that a multi-agent system $\Sigma$ satisfies a propery $P$. If $IS$ is an interpreted system representing $\Sigma$, and $\varphi$ the CTLK formula corresponding to $P$, we need to verify that $(IS, s_0) \models \varphi$, for all initial states $s_0 \in I$.
 
-Algorithmically it is more efficient \cite{need ref} to compute the set of global states $[\varphi]$ of $IS$ where $\varphi$ is true, and check that $I \subseteq [\varphi]$. 
-The following algorithm returns $[\varphi]$ for any CTLK formula $\varphi$.
+Algorithmically it is more efficient \cite{need ref} to compute the set of global states $\llbracket\varphi\rrbracket$ of $IS$ where $\varphi$ is true, and check that $I \subseteq \llbracket\varphi\rrbracket$. 
+The following algorithm returns $\llbracket\varphi\rrbracket$ for any CTLK formula $\varphi$.
 
 
 \begin{lstlisting}[mathescape]
 
 function SAT($\varphi$) 
-// returns $[\varphi]$
+// returns $\llbracket\varphi\rrbracket$
 if $\varphi = \top$: return $G$
 if $\varphi = \bot$: return $\varnothing$
 if $\varphi = p$: return $\pi(p)$ 
@@ -306,13 +309,13 @@ Notice that this covers all formulae $\varphi$, as $\{EX, AF, EU, K_i, E, C\}$ i
 \begin{lstlisting}[mathescape]
 
 function SAT$_{\mbox{EX}}$($\varphi$)
-// returns $[EX\varphi]$
+// returns $\llbracket EX\varphi\rrbracket$
   X := {$g_0 \in G \mid g_0 \rightarrow g_1$ for some $g_1 \in $SAT($\varphi$) }
   return X
 end
  
 function SAT$_{\mbox{AF}}$($\varphi$)
-// returns $[AF\varphi]$
+// returns $\llbracket AF\varphi\rrbracket$
   X := $G$
   Y := SAT($\varphi$)
   repeat until X = Y:
@@ -324,7 +327,7 @@ end
   
 
 function SAT$_{\mbox{EU}}$($\varphi_1$, $\varphi_2$)
-// returns $[E(\varphi_1U\varphi_2)]$
+// returns $\llbracket E(\varphi_1U\varphi_2)\rrbracket$
   W := SAT($\varphi$)
   X := $G$
   Y := SAT($\psi$)
@@ -336,34 +339,31 @@ function SAT$_{\mbox{EU}}$($\varphi_1$, $\varphi_2$)
 end
 
 function SAT$_{\mbox{K}}$($i$, $\varphi$)
-// returns $[K_i\varphi]$
+// returns $\llbracket K_i\varphi\rrbracket$
   X := SAT($\lnot\varphi$)
-  Y := $\{g_0 \in G \mid \exists g_1 \in$ X with $R_i(g_0, g_1)\}$
+  Y := $\{g_0 \in G \mid \exists g_1 \in$ X with $g_0 \sim_i g_1\}$
   return $G \setminus\mbox{Y}$
 end
 
 function SAT$_{\mbox{E}}$($\varphi$)
-// returns $[E\varphi]$
+// returns $\llbracket E\varphi\rrbracket$
   X := SAT($\lnot\varphi$)
-  Y := $\{g_0 \in G \mid \exists g_1 \in$ X with $R_i(g_0, g_1)$ for all $i = 1, ..., n\}$
+  Y := $\{g_0 \in G \mid \exists g_1 \in$ X with $g_0 \sim_i g_1$ for all $i = 1, ..., n\}$
   return $G \setminus\mbox{Y}$
 end
 
 function SAT$_{\mbox{C}}$($\varphi$)
-// returns $[C\varphi]$
+// returns $\llbracket C\varphi\rrbracket$
   X := $G$
   Y := SAT($\lnot\varphi$)
   repeat until X = Y:
     X := Y
-    Y := $\{g_0 \in G \mid \exists g_1 \in$ X with $R_i(g_0, g_1)$ for all $i = 1, ..., n\}$
+    Y := $\{g_0 \in G \mid \exists g_1 \in$ X with $g_0 \sim_i g_1$ for all $i = 1, ..., n\}$
   end
   return $G \setminus\mbox{Y}$
 end
-
+$\\$
 \end{lstlisting}
-
-TODO write something about $R_i$. 
-
 The complexity of \texttt{SAT} is linear in the size of the model. However, the size of the model grows exponentially in the number of variables used to describe the system $\Sigma$, therefore the explicit approach is not always viable in practice. This is the main difficulty in model checking and it is known as the \textit{state explosion problem}. 
 
 In the next section we introduce a model checking technique aiming to improve the efficiency of the approach. 
@@ -381,7 +381,7 @@ In the next section we introduce a model checking technique aiming to improve th
     \label{fig:model_example}
 \end{figure}
 
-The encoding process is best illustrated by an example  \cite{logic_in_computer_science}
+We use an example \cite{logic_in_computer_science} to illustrate the encoding process.
 Consider the model in Figure~\ref {fig:model_example}, representing a system with three states labelled $s_0, s_1, s_2$. 
 
 We consider two propositional variables, namely $x_1$ and $x_2$.  
@@ -403,16 +403,25 @@ $\{ s_0, s_1, s_2\}$ & $(x_1 \land \lnot x_2) \lor (\lnot x_1 \land  x_2) \lor (
 
 Note that for this representation to be unambiguous, we must ensure that no two states satisfy the same set of Boolean variables. If this is the case, new variables can be added which will be used to differenciate between the ambiguous states.
 
+
 \myparagraph{Symbolic Representation of a Transition Relation}
 
-The transition relation $\rightarrow$ of a model is a subset of $S \times S$. Taking two copies of our set of propositional variables, we can then associate a Boolean formula to the transition relation. In the example above, the transition relation $\rightarrow$ of the model is $\{(s_0, s_1), (s_1, s_2), (s_2, s_0), (s_2, s_2)\}$. 
-Using our Boolean representations for $s_0, s_1$, and $s_2$, we compute the representation of $\rightarrow$ to be $$(\lnot x_1 \land \lnot x_2 \land \lnot x'_1 \land \lnot x'_2 ) \lor (\lnot x_1 \land \lnot x_2 \land x'_1 \land \lnot x'_2 ) \lor ( x_1 \land \lnot x_2 \land \lnot x'_1 \land  x'_2 ) \lor (\lnot x_1 \land x_2 \land \lnot x'_1 \land \lnot x'_2 )$$
+The transition relation $\rightarrow$ of a model is a subset of $S \times S$. Taking two copies of our set of propositional variables, we can then associate a Boolean formula to the transition relation, as follows. 
 
-[needs more details on the computation]\\\\
+Firstly, notice that in the example above the transition relation $\rightarrow$ of the model is $$\{(s_0, s_1), (s_1, s_2), (s_2, s_0), (s_2, s_2)\}.$$
+Our set of Boolean variables was $\{x_1, x_2\}$; we now create a copy and use \textit{primed} variables to represent its elements. We get another set $\{x_1', x_2'\}$, which will be used to represent the \textit{next} state in our encoding of the transition relation.
+Now, for each pair element in the set, we take the conjunction of the Boolean representation of each state in the pair, the first one using the original set of variables, the second the primed set. For example, with $(s_0, s_1)$ is associated the formula $(\lnot x_1 \land \lnot x_2) \land (\lnot x'_1 \land \lnot x'_2)$ (using the Boolean representation for $s_0, s_1$ derived above -- see the table).
+
+As in the representation of sets of states, we represent sets of pairs by taking the conjunction of the representation of each pair element. Thus we compute the representation of $\rightarrow$ to be $(\lnot x_1 \land \lnot x_2 \land \lnot x'_1 \land \lnot x'_2 ) \lor (\lnot x_1 \land \lnot x_2 \land x'_1 \land \lnot x'_2 ) \lor ( x_1 \land \lnot x_2 \land \lnot x'_1 \land  x'_2 ) \lor (\lnot x_1 \land x_2 \land \lnot x'_1 \land \lnot x'_2 )$.
 
 \myparagraph{The case of Multi-Agent Systems}
 
-need to explain this
+Notice that the procedure described above is only valid for global states and does not distinguish between different agents. 
+In the case of multi-agent systems, we can encode the local states for agents using the same method as for states in the general case, making sure to use a different set of variable for each agent. A Boolean representation for a global state in the system will then be the conjunction of the formulas for the local states of which it consists. The separate encoding of the states for each agent will also enable the agent protocols to be encoded independently.
+
+Moreover, in order to successfully implement our model checking algorithm using symbolic expressions, we need a way of representing the agent accessibility relations $\sim_i$.
+But each of these is a binary relation on states, i.e. a subset of $S \times S$. Hence we can use the exact same method as for the global transition relation. 
+\\\\
 
 How does this help us? Well, several techniques exist which allow us to represent these Boolean formulas in a very concise form. This is the topic of the next section.
 
@@ -420,21 +429,22 @@ How does this help us? Well, several techniques exist which allow us to represen
 
 It is important to make the point that the Boolean formulas computed in \ref{symbolic} can be regarded as Boolean \textit{functions}, i.e. functions $\{0, 1\}^n \rightarrow \{0, 1\}$ for some $n$. For example, the formula $x_1 \land \lnot x_2$ is associated to the function $f(x_1, x_2) = x_1 \land \lnot x_2$.
 
-In this section we introduce a theory of representations of Boolean functions using directed acyclic graphs (DAG). 
+In this section we introduce various representations of Boolean functions using directed acyclic graphs (DAG). 
 
 \subsubsection{Ordered Binary Decision Diagrams}
 
-After truth tables, one the most basic ways of representing Boolean functions is by using a \textit{binary decision tree} (BDT). A BDT is a binary tree where we label non-terminal nodes with Boolean variables $x_1, x_2, ...$ and terminal nodes with the values 0 and 1. Each non-terminal node has two outgoing edges, one solid and one dashed (one for each value of the variable the node is labelled with). An example is shown in Figure~\ref{fig:BDT}. Note that the initial ordering of the variables changes the resulting BDT; for convenience, we write $[x_1, x_2, ..., x_n]$ to denote the order $x_1 < x_2 < ... < x_n$.
+One the most basic ways of representing a Boolean function is by using a \textit{binary decision tree} (BDT). A BDT is a binary tree where we label non-terminal nodes with Boolean variables $x_1, x_2, ...$ and terminal nodes with the values 0 and 1. Each non-terminal node has two outgoing edges, one solid and one dashed (one for each value of the variable the node is labelled with). An example is shown in Figure~\ref{fig:BDT}. Note that the initial ordering of the variables affects the resulting BDT; for convenience, we write $[x_1, x_2, ..., x_n]$ to denote the order $x_1 < x_2 < ... < x_n$.
 
 
-BDTs are a relatively inefficient way of storing Boolean formulas, since a BDT for a formula with $n$ variables will have $2^{n+1} - 1$ nodes. Fortunately, a BDT can be reduced to an \textit{ordered binary decision diagram} (OBDD), a much more compact data structure.
+BDTs are a relatively inefficient way of storing Boolean formulas, since a BDT for a formula with $n$ variables has $2^{n+1} - 1$ nodes. Fortunately, a BDT can be reduced to a \textit{reduced ordered binary decision diagram} (ROBDD), a much more compact data structure.
 
 \begin{figure}
 \centering
 \begin{tikzpicture}
 
-	[level 1/.style={sibling distance=33mm},
-	 level 2/.style={sibling distance=23mm}]
+	[level 1/.style={sibling distance=53mm},
+	 level 2/.style={sibling distance=33mm}, 
+	 level 3/.style={sibling distance=33mm}]
 	\node[circle, draw] (x1) {$x_1$}	 
 		child {node[circle,draw] (x21) {$x_2$} [dashed]
 			child {node[rectangle, solid, draw] (1) {1} [dashed]}
@@ -449,20 +459,19 @@ BDTs are a relatively inefficient way of storing Boolean formulas, since a BDT f
 
 \myparagraph{The Reduction Algorithm} 
 
-There are three steps in the reduction of BDTs to OBDDs:
+\noindent There are three steps in the reduction of BDTs to ROBDDs:
 \begin{enumerate}
 \item Removal of duplicate terminals: we merge all the 0-nodes and 1-nodes into two unique terminal nodes
 \item Removal of redundant tests: if both outgoing edges of a node $n$ point to the same node $m$, we remove $n$ from the graph, sending all its incoming edges directly to $m$ 
 \item Removal of duplicate non-terminals: we merge any two subtrees with identical BDD structure
 \end{enumerate}
-
-Steps (2) and (3) are repeatedly applied until no further reduction is possible. The resulting diagram is said to be a ordered binary decision diagram. 
+Steps (2) and (3) are repeatedly applied until no further reduction is possible, and the resulting diagram is said to be a reduced ordered binary decision diagram. 
 
 [here need example of using reduction algorithm]
 
 The following key result makes the use of OBDDs viable in practice: 
 
-\begin{theorem}
+\begin{theorem} \cite{bryant}
 \label{obdd_uniqueness}
 If $f$ is a Boolean function over the variables $x_1, ..., x_n$, then the OBDD representing $f$ is unique, up to the order of $x_1, ..., x_n$ chosen.
 \end{theorem}
@@ -483,7 +492,9 @@ In computer science, the field of \textit{knowledge compilation} is concerned wi
  The main properties that we look for in a target compilation language are the canonicity of the representation, the succinctness of the representation, and a polynomial-time complexity for queries and operations on the language. 
  These properties will ensure that we can safely rely on a particular language for our model checking algorithm. 
  
- OBDDs satisfy these properties (with succintness remaining highly dependent on the variable order), and in fact a number of model checkers use them for state-space representation (e.g. NuSMV, MCMAS). 
+ OBDDs satisfy these properrimental results that we present
+next, we hope to illustrate two po
+ties (with succintness remaining highly dependent on the variable order), and in fact a number of model checkers use them for state-space representation (e.g. NuSMV, MCMAS). 
  
  In 2002, A. Darwiche and P. Marquis published \cite{compilation_map} a comparative analysis of most existing DAG-based target compilation languages in terms of their succintness and the polytime operations they support. They show that all of these languages are subsets of a broad language called \textit{negation normal form} (NNF). 
 
@@ -578,12 +589,14 @@ In the next section we present SDDs in full details, delaying our own experiment
 
 \subsection{Sentential Decision Diagrams}
 
-\subsubsection{Preliminary Definitions}
+Most of the content in that section is taken from the work of A. Darwiche in \cite{sdd_1}, the first paper written on SDDs. 
 
-To define SDDs formally we must start with some preliminary definitions related to Boolean functions. 
+\subsubsection{Preliminaries}
+
+To define SDDs formally we must start with some preliminary definitions and results related to Boolean functions. 
 
 \begin{definition} 
-Let $f$ be a Boolean function. If $X$ is a set of variables, the \textit{conditioning} of $f$ on an instantiation \textbf{x}, written $f|_{\textbf{x}}$ is the Boolean function obtained by setting variables of $f$ in $X$ to their value in \textbf{x}. 
+Let $f$ be a Boolean function. If $X$ is a set of variables, the \textit{conditioning} of $f$ on an instantiation \textbf{x} of $X$, written $f|_{\textbf{x}}$ is the Boolean function obtained by setting variables of $f$ in $X$ to their value in \textbf{x}. 
 We say that a function $f$ \textit{essentially depends} on a variable $x$ iff $f|_{x} \neq f|_{\lnot x}$, and we write $f(X)$ if $f$ essentially depends on variables in $X$ only.
 \end{definition}
 
@@ -592,12 +605,11 @@ We say that a function $f$ \textit{essentially depends} on a variable $x$ iff $f
 The following definition is the basis for the construction of SDDs:
 
 \begin{definition} (Decompositions and partitions)
-
-An \textit{($X$,$Y$)-decomposition} of a function $f(X, Y)$ is a set of pairs $$\{(p_1, s_1),...,(p_n, s_n)\}$$ such that $$ f = (p_1(X) \land s_1(Y)) \lor ... \lor (p_n(X) \land s_n(Y)).$$
+An \textit{($X$,$Y$)-decomposition} of a function $f(X, Y)$ is a set of pairs $\{(p_1, s_1),...,(p_n, s_n)\}$ such that $$ f = (p_1(X) \land s_1(Y)) \lor ... \lor (p_n(X) \land s_n(Y)).$$
 The decomposition is said to be \textit{strongly deterministic} on $X$ if $p_i(X) \land p_j(X) = \bot$ for $i \neq j$. In this case, each ordered pair $(p_i, s_i)$ in the decomposition is called an \textit{element}, each $p_i$ a \textit{prime} and each $s_i$ a \textit{sub}.
 
 Let $\alpha = \{(p_1, s_1),...,(p_n, s_n)\}$ be an ($X,Y$)-decomposition, and suppose $\alpha$ is strongly deterministic on $X$.
-Then $\alpha$ is called an $X$-\textit{partition} iff its primes form a partition (i.e primes are pairwise mutually exclusive, each prime is consistent, and the disjunction of all primes is valid.)
+Then $\alpha$ is called an $X$-\textit{partition} iff its primes form a partition (i.e primes are pairwise mutually exclusive, each prime is consistent, and the disjunction of all primes is valid).
 We say that $\alpha$ is \textit{compressed} if $s_i \neq s_j$ for $i \neq j$.
 \end{definition}
 
@@ -605,20 +617,23 @@ We say that $\alpha$ is \textit{compressed} if $s_i \neq s_j$ for $i \neq j$.
 Let $f(x, y, z) = (x \land y) \lor (x \land z)$. Then $\alpha = \{(x, y\lor z)\}$ is an $(\{x\}, \{y, z\})$-decomposition of $f$ which is strongly deterministic (as there is only one prime). It is however not an $\{x\}$-partition, but $\beta = \{(x, y\lor z), (\lnot x, \bot)\}$ is, since $x, \lnot x$ form a partition. Note that $\beta$ is compressed. 
 \end{example}
 
-\noindent Remark: Notice that in an $X$-partition $\bot$ can never be prime, and if $\top$ is prime then it is the only prime. Moreover primes determine subs, so two $X$-partitions are different iff they contain distinct primes.
+\noindent Remark that in an $X$-partition $\bot$ can never be prime, and if $\top$ is prime then it is the only prime. Moreover primes determine subs, so two $X$-partitions are different iff they contain distinct primes.
 
 \begin{theorem}
 \label{theorem_apply}
 Let $\circ$ be a Boolean operator and let $\{(p_1, s_1),...,(p_n, s_n)\}$ and $\{(q_1, r_1),...,(q_m, r_m)\}$  be $X$-partitions of Boolean functions $f(X, Y)$ and $g(X, Y)$ respectively. Then $$\{(p_i \land q_j, s_i \circ r_j) \mid  p_i \land q_j  \neq \bot \}$$ is an $X$-partition of $f \circ g$.
 \end{theorem}
 \begin{proof}
- Since $p_1, ..., p_n$ and $q_1, ..., q_m$ are partitions, the $(p_i \land q_j$ also form a partition for $i = 1, ..., n$, $j = 1, ..., m$ and $p_i \land q_j \neq \bot$. 
+ Since $p_1, ..., p_n$ and $q_1, ..., q_m$ are partitions, the $(p_i \land q_j)$ also form a partition for $i = 1, ..., n$, $j = 1, ..., m$ and $p_i \land q_j \neq \bot$. 
+ 
+To do: finish proof 
 \end{proof}
 
 As we see later on, an important consequence of Theorem~\ref{theorem_apply} is the polynomial time operations available on SDDs. Canonicity of SDDs is due to the following result:
 
 \begin{theorem}
-A function $f(\textbf{X}, \textbf{Y})$ has exaclty one compressed \textbf{X}-partition.
+\label{unique_compressed}
+A function $f(X, Y)$ has exaclty one compressed $X$-partition.
 \end{theorem}
 \begin{proof}
 proof
@@ -626,32 +641,55 @@ proof
 
 \myparagraph{Vtrees}
 
-Vtrees (``variable trees") are to SDDs what variable orders are to BDDs. A vtree completely determines the structure of an SDD, so they are crucial to the viability of SDDs in practice.
+Vtrees (for ``variable trees") are to SDDs what variable orders are to BDDs. A vtree completely determines the structure of an SDD, so they are crucial to the viability of SDDs in practice.
 
 \begin{definition}
-A \textit{vtree} for variables $X$ is a full binary tree whose leaves are in one-to-one correspondence with the variables in $X$. We will often not distinguish between a vtree node $v$ and the subtree rooted at $v$, and the left and right children of a node $v$ will be denoted $v^l$ and $v^r$, respectively.
+A \textit{vtree} for variables $X$ is a full binary tree whose leaves are in one-to-one correspondence with the  variables in $X$. We will often not distinguish between a vtree node $v$ and the subtree rooted at $v$, and the left and right children of a node $v$ will be denoted $v^l$ and $v^r$, respectively.
 \end{definition}
 
-\begin{example}
-Let $X = \{x_1, x_2, x_3, x_4\}$. The following are two vtrees for $X$. 
-\end{example}
-
-Note that a vtree on \textbf{X} is stronger than a total order of the variables in \textbf{X}. Example \ref{test} shows two distinct vtrees which induce the same variable order. 
-
-Now, let $f(\textbf{X})$ be a Boolean function and let $v$ be a vtree for \textbf{X}. We can construct an SDD for $f$ using a recursive algorithm, as follows.
-
- We first notice that variables in \textbf{X} are split into two disjoint sets, namely the variables in $v^l$ (say, \textbf{Y}) and the variables in $v^r$ (say, \textbf{Z}). Now, let $\alpha =  \{(p_1, s_1),...,(p_n, s_n)\}$ be a \textbf{Y}-partition of $f(\textbf{Y}, \textbf{Z})$. We apply this decomposition again to each prime 
-
-[...] describe more
-\subsubsection{Syntax and Semantics of SDDs}
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{balancedABCD.png}
+\qquad
+\includegraphics[scale=0.5]{rightlinearABCD.png}
 
 
-\begin{definition} (Syntax)
-Let $v$ be a vtree. $\alpha$ is an SDD that respects $v$ iff: 
+\caption{Two vtrees for $X = \{A, B, C, D\}$ To Do sort out nodes IDs}
+\label{fig:vtree_examples} 
+
+\end{figure}
+Note that a vtree on a set $X$ is stronger than a total order of the variables in $X$. Figure~\ref{fig:vtree_examples} shows two distinct vtrees which induce the same variable order. 
+
+\subsubsection{Definition and Construction}
+
+The construction of an SDD for a Boolean function $f$ with respect to a vtree $v$ is done by a recursive algorithm on the children nodes of $v$. 
+
+Let $v$ be the vtree on the left of Figure~\ref{fig:vtree_examples}, and let $$f(A, B, C, D) = (A \land B) \lor (B \land C) \lor (C \land D).$$
+
+The decomposition of $f$ at the vtree node $v$ goes as follows: we split the variables in $X$ into two subsets by separating variables in $v^l$ from those in $v^r$: we obtain $\{A, B\}$ and $\{C, D\}$; we take the unique compressed $\{A, B\}$-partition of $f$, namely $\alpha = \{(\lnot B , C\land D), (\lnot A \land B, C), (A \land B, \top)\}$. The SDD for $f$ is the decomposition obtained by further decomposing the primes of $\alpha$ at $v^l$ and its subs at $v^r$. We continue this recursively until all elements consist of literals or constants. 
+
+\myparagraph{Graphical Representation of SDDs}
+
+The SDD constructed for function $f$ is represented on the left in Figure~\ref{fig:sddexample1}. On the right is the SDD for $f$ constructed with respect to the vtree on the right in Figure~\ref{fig:vtree_examples}.
+
+A decomposition is represented by a circle with outgoing edges pointing to its elements, and an element is represented by a pair of boxes where the left box represents the prime and the right box represents the sub. If one of them is another decomposition, we leave the box empty and draw an edge pointing to the circle node representing it.
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.3]{balancedfirstexample.png}
+\includegraphics[scale=0.3]{rightlinearfirstexample.png}
+
+\caption{SDDs for $f = (A \land B) \lor (B \land C) \lor (C \land D)$ corresponding to the vtrees in Figure~\ref{fig:vtree_examples}. Notice that identical SDD nodes have been merged.}
+\label{fig:sddexample1} 
+\end{figure}
+
+The next two definitions formally define the syntax and semantics of SDDs.
+
+\begin{definition} (Syntax) Let $v$ be a vtree. $\alpha$ is an SDD that respects $v$ iff: 
 \begin{itemize} 
 \item $\alpha = \top$ or $\alpha = \bot$
 \item $\alpha = X$ or $\alpha = \lnot X$, and $v$ is a leaf with variable $X$
-\item $v$ is internal, and $\alpha$ is a partition  $\{(p_1, s_1), ..., (p_n, s_n)\}$ such that for all $i$, $p_i$ is an SDD that respects $v^l$ and $s_i$ is an SDD that respects $v^r$.
+\item $v$ is an internal node (i.e. it has children), and $\alpha$ is a partition  $\{(p_1, s_1), ..., (p_n, s_n)\}$ such that for all $i$, $p_i$ is an SDD that respects $v^l$ and $s_i$ is an SDD that respects $v^r$.
 \end{itemize}
 In the first two cases we say that $\alpha$ is \textit{terminal}, and in the third case $\alpha$ is called a \textit{decomposition}. For SDDs $\alpha$ and $\beta$, we write $\alpha = \beta$ iff they are \textit{syntactically equal}.
 \end{definition}
@@ -667,15 +705,10 @@ We say two SDDs $\alpha$ and $\beta$ are \textit{equivalent} (written $\alpha \e
 
 \end{definition}
 
-
-\subsubsection{Construction of SDDs}
-
-
-
-\subsubsection{Canonicity of SDDs} 
+\subsubsection{Canonicity and Operations} 
 
 It is obvious that if SDDs $\alpha$ and $\beta$ are equal, then they are equivalent. We would however like 
-to impose conditions on the construction of $\alpha$ and $\beta$  so that $\alpha \equiv \beta \Rightarrow \alpha = \beta$.
+to impose conditions on the construction of $\alpha$ and $\beta$  so that $\alpha \equiv \beta \Rightarrow \alpha = \beta$, which would make SDDs a \textit{canonical }representation, a crucial property.
 We begin with a few definitions and lemmas.
 
 \begin{definition}
@@ -684,34 +717,75 @@ Let $f$ be a non-trivial Boolean function. We say $f$ \textit{essentially depend
 
 \begin{lemma}
 A non-trivial function essentially depends on exactly one vtree node.
+\label{unique_vtree_function}
 \end{lemma} 
-
-\begin{proof} 
-
-\end{proof}
  
 \begin{definition}
 An SDD is \textit{compressed} iff all its decompositions are compressed. It is \textit{trimmed} iff it does not have decompositions of the form $\{(\top, \alpha)\}$ or $\{(\alpha, \top), (\lnot\alpha, \bot)\}$ for some SDD $\alpha$.
 \end{definition}
 
-An SDD can be trimmed by traversing it bottom-up and replacing decompositions of the form  $\{(\top, \alpha)\}$ or $\{(\alpha, \top), (\lnot\alpha, \bot)\}$ by $\alpha$.
+
+These two properties are very accessible. An SDD is compressed as long as all $X$-partitions used during its construction are compressed, and it can be trimmed by traversing it bottom-up and replacing decompositions of the form  $\{(\top, \alpha)\}$ or $\{(\alpha, \top), (\lnot\alpha, \bot)\}$ by $\alpha$. 
+Theorem~\ref{canonicity} below shows that they are in fact sufficient for the representation to be canonical. To prove it we first need another lemma. 
+
+\begin{lemma}
+Suppose $\alpha$ is a non-trivial, compressed and trimmed SDD. Then $\alpha$ respects a unique vtree node $v$, which is the unique node that the Boolean function $f = \langle \alpha \rangle$ essentially depends on.
+\label{unique_vtree_sdd}
+\end{lemma}
 
 \begin{theorem} 
-Let $\alpha$ and $\beta$ be compressed and trimmed SDDs. Then $$\alpha = \beta \Leftrightarrow \alpha \equiv \beta$$
+\label{canonicity}
+Let $\alpha$ and $\beta$ be compressed and trimmed SDDs. Then $$\alpha = \beta \Leftrightarrow \alpha \equiv \beta.$$
 \end{theorem}
 
 \begin{proof}
-by induction
+$(\Rightarrow)$ is clear. For $(\Leftarrow)$, suppose that $\alpha \equiv \beta$ and let $f = \langle \alpha \rangle = \langle \beta \rangle.$ If $f$ is constant, then $\alpha$ and $\beta$ are trivial SDDs, therefore they are equal.
+Suppose  now that $f$ is non-trivial, and let $v$ be the vtree node that $f$ essentially depends on (it is unique by Lemma~\ref{unique_vtree_function}). Then by Lemma~\ref{unique_vtree_sdd}, $\alpha$ and $\beta$ respect $v$. 
+We continue the proof by structural induction on $v$. 
+
+If $v$ is a leaf, then $\alpha$ and $\beta$ are terminals. But $f$ is non-trivial so $\alpha$ and $\beta$ are equivalent literals, and so they must be equal. 
+Suppose now that $v$ is internal, and that the theorem holds for $v^l$ and $v^r$. Let $X$ be the variables in $v^l$ and $Y$ be the variables in $v^r$. 
+Write $\alpha = \{(p_1,s_1), ..., (p_n,s_n)\}$  and $\beta = \{(q_1,r_1), ..., (q_m,r_m)\}$, where the $p_i, q_j$ are SDDs with respect to $v^l$ and the $s_i, r_j$ are SDDs with respect to $v^r$. Then  $\{(\langle p_1 \rangle,\langle s_1\rangle), ..., (\langle p_n\rangle,\langle s_n\rangle)\}$ and  $\{(\langle q_1 \rangle,\langle r_1\rangle), ..., (\langle q_n\rangle,\langle r_n\rangle)\}$ are $X$-partitions of $f$, and they are compressed since $\alpha$ and $\beta$ are compressed SDDs. So by Theorem~\ref{unique_compressed}, they are the same. So $n = m$, and for all $i$ we have $\langle p_i\rangle = \langle q_i \rangle $ and $\langle s_i \rangle = \langle r_i\rangle$, possibly after reordering. Then by definition $p_i \equiv q_i$ and $s_i \equiv r_i$, which by induction implies that $p_i = q_i$ and $s_i = r_i$. So $\alpha = \beta$.
 \end{proof}
 
-\subsubsection{SDD Operations}
+\myparagraph{Operations on SDDs} 
+
+We start right away by giving the pseudo-code for the \texttt{apply} algorithm on SDDs, which combines two SDDs $\alpha$ and $\beta$ using a Boolean operation $\circ$, provided they respect the same vtree node.
+ 
+\begin{lstlisting}[mathescape]
+
+ 1 function apply($\alpha$, $\beta$, $\circ$)
+ 2  if $\alpha$ and $\beta$ are constants or literals
+ 3    return $\alpha \circ \beta$   
+ 4  else if cache($\alpha$, $\beta$, $\circ$) != null
+ 5    return cache($\alpha$, $\beta$, $\circ$)
+ 6  else
+ 7    $\gamma$ = {}
+ 8    for all elements ($p_i$, $s_i$) in $\alpha$
+ 9      for all elements ($q_j$, $r_j$) in $\beta$ 
+10        $p$ = apply($p_i$, $q_j$, $\land$)
+11        if p != $\bot$
+12         $s$ = apply($s_i$, $r_j$, $\circ$)
+13         if $\nexists$ element ($q$, $s$) in $\gamma$
+14            add ($p$, $s$) to $\gamma$
+15          else 
+16            add (apply($p$, $q$, $\lor$), s) to $\gamma$
+17        end if
+18      end for
+19    end for
+20    return cache($\alpha$, $\beta$, $\circ$) = $\gamma$
+21  end if
+22 end function
+$$
+\end{lstlisting}
+
+If $\alpha$ and $\beta$ are compressed, then this algorithm returns a compressed SDD for $\alpha \circ \beta$. 
+Theorem~\ref{theorem_apply} ensures that \texttt{apply($\alpha$, $\beta$, $\circ$)} is in fact an SDD, while the if condition on line 13 checks that its subs are distinct, thereby making it a compressed SDD. The use of the \texttt{cache} is there to emphasise the fact that any implementation of \texttt{apply} could be significantly improved by keeping the set of computed SDDs in memory. 
 
 The \texttt{apply} algorithm to compose SDDs $\alpha$ and $\beta$ using a Boolean operator takes time $O(|\alpha||\beta|)$ provided both SDDs 
-are normalised. See \cite{sdd_1} for details of the algorithm.
 
-The \texttt{exists} algorithm is the implementation of the $\exists X$ operator on function $f$ for variable $X$. Recall $$\exists X f = f[0/X] \lor f[1/X]$$
-This can be implemented using the \texttt{restrict} algorithm which returns the conditioning $f|_{\mbox{x}}$ for an instantiation x of $X$.  
-
+\subsubsection{OBDDs are SDDs}
+v
 \section{Implementation}
 
 This chapter is devoted to the implementation of the model checker itself. We start by giving an overview of the existing code base and libraries upon which it relies, before presenting the important design decisions and algorithms, and finally discussing the challenges that occured during the implementation of this new model checker. 
@@ -725,6 +799,12 @@ This chapter is devoted to the implementation of the model checker itself. We st
 The SDD Package API contains most of the functions required for the use of SDDs in model checking. This includes basic manipulations such as conjunction, disjunction, and negation of Boolean functions represented by SDDs, conditioning a function on a literal, and quantifying out variables (the SDD equivalent of $\exists$ and $\forall$). Additionally, the API makes possible a number of operations on vtrees, including \textit{rotating }and \textit{swapping} (these are crucial for navigating the space of vtrees in the context of SDD minimisation, see below for details). 
 
 The \textit{SDD manager} is the focal point for all the SDD operations in the program. It is there to ensure that all SDDs in the program have been built with respect to the same vtree, and it handles SDD conversions in the case of a vtree modification. It also gives the user access to a number of statistics, helpful for tracking a program's memory usage or the size of some SDD nodes. 
+
+\myparagraph{Standard Vtrees}
+\label{std_vtrees}
+
+
+need pictures 
 
 \myparagraph{Dynamic SDD Minimisation}
 
@@ -744,7 +824,7 @@ We now give an informal description of the algorithm in \cite{sdd_3} (the one im
 
 CUDD is the C$++$ BDD library used by MCMAS (see below) for BDD manipulation, and it is therefore our reference for all practical comparisons between SDDs and BDDs. 
 
-Here we simply give an account of the differences between  CUDD and the SDD package, in order for our comparisons to be fair: we are interested in the relative efficiency of the data structures, not the packages, and therefore it is important that we take into account any difference in design and implementation. 
+Here we simply give an account of the differences between  CUDD and the SDD package, in order for our comparisons to be fair: we are interested in the relative efficiency of the data structures, not the packages, and therefore it is important that we take into account any differences in design and implementation. 
 
 Fortunately, the libraries have a very similar design. Both are organised around a manager handling all internal operations. 
 \begin{itemize}
@@ -786,18 +866,6 @@ The main steps in the program are
 \item compute SAT on modal formulas and compare with reach
 \end{enumerate}
 
-encore quelques lignes
-encore quelques lignes
-encore quelques lignes
-encore quelques lignes
-encore quelques lignes
-encore quelques lignes
-encore quelques lignes
-encore quelques lignes
-encore quelques lignes
-encore quelques lignes
-encore quelques lignes
-
 \myparagraph{Variable Allocation}
 
 Variable allocation is the process of allocating manager variables (created with the manager) to agents and determining the various sets of variables needed for symbolic representation within each agent: state variables, primed state variables (a copy of the state variables representing the \textit{next }state), and action variables.
@@ -811,7 +879,7 @@ It may seem confusing that variable allocation happens before the user has been 
 In MCMAS, the user can choose between four \textit{standard} different variable orders. We take the time to present them here, not only because of the great impact that this choice has on the overall performance, but also for reference in the future chapters (where we compare these orders with various SDD vtrees).
 
 \myparagraph{Standard Variable Orders}
- 
+ \label{std_orderings}
 Suppose MCMAS is running on an example requiring $n$ state variables denoted $x_1, ..., x_n$, and $m$ action variables denoted $a_1, ..., a_m$. By definition there are $n$ primed state variables (the next state is a state, so it can be represented with the $n$ state variables), these are denoted $x_1', ..., x_n'$. 
 Suppose also that there are $k$ agents, and that for each $i$, agent $i$ has been allocated variables $x_{i_1}, ..., x_{i_{n_i}}$, $x_{i_1}', ..., x_{i_{n_i}}'$ and $a_{j_1}, ..., a_{j_{m_i}}$, for some $n_i, m_i \in \mathbb{N}$ and where $i_1, ..., i_{n_i}$ and $j_i, ..., j_{m_i}$ are sequences of consecutive integers.
 
@@ -883,34 +951,67 @@ An useful alternative is to construct the SDD with respect to a right-linear vtr
 \end{itemize}
  This second option is nonetheless the only available solution in the case of very large SDDs and BDDs, which explains the difficulty in debugging larger examples.
  
-  We were able to verify the correctness of our implementation by looking at the actual result of the execution. If our model checker yields the same answer as MCMAS on a large number of Boolean formulae, it is very likely that the encoding of the transition relation, the reachable state space, and the implementation of \texttt{SAT} are correct.  
+  We are able to verify the correctness of our implementation by looking at the actual result of the execution. If our model checker yields the same answer as MCMAS on a large number of Boolean formulae, it is very likely that the encoding of the transition relation, the reachable state space, and the implementation of \texttt{SAT} are correct.  
 
 \section{Evaluation} 
 
-\subsection{Setup}
+\subsection{Setup and Evaluation Plan}
 
-\subsubsection{Example Models}
+\subsubsection{Evaluation Strategy}
+
+The ultimate objective of this project was either to establish, or to refute SDDs (in their current state) as serious competitors to BDDs in model checking. The obvious plan for quantitative analysis was to do a side-by-side comparison of our model checker and MCMAS on a series of examples, and conclude. However, in order to provide a fair comparison we had to ensure that both structures were performing ``at the best of their abilities". 
+
+There are suggested methods for the use of BDDs in model checking, in particular concerning initial variable orders~\cite{bdd_heuristics}. For the specific case of MCMAS we observe that the standard order number 2 (see \ref{std_orderings}) \textit{often} yields the best results.
+On the other hand, SDDs had not yet been explored in the context of model checking, and consequently no heuristics existed. 
+
+Through this evaluation we planned to remediate this by investigating various vtree constructions and comparing them with MCMAS. 
+
+To start with, we decided to focus on the issue of \textit{static} vtree generation, for the situation where the vtree has to be determined \textit{before} SDDs are constructed, as opposed to continuously modified as the construction process happens (this is called \textit{dynamic} minimisation). 
+
+Although it may seem like wasted effort, the importance of static vtree generation is non-negligible, for two reasons: firstly, it helps us understand what aspects of the vtree have the greatest impact on the final SDD; secondly, even though dynamic minimisation is generally the most efficient technique, it can also be a very time-consuming process which some applications might find less practical. 
+
+After this first investigation, we planned to look at the performance of SDDs when enabling the dynamic minimisation feature of the SDD Package, and compare it to BDD dynamic variable reordering as implemented in MCMAS.
+
+We hoped that both of these analyses (static and dynamic) would provide enough information to know whether or not SDDs (as implemented in the SDD Package) are suitable for model checking multi-agent systems.
+
+	\subsubsection{Example Models}
 \begin{itemize}
 \item Description of models used for quantitative analysis 
 \end{itemize}
-\subsubsection{Machine and Configurations} 
+\subsubsection{Machine, Configurations, Benchmarking Process} 
 
-\subsubsection{Outline}
 
-\subsection{Comparison with Right-Linear Vtrees}
 
-\subsection{Comparison with Standard Vtrees}
+\subsection{Comparisons with Standard Vtrees under Static Vtree Generation}
 
-\subsection{Towards a Better Vtree: Observations}
+We started our investigation by experimenting with the standard vtrees, i.e. those pre-implemented in the SDD package, namely right-linear, left-linear, balanced, and vertical. 
+
+\subsubsection{Right-Linear Vtrees} 
+
+Recall that BDDs are structurally identical to SDDs build using a right-linear vtree, and the same variable ordering (\ref{bdds_are_sdds}). 
+Experimenting with this particular type of SDDs was therefore of significant importance, as it would enable us to compare the efficiency of both model checkers in the exact same situations. 
+
+$$DATA$$
+
+As shown in the DATA above, the result of this was disappointing
+
+
+\subsubsection{Other Standard Vtrees}
+
+
+
+\subsubsection{Towards a Better Vtree: Observations}
 
 \begin{itemize}
 \item The environment generally contains the highest number of variables (and hence the largest evolution SDD). 
 \item Applying the transition relation in the state space generation represents a significant amount (think more than 80\%) of the overhead. In some cases \texttt{sdd\_exists()} is also very slow, but only in some cases, which can lead to thinking that significant improvements are possible.
- 
+
 \end{itemize}
 
 
 \subsection{New Vtrees and Experiments}
+
+
 
 We aim to find an initial vtree leading to faster computations. We notice that whatever the initial vtree, dynamic reduction algorithms always result in a particular type of vtree, which we call \textit{pseudo-right-linear}. 
 All our experiments are with pseudo-right-linear vtrees.
@@ -927,7 +1028,7 @@ paired with their primed counterpart. (TODO: confirm this!)
 
 \end{itemize}
 
-\subsection{Comparisons with Dynamic Reordering and Minimisation}
+\subsection{Using Dynamic Reordering and Minimisation}
 
 
 
@@ -985,6 +1086,17 @@ Cambridge University Press, 2004.
 
 \bibitem{add}  R. I. Bahar, E. A. Frohm, C. M. Gaona, G. D. Hachtel, E. Macii, A. Pardo, F. Somenzi:\textit{
 Algebraic decision diagrams and their applications}, 1993.
+
+\bibitem{bdd_heuristics} M. Rice, S. Kulhari:\textit{ A Survey of Static Variable Ordering Heuristics for Efficient BDD/MDD Construction}, 2008.
+
+\bibitem{bryant} R. E. Bryant: \textit{Graph-Based Algorithms
+for Boolean Function Manipulation}, 1986.
+
+\bibitem{ctl*}  	E. A. Emerson, J. Y. Halpern:\textit{
+``Sometimes" and ``not never" revisited: on branching versus linear time temporal logic}, 1986.
+	
+\bibitem{ctlk}R. Fagin, J. Y. Halpern, Y. Moses, M. Y. Vardi: \textit{Reasoning about Knowledge}, 1995.
+
 
 \bibitem{MCMAS_website} MCMAS webpage, http://vas.doc.ic.ac.uk/software/mcmas/
 
