@@ -29,34 +29,34 @@
 \contentsline {subsubsection}{\numberline {2.4.3}Canonicity and Operations}{21}
 \contentsline {paragraph}{Operations on SDDs}{23}
 \contentsline {subsubsection}{\numberline {2.4.4}OBDDs are SDDs}{24}
-\contentsline {section}{\numberline {3}Implementation}{25}
-\contentsline {subsection}{\numberline {3.1}Preliminaries}{25}
-\contentsline {subsubsection}{\numberline {3.1.1}The SDD Package}{25}
-\contentsline {paragraph}{Standard Vtrees}{25}
-\contentsline {paragraph}{Dynamic SDD Minimisation}{25}
-\contentsline {paragraph}{CUDD}{26}
-\contentsline {subsubsection}{\numberline {3.1.2}MCMAS}{27}
-\contentsline {paragraph}{Important Classes and Methods}{27}
-\contentsline {paragraph}{Variable Allocation}{28}
-\contentsline {paragraph}{Standard Variable Orders}{28}
-\contentsline {paragraph}{Algebraic Decision Diagrams}{29}
-\contentsline {subsection}{\numberline {3.2}Contributions}{30}
-\contentsline {subsubsection}{\numberline {3.2.1}A Model Checker Based on SDDs}{30}
-\contentsline {subsubsection}{\numberline {3.2.2}Challenges}{30}
-\contentsline {paragraph}{Garbage Collection}{30}
-\contentsline {paragraph}{Debugging and Comparing}{31}
-\contentsline {section}{\numberline {4}Evaluation}{32}
-\contentsline {subsection}{\numberline {4.1}Setup and Evaluation Plan}{32}
-\contentsline {subsubsection}{\numberline {4.1.1}Evaluation Strategy}{32}
-\contentsline {subsubsection}{\numberline {4.1.2}Example Models}{32}
-\contentsline {subsubsection}{\numberline {4.1.3}Machine, Configurations, Benchmarking Process}{33}
-\contentsline {subsection}{\numberline {4.2}Comparisons with Standard Vtrees under Static Vtree Generation}{33}
-\contentsline {subsubsection}{\numberline {4.2.1}Right-Linear Vtrees}{33}
-\contentsline {subsubsection}{\numberline {4.2.2}Other Standard Vtrees}{33}
-\contentsline {subsubsection}{\numberline {4.2.3}Towards a Better Vtree: Observations}{33}
-\contentsline {subsection}{\numberline {4.3}New Vtrees and Experiments}{33}
-\contentsline {subsection}{\numberline {4.4}Using Dynamic Reordering and Minimisation}{34}
-\contentsline {subsection}{\numberline {4.5}More suggestions for speed improvement}{34}
-\contentsline {section}{\numberline {5}Conclusions and further work}{35}
-\contentsline {subsection}{\numberline {5.1}Review}{35}
-\contentsline {subsection}{\numberline {5.2}Future work}{35}
+\contentsline {section}{\numberline {3}Implementation}{26}
+\contentsline {subsection}{\numberline {3.1}Preliminaries}{26}
+\contentsline {subsubsection}{\numberline {3.1.1}The SDD Package}{26}
+\contentsline {paragraph}{Standard Vtrees}{26}
+\contentsline {paragraph}{Dynamic SDD Minimisation}{26}
+\contentsline {paragraph}{CUDD}{27}
+\contentsline {subsubsection}{\numberline {3.1.2}MCMAS}{28}
+\contentsline {paragraph}{Important Classes and Methods}{28}
+\contentsline {paragraph}{Variable Allocation}{29}
+\contentsline {paragraph}{Standard Variable Orders}{29}
+\contentsline {paragraph}{Algebraic Decision Diagrams}{30}
+\contentsline {subsection}{\numberline {3.2}Contributions}{31}
+\contentsline {subsubsection}{\numberline {3.2.1}A Model Checker Based on SDDs}{31}
+\contentsline {subsubsection}{\numberline {3.2.2}Challenges}{31}
+\contentsline {paragraph}{Garbage Collection}{31}
+\contentsline {paragraph}{Debugging and Comparing}{32}
+\contentsline {section}{\numberline {4}Evaluation}{33}
+\contentsline {subsection}{\numberline {4.1}Setup and Evaluation Plan}{33}
+\contentsline {subsubsection}{\numberline {4.1.1}Evaluation Strategy}{33}
+\contentsline {subsubsection}{\numberline {4.1.2}Example Models}{33}
+\contentsline {subsubsection}{\numberline {4.1.3}Machine, Configurations, Benchmarking Process}{34}
+\contentsline {subsection}{\numberline {4.2}Comparisons with Standard Vtrees under Static Vtree Generation}{34}
+\contentsline {subsubsection}{\numberline {4.2.1}Right-Linear Vtrees}{34}
+\contentsline {subsubsection}{\numberline {4.2.2}Other Standard Vtrees}{34}
+\contentsline {subsubsection}{\numberline {4.2.3}Towards a Better Vtree: Observations}{34}
+\contentsline {subsection}{\numberline {4.3}New Vtrees and Experiments}{34}
+\contentsline {subsection}{\numberline {4.4}Using Dynamic Reordering and Minimisation}{35}
+\contentsline {subsection}{\numberline {4.5}More suggestions for speed improvement}{35}
+\contentsline {section}{\numberline {5}Conclusions and further work}{36}
+\contentsline {subsection}{\numberline {5.1}Review}{36}
+\contentsline {subsection}{\numberline {5.2}Future work}{36}

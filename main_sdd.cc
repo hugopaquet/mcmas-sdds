@@ -827,7 +827,19 @@ main(int argc, char *argv[])
 	Vtree* vtree = create_vtree();
 	
 	sdd_vtree_save_as_dot("vtree.dot", vtree);
+	
 
+	Vtree* tmpvtree = sdd_vtree_read("vtree.txt");
+	sdd_vtree_save_as_dot("vtree.dot", tmpvtree);
+	SddManager* tmpman = sdd_manager_new(tmpvtree);
+	SddNode* tmpnode = sdd_conjoin(sdd_manager_literal(1, tmpman), sdd_manager_literal(2, tmpman), tmpman);
+	tmpnode = sdd_disjoin(tmpnode, sdd_conjoin(sdd_manager_literal(2, tmpman), sdd_manager_literal(3, tmpman), tmpman), tmpman);
+	tmpnode = sdd_disjoin(tmpnode, sdd_conjoin(sdd_manager_literal(3, tmpman), sdd_manager_literal(4, tmpman), tmpman), tmpman);
+
+	sdd_save_as_dot("node.dot", tmpnode);
+
+
+	exit(0);
 		// Create and setup SDD manager
 	int auto_gc_and_minimize = 1; //1=yes
 	SddManager* manager = sdd_manager_new(vtree);

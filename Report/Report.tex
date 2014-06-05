@@ -765,27 +765,63 @@ We start right away by giving the pseudo-code for the \texttt{apply} algorithm o
  9      for all elements ($q_j$, $r_j$) in $\beta$ 
 10        $p$ = apply($p_i$, $q_j$, $\land$)
 11        if p != $\bot$
-12         $s$ = apply($s_i$, $r_j$, $\circ$)
-13         if $\nexists$ element ($q$, $s$) in $\gamma$
+12          $s$ = apply($s_i$, $r_j$, $\circ$)
+13          if $\nexists$ element ($q$, $s$) in $\gamma$
 14            add ($p$, $s$) to $\gamma$
 15          else 
 16            add (apply($p$, $q$, $\lor$), s) to $\gamma$
-17        end if
-18      end for
-19    end for
-20    return cache($\alpha$, $\beta$, $\circ$) = $\gamma$
-21  end if
-22 end function
+17          end if
+18        end if
+19      end for
+20    end for
+21    return cache($\alpha$, $\beta$, $\circ$) = $\gamma$
+22  end if
+23 end function
 $$
 \end{lstlisting}
 
 If $\alpha$ and $\beta$ are compressed, then this algorithm returns a compressed SDD for $\alpha \circ \beta$. 
-Theorem~\ref{theorem_apply} ensures that \texttt{apply($\alpha$, $\beta$, $\circ$)} is in fact an SDD, while the if condition on line 13 checks that its subs are distinct, thereby making it a compressed SDD. The use of the \texttt{cache} is there to emphasise the fact that any implementation of \texttt{apply} could be significantly improved by keeping the set of computed SDDs in memory. 
+Theorem~\ref{theorem_apply} ensures that \texttt{apply($\alpha$, $\beta$, $\circ$)} is in fact an SDD, while the if condition on line 13 checks that its subs are distinct, thereby making it a compressed SDD. The use of the \texttt{cache} in the pseudo-code emphasises the fact that any implementation of \texttt{apply} could be significantly improved by keeping the set of computed SDDs in a cache in memory. 
 
-The \texttt{apply} algorithm to compose SDDs $\alpha$ and $\beta$ using a Boolean operator takes time $O(|\alpha||\beta|)$ provided both SDDs 
+The \texttt{apply} algorithm to compose SDDs $\alpha$ and $\beta$ takes time $O(|\alpha||\beta|)$, which implies that conjunction, disjunction and negation of SDDs can all be done in polynomial time.
+
+To do: Need to write something about the \texttt{condition()} algorithm which comes up a lot in model checking.
 
 \subsubsection{OBDDs are SDDs}
-v
+
+To end the background section of this report, we would like to   on the fact that OBDDs are SDDs, i.e. if we regard each of them as subsets of NNF, then OBDD $\subseteq$ SDD. We first give a simple explanation for why this is the case. 
+
+Consider an SDD $\alpha$ respecting a vtree $v$ such that every left child is a leaf. Such a vtree is said to be \textit{right-linear}, and every decomposition in $\alpha$ will be of the form $\{(A, \beta_1), (\lnot A, \beta_2)\}$ for some variable $A$ and SDDs $\beta_1, \beta_2$. 
+But this is the same decomposition as that occuring in a BDD at the node labelled with $A$.
+
+Suppose now that $B$ is a BDD for function $f$, and that $v$ is the \textit{only} right-linear vtree inducing the variable order for $B$. Then the SDD for $f$ respecting $v$ is \textit{syntactically equal} to $B$, when both are regarded as NNF sentences. Hence there is a one-to-one correspondence between BDDs and SDDs respecting right-linear vtrees. 
+Figure~\ref{bdds_are_sdds} illustrate this with an example. 
+
+\begin{figure}
+
+\begin{tikzpicture}
+
+	[level 1/.style={sibling distance=33mm},
+	 level 2/.style={sibling distance=23mm},
+	 level 3/.style={sibling distance=16mm}]
+	\node[circle, draw] (X) {$X$}	 
+		child {node[circle, solid, draw] (Y) {$Y$} [dashed]
+			child {node[circle, solid, draw] (Z1) {$Z$} [dashed]
+				child {node[rectangle, solid, draw] (0) {0} [solid]}
+				child {node[rectangle, solid, draw] (1) {1} [dashed]}}
+			child {node[circle, solid, draw] (Z2) {$Z$} [solid]}};
+	\draw[solid] (X) -- (1); 
+\end{tikzpicture}
+
+%\includegraphics[scale=•]{•}
+
+\caption{The BDD for $f = $ with variable order $[]$ (left), and the SDD respecting the right-linear vtree inducing the same order (right)}
+\label{bdds_are_sdds}
+\end{figure}
+
+A very general consequence of this is that any application of BDDs in computer science could be implemented using SDDs instead, as it would retain the attractive properties of BDDs while benefiting from the potential reduction in size that SDDs present. In the more specific case of this project, we will see in a later chapter that this correspondence was extremely useful in helping us compare the efficiency of SDDs with that of BDDs in model checking: by restricting our SDD implementation to right-linear vtrees, we were able to compare both programs more accurately by taking into account the overhead due to the difference in \textit{implementation} (as opposed to a difference in size between the two structures -- we knew these were the same!).
+
+
 \section{Implementation}
 
 This chapter is devoted to the implementation of the model checker itself. We start by giving an overview of the existing code base and libraries upon which it relies, before presenting the important design decisions and algorithms, and finally discussing the challenges that occured during the implementation of this new model checker. 

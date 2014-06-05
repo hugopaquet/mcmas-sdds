@@ -125,8 +125,8 @@ compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, v
      cout << "\tApplying transition\t";
      struct timeb tmb2;
     ftime(&tmb2);
-     	  if(options["dao"])
-		  sdd_manager_auto_gc_and_minimize_off(manager);
+  //   	  if(options["dao"])
+	//	  sdd_manager_auto_gc_and_minimize_off(manager);
     for(unsigned int i = 0; i < agents->size(); i++) {
          cout << ".";
          cout.flush();
@@ -135,16 +135,16 @@ compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, v
 			//sdd_deref(tmp, manager);
 	  }
 //	sdd_vtree_save_as_dot("t1.dot", sdd_manager_vtree(manager));
-	   	  if(options["dao"])
-		  sdd_manager_auto_gc_and_minimize_on(manager);
+//	   	  if(options["dao"])
+//		  sdd_manager_auto_gc_and_minimize_on(manager);
 	  struct timeb tmb3;
     ftime(&tmb3);
     cout << "  (" << ((tmb3.time-tmb2.time) + (tmb3.millitm-tmb2.millitm)/1000.0) << ")" << endl;
 	  cout << "\tExists non-primed vars\t";
 	   ftime(&tmb2);
 	   
- 	  if(options["dao"])
-		  sdd_manager_auto_gc_and_minimize_off(manager);
+// 	  if(options["dao"])
+//		  sdd_manager_auto_gc_and_minimize_off(manager);
 		for(unsigned int i = 0; i < v; i++) {
 		  cout << ".";
 		  cout.flush();
@@ -156,16 +156,16 @@ compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, v
 //		sdd_vtree_save("vtree.txt", sdd_manager_vtree(manager));
 		    ftime(&tmb3);
     cout << "  (" << ((tmb3.time-tmb2.time) + (tmb3.millitm-tmb2.millitm)/1000.0) << ")" << endl;
-		if(options["dao"])
-			sdd_manager_auto_gc_and_minimize_on(manager);
+//		if(options["dao"])
+//			sdd_manager_auto_gc_and_minimize_on(manager);
     cout << "\tRenaming vars\t";
     cout.flush();
     	   ftime(&tmb2);
 		next1 = sdd_rename_variables(tmp = next1, map, manager);
 		sdd_ref(next1, manager);
 		sdd_deref(tmp, manager);
-		if(options["dao"])
-	  	sdd_manager_auto_gc_and_minimize_off(manager);
+//		if(options["dao"])
+//	  	sdd_manager_auto_gc_and_minimize_off(manager);
 	  	    ftime(&tmb3);
     cout << "  (" << ((tmb3.time-tmb2.time) + (tmb3.millitm-tmb2.millitm)/1000.0) << ")" << endl;
 	  cout << "\tExists action vars\t";
@@ -195,8 +195,8 @@ compute_reach(SddNode* in_st, SddManager* manager, struct parameters * params, v
 			sdd_ref(reach, manager);
 			sdd_deref(q1, manager);
 		}
-		if(options["dao"])
-	  	sdd_manager_auto_gc_and_minimize_on(manager); 
+//	if(options["dao"])
+	//  	sdd_manager_auto_gc_and_minimize_on(manager); 
 				ftime(&tmb3);
     cout << "  (" << ((tmb3.time-tmb2.time) + (tmb3.millitm-tmb2.millitm)/1000.0) << ")" << endl;
 		sdd_manager_garbage_collect(manager);
@@ -827,7 +827,15 @@ main(int argc, char *argv[])
 	Vtree* vtree = create_vtree();
 	
 	sdd_vtree_save_as_dot("vtree.dot", vtree);
+	
 
+	Vtree* tmpvtree = sdd_vtree_read("vtree.txt");
+	sdd_vtree_save_as_dot("vtree.dot", tmpvtree);
+	SddManager* tmpman = sdd_manager_new(tmpvtree);
+	SddNode* tmpnode = sdd_conjoin(sdd_manager_literal(1, tmpman), sdd_manager_literal(2, tmpman), tmpman);
+	tmpnode = sdd_disjoin(tmpnode, sdd_conjoin(sdd_manager_literal(2, tmpman), sdd_manager_literal(3, tmpman), tmpman), tmpman);
+	tmpnode = sdd_disjoin(tmpnode, sdd_conjoin(sdd_manager_literal(3, tmpman), sdd_manager_literal(4, tmpman), tmpman), tmpman);
+	exit(0);
 		// Create and setup SDD manager
 	int auto_gc_and_minimize = 1; //1=yes
 	SddManager* manager = sdd_manager_new(vtree);
