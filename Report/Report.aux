@@ -20,92 +20,112 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Model Checking}{9}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.1}Explicit Model Checking}{9}}
 \newlabel{explicit}{{2.2.1}{9}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.2}Symbolic Model Checking}{11}}
 \citation{logic_in_computer_science}
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces A model}}{12}}
 \newlabel{fig:model_example}{{1}{12}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.2}Symbolic Model Checking}{12}}
 \@writefile{toc}{\contentsline {paragraph}{Symbolic Representation of Sets of States}{12}}
 \newlabel{symbolic}{{2.2.2}{12}}
-\@writefile{toc}{\contentsline {paragraph}{Symbolic Representation of a Transition Relation}{12}}
-\@writefile{toc}{\contentsline {paragraph}{The case of Multi-Agent Systems}{13}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces BDT for $f(x_1, x_2) = x_1 \land \lnot x_2$ under the ordering $[x_1, x_2]$}}{14}}
-\newlabel{fig:BDT}{{2}{14}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Representing Boolean functions}{14}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.1}Ordered Binary Decision Diagrams}{14}}
-\@writefile{toc}{\contentsline {paragraph}{The Reduction Algorithm}{14}}
+\@writefile{toc}{\contentsline {paragraph}{Symbolic Representation of a Transition Relation}{13}}
+\@writefile{toc}{\contentsline {paragraph}{The functions $\mathop {\mathrm  {pre}}_\exists $ and $\mathop {\mathrm  {pre}}_\forall $}{13}}
+\newlabel{exist}{{2.2.2}{14}}
+\@writefile{toc}{\contentsline {paragraph}{The case of Multi-Agent Systems}{15}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Representing Boolean functions}{15}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.1}Ordered Binary Decision Diagrams}{15}}
 \citation{bryant}
-\newlabel{obdd_uniqueness}{{2.1}{15}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.2}A Knowledge Compilation Map}{15}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces BDT for $f(x_1, x_2) = x_1 \land \lnot x_2$ under the ordering $[x_1, x_2]$}}{16}}
+\newlabel{fig:BDT}{{2}{16}}
+\@writefile{toc}{\contentsline {paragraph}{The Reduction Algorithm}{16}}
+\newlabel{obdd_uniqueness}{{2.1}{16}}
 \citation{compilation_map}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.2}A Knowledge Compilation Map}{17}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces An OBDD (left) and its corresponding NNF sentence (right). Although the former seems much more compact, the difference in size is only linear and both representations are essentially the same. TODO sort this oout}}{18}}
+\newlabel{nnf_obdd}{{3}{18}}
 \citation{trees_of_bdds}
 \citation{bdd_trees}
 \citation{compilation_map}
 \citation{sdd_1}
 \citation{sdd_3}
 \citation{sdd_1}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.3}Project Directions}{16}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces An OBDD (left) and its corresponding NNF sentence (right). Although the former seems much more compact, the difference in size is only linear and both representations are essentially the same. TODO sort this oout}}{17}}
-\newlabel{nnf_obdd}{{3}{17}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Sentential Decision Diagrams}{18}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.1}Preliminaries}{18}}
-\newlabel{theorem_apply}{{2.2}{19}}
-\newlabel{unique_compressed}{{2.3}{19}}
-\@writefile{toc}{\contentsline {paragraph}{Vtrees}{19}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.2}Definition and Construction}{19}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Two vtrees for $X = \{A, B, C, D\}$ To Do sort out nodes IDs}}{20}}
-\newlabel{fig:vtree_examples}{{4}{20}}
-\@writefile{toc}{\contentsline {paragraph}{Graphical Representation of SDDs}{20}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces SDDs for $f = (A \land B) \lor (B \land C) \lor (C \land D)$ corresponding to the vtrees in Figure\nobreakspace  {}4\hbox {}. Notice that identical SDD nodes have been merged.}}{21}}
-\newlabel{fig:sddexample1}{{5}{21}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.3}Canonicity and Operations}{21}}
-\newlabel{unique_vtree_function}{{2.4}{22}}
-\newlabel{unique_vtree_sdd}{{2.5}{22}}
-\newlabel{canonicity}{{2.6}{22}}
-\@writefile{toc}{\contentsline {paragraph}{Operations on SDDs}{23}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces The BDD for $f = $ with variable order $[]$ (left), and the SDD respecting the right-linear vtree inducing the same order (right)}}{24}}
-\newlabel{bdds_are_sdds}{{6}{24}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.4}OBDDs are SDDs}{24}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Implementation}{26}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Preliminaries}{26}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.1}The SDD Package}{26}}
-\@writefile{toc}{\contentsline {paragraph}{Standard Vtrees}{26}}
-\newlabel{std_vtrees}{{3.1.1}{26}}
-\@writefile{toc}{\contentsline {paragraph}{Dynamic SDD Minimisation}{26}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.3}Project Directions}{19}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Sentential Decision Diagrams}{19}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.1}Preliminaries}{19}}
+\newlabel{theorem_apply}{{2.2}{20}}
+\newlabel{unique_compressed}{{2.3}{20}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Two vtrees for $X = \{A, B, C, D\}$ To Do sort out nodes IDs}}{21}}
+\newlabel{fig:vtree_examples}{{4}{21}}
+\@writefile{toc}{\contentsline {paragraph}{Vtrees}{21}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.2}Definition and Construction}{21}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces SDDs for $f = (A \land B) \lor (B \land C) \lor (C \land D)$ corresponding to the vtrees in Figure\nobreakspace  {}4\hbox {}. Notice that identical SDD nodes have been merged.}}{22}}
+\newlabel{fig:sddexample1}{{5}{22}}
+\@writefile{toc}{\contentsline {paragraph}{Graphical Representation of SDDs}{22}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.3}Canonicity and Operations}{23}}
+\newlabel{unique_vtree_function}{{2.4}{23}}
+\newlabel{unique_vtree_sdd}{{2.5}{23}}
+\newlabel{canonicity}{{2.6}{23}}
+\@writefile{toc}{\contentsline {paragraph}{Operations on SDDs}{24}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.4}OBDDs are SDDs}{25}}
+\newlabel{bdds_are_sdds}{{2.4.4}{25}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces The BDD for $f = $ with variable order $[]$ (left), and the SDD respecting the right-linear vtree inducing the same order (right)}}{26}}
+\newlabel{fig:bdds_are_sdds}{{6}{26}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Implementation}{27}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Preliminary I: The SDD Package}{27}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.1}Description}{27}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.2}Standard Vtrees}{27}}
+\newlabel{std_vtrees}{{3.1.2}{27}}
 \citation{sdd_3}
 \citation{knuth}
-\citation{sdd_3}
-\@writefile{toc}{\contentsline {paragraph}{CUDD}{27}}
-\newlabel{gc}{{3.1.1}{27}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.2}MCMAS}{28}}
-\@writefile{toc}{\contentsline {paragraph}{Important Classes and Methods}{28}}
-\@writefile{toc}{\contentsline {paragraph}{Variable Allocation}{29}}
-\@writefile{toc}{\contentsline {paragraph}{Standard Variable Orders}{29}}
-\newlabel{std_orderings}{{3.1.2}{29}}
+\citation{recursive calls on $v_l$ and $v_r$. We then consider two subtreesdd_3}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces The four standard vtrees, in order: right-linear, balanced, left-linear, and vertical.}}{28}}
+\newlabel{fig:std_vtrees_example}{{7}{28}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.3}Dynamic SDD Minimisation}{28}}
+\citation{mcmas}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.4}Comparison with CUDD}{29}}
+\newlabel{gc}{{3.1.4}{29}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Preliminary II: MCMAS}{30}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}Important Classes and Methods}{30}}
+\newlabel{MCMAS_steps}{{3.2.1}{30}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}Variable Allocation}{31}}
+\newlabel{variable_allocation}{{3.2.2}{31}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.3}Standard Variable Orders}{32}}
+\newlabel{std_orderings}{{3.2.3}{32}}
 \citation{add}
-\@writefile{toc}{\contentsline {paragraph}{Algebraic Decision Diagrams}{30}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Contributions}{31}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}A Model Checker Based on SDDs}{31}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}Challenges}{31}}
-\@writefile{toc}{\contentsline {paragraph}{Garbage Collection}{31}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.4}Algebraic Decision Diagrams}{33}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}A Model Checker Based on SDDs}{34}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.1}Adapting MCMAS}{34}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.2}Existential Quantification}{35}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}SDD-Specific Features}{35}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.1}Vtrees and Variable Orders}{35}}
 \citation{minisat}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.2}Dynamic Vtree Search in Multi-Agent Systems}{37}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Software Engineering Issues and Challenges}{37}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.1}Garbage Collection}{37}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.2}Comparing SDDs and BDDs}{37}}
 \citation{dot}
-\@writefile{toc}{\contentsline {paragraph}{Debugging and Comparing}{32}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.3}Correctness}{38}}
 \citation{bdd_heuristics}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Evaluation}{33}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Setup and Evaluation Plan}{33}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}Evaluation Strategy}{33}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}Example Models}{33}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3}Machine, Configurations, Benchmarking Process}{34}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Comparisons with Standard Vtrees under Static Vtree Generation}{34}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}Right-Linear Vtrees}{34}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}Other Standard Vtrees}{34}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3}Towards a Better Vtree: Observations}{34}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}New Vtrees and Experiments}{34}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Using Dynamic Reordering and Minimisation}{35}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}More suggestions for speed improvement}{35}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusions and further work}{36}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Review}{36}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Future work}{36}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Evaluation (?)}{40}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Setup and Evaluation Plan}{40}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}Evaluation Strategy}{40}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}Example Models}{40}}
+\newlabel{ispl_examples}{{4.1.2}{40}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3}Machine, Configurations, Benchmarking Process}{41}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Comparisons with Standard Vtrees under Static Vtree Generation}{41}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}Right-Linear Vtrees}{41}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}Other Standard Vtrees}{42}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3}Towards a Better Vtree: Observations}{42}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Static Experiments with Alternative Vtrees}{42}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.1}A First Attempt}{42}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.2}An Upper Bound on Subtree Size}{42}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.3}Various Vtree Characteristics and Their Impact}{42}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Using Dynamic Reordering and Minimisation}{43}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.1}Initial Observations}{43}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.2}Experiments}{43}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.3}Grouping Variables}{43}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}Summary}{44}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusion and future work}{45}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Review}{45}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Future work}{45}}
 \bibcite{sdd_1}{1}
 \bibcite{sdd_2}{2}
 \bibcite{sdd_3}{3}
