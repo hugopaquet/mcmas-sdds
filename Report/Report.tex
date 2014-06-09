@@ -888,7 +888,7 @@ Throughout this report we refer to these as the \textit{standard} vtrees. An exa
 \end{figure}
 
 \subsubsection{Dynamic SDD Minimisation}
-
+\label{sdd_dao_algo}
 One particularly important feature of the SDD Package is \textit{dynamic SDD minimisation}. When enabled, this feature automatically attempts to minimise the size of a manager's SDD nodes by searching for a better vtree. Unfortunately this is not always a more efficient solution as searching the space of vtrees is a very lengthy process: there are $\frac{(2n -2)!}{(n-1)!}$ distinct vtrees over $n$ variables!
 
 An vtree search algorithm was proposed in \cite{sdd_3} for more efficient dynamic minimisation of SDDs. This algorithm relies on three standard binary tree operations: left-rotation, right-rotation, and swap; these operations are sufficient for navigating the space of all vtrees \cite{knuth}.
@@ -1047,7 +1047,59 @@ Additionally, new data types and functions had to be defined in order to deal wi
 
 \subsubsection{Existential Quantification}
 
-In CUDD, the function responsible for existential variable quantification (cf. \ref{exist}) is \texttt{Cudd\_bddExistAbstract()}. This takes as input two BDDs $f$ and $g$, and returns the BDD for $f$ after existential quantification of all variables in $g$. 
+Recall  (\ref{exist}) that the model checking algorithm relies on the functions $\mbox{pre}_\exists$ and $\mbox{pre}_\forall$, which themselves depend on existential quantification, or the process of relaxing the constraint on one or more variables in a function. 
+
+In CUDD, the function responsible for existential variable quantification is \texttt{Cudd\_bddExistAbstract()}. This takes as input two BDDs $f$ and $c$, and returns the BDD for $f$ after existential quantification of all variables in $c$. The implementation of this function is based on the following recursive algorithm called \texttt{restrict}, originally described in \cite{unified_framework}: 
+
+\begin{lstlisting}[mathescape]
+
+function restrict(f, c):
+// pre:$ \mbox{ c != } \bot$ and variables of c are all variables of f
+  if c = $\top$ or f = $\bot$ or f = $\top$
+    return f
+  x := top variable in f // the root of the BDD
+  if (x = top variable in c)  
+    return (restrict(f$|_{\mbox{x}}$, c$|_{\mbox{x}}$) $\lor$ restrict(f$|_{\lnot\mbox{x}}$, c$|_{\mbox{x}}$))
+  else // x does not appear in c
+    return (x $\land$ restrict(f$|_{\mbox{x}}$ , c)) $\lor$ ($\lnot$x $\land$ restrict(f$|_{\lnot\mbox{x}}$ , c))
+end
+$\\$
+\end{lstlisting}
+
+In the context of symbolic model checking, existential quantification of a set of variable $X$ from a function $f$ can be done in CUDD by a call to \texttt{Cudd\_bddExistAbstract(f, c)}, where \texttt{f} is the BDD for $f$ and \texttt{c} is a function essentially depending on all the variables in $X$ (in MCMAS \texttt{c} is set to be the conjunction of all the variables in $X$).
+
+In the SDD Package, existential quantification can only be done one variable at a time, by calling \texttt{sdd\_exists(x, f, manager)} which returns $\exists x f$. Our first solution was to iteratively call this function on every variable in $X$, but our first experiments revealed that this method was very slow. We therefore implemented the above algorithm in our model checker as an attempt to reduce computation time:
+
+\begin{lstlisting}[mathescape]
+
+SddNode* restrict_sdd(SddNode* f, SddNode* c, SddManager manager) 
+{
+  if(sdd_node_is_false(c)) // not allowed
+    return NULL; 
+  if(sdd_node_is_true(c) || sdd_node_is_false(f) || sdd_node_is_true(f))
+    return f;
+  SddLiteral x = get_top_variable(f);
+  SddLiteral y = get_top_variable(c);
+  if (x == y) {
+    SddNode* res1 = restrict_sdd(sdd_condition(x, f, manager), sdd_condition(x, c, manager), manager);
+    SddNode* res2 = restrict_sdd(sdd_condition(-x, f, manager), sdd_condition(x, c, manager), manager);
+    return sdd_disjoin(res1, res2, manager);
+  } else {
+    SddNode* res1 = restrict_sdd(sdd_condition(x, f, manager), c, manager);
+    SddNode* res2 = restrict_sdd(sdd_condition(-x, f, manager), c, manager);
+    return ite(sdd_manager_literal(x, manager), res1, res2, manager);
+  }
+}
+
+\end{lstlisting}
+In the code above, \texttt{ite} refers to an implementation of the ITE (If-Then-Else) operator on Boolean functions, namely $$\mbox{ITE}(f, g, h) = (f \land g) \lor (\lnot f \land h).$$
+
+Another point worth discussing is the notion of ``top variable" for an SDD. In a BDD, this is unambiguously refering to the variable with which the root is labelled, and this choice of variable for the start of the algorithm is clearly induced by the conditioning algorithm on BDDs, which consists in removing the \textit{false} outcoming edge for each node labelled with the variable in question -- if this is the top variable, then this amounts to simply removing the right (or left) subtree of the BDD. 
+
+In an SDD however, this is not so obvious: 
+
+to do: talk about \texttt{sdd\_condition()} and the performance of our implementation.
+
 
 
 \subsection{SDD-Specific Features}
@@ -1089,7 +1141,13 @@ To use \texttt{create\_vtree()}, we need to pass it the number of variables that
 
 \subsubsection{Dynamic Vtree Search in Multi-Agent Systems}
 
-write about grouped search
+In \ref{sdd_dao_algo}, we described the dynamic minimisation algorithm implemented in the SDD Package. This algorithm is focused on a complete restructuring of the manager's vtree in order to minimise the size of its SDD nodes. 
+
+Early experiments with this algorithm revealed large 
+
+
+However, in multi-agent systems, it is 
+
 
 \subsection{Software Engineering Issues and Challenges}
 
@@ -1328,6 +1386,7 @@ for Boolean Function Manipulation}, 1986.
 	
 \bibitem{ctlk}R. Fagin, J. Y. Halpern, Y. Moses, M. Y. Vardi: \textit{Reasoning about Knowledge}, 1995.
 
+\bibitem{unified_framework} O. Coudert, J-C. Madre: \textit{A Unified Framework For the Formal Verification of Sequential Circuits}, 1990.
 
 \bibitem{MCMAS_website} MCMAS webpage, http://vas.doc.ic.ac.uk/software/mcmas/
 
@@ -1345,4 +1404,4 @@ for Boolean Function Manipulation}, 1986.
 
 \end{thebibliography}
 
-\end{document}{document}
+\end{document}
