@@ -1,31 +1,31 @@
-\contentsline {section}{\numberline {1}Introduction}{3}
-\contentsline {subsection}{\numberline {1.1}The Problem}{3}
-\contentsline {subsection}{\numberline {1.2}The Idea}{3}
-\contentsline {subsection}{\numberline {1.3}The Deliverables}{3}
-\contentsline {section}{\numberline {2}Background}{4}
-\contentsline {subsection}{\numberline {2.1}Logics for Multi-Agent Systems}{4}
-\contentsline {subsubsection}{\numberline {2.1.1}Multi-Agent Systems}{4}
-\contentsline {subsubsection}{\numberline {2.1.2}Interpreted Systems}{4}
-\contentsline {subsubsection}{\numberline {2.1.3}Linear Temporal Logic}{5}
-\contentsline {paragraph}{Semantics}{6}
-\contentsline {subsubsection}{\numberline {2.1.4}Computation Tree Logic}{7}
-\contentsline {subsubsection}{\numberline {2.1.5}The Epistemic Logic CTLK}{8}
-\contentsline {subsection}{\numberline {2.2}Model Checking}{9}
-\contentsline {subsubsection}{\numberline {2.2.1}Explicit Model Checking}{9}
-\contentsline {subsubsection}{\numberline {2.2.2}Symbolic Model Checking}{12}
-\contentsline {paragraph}{Symbolic Representation of Sets of States}{12}
-\contentsline {paragraph}{Symbolic Representation of a Transition Relation}{13}
-\contentsline {paragraph}{The functions $\mathop {\mathrm {pre}}_\exists $ and $\mathop {\mathrm {pre}}_\forall $}{13}
-\contentsline {paragraph}{The case of Multi-Agent Systems}{15}
-\contentsline {subsection}{\numberline {2.3}Representing Boolean functions}{15}
-\contentsline {subsubsection}{\numberline {2.3.1}Ordered Binary Decision Diagrams}{15}
-\contentsline {paragraph}{The Reduction Algorithm}{16}
-\contentsline {subsubsection}{\numberline {2.3.2}A Knowledge Compilation Map}{17}
+\contentsline {section}{\numberline {1}Introduction}{4}
+\contentsline {subsection}{\numberline {1.1}The Problem}{4}
+\contentsline {subsection}{\numberline {1.2}The Idea}{5}
+\contentsline {subsection}{\numberline {1.3}The Deliverables}{5}
+\contentsline {section}{\numberline {2}Background}{6}
+\contentsline {subsection}{\numberline {2.1}Logics for Multi-Agent Systems}{6}
+\contentsline {subsubsection}{\numberline {2.1.1}Multi-Agent Systems}{6}
+\contentsline {subsubsection}{\numberline {2.1.2}Interpreted Systems}{6}
+\contentsline {subsubsection}{\numberline {2.1.3}Linear Temporal Logic}{7}
+\contentsline {paragraph}{Semantics}{8}
+\contentsline {subsubsection}{\numberline {2.1.4}Computation Tree Logic}{9}
+\contentsline {subsubsection}{\numberline {2.1.5}The Epistemic Logic CTLK}{10}
+\contentsline {subsection}{\numberline {2.2}Model Checking}{10}
+\contentsline {subsubsection}{\numberline {2.2.1}Explicit Model Checking}{11}
+\contentsline {subsubsection}{\numberline {2.2.2}Symbolic Model Checking}{14}
+\contentsline {paragraph}{Symbolic Representation of Sets of States}{14}
+\contentsline {paragraph}{Symbolic Representation of a Transition Relation}{15}
+\contentsline {paragraph}{The functions $\mathop {\mathrm {pre}}_\exists $ and $\mathop {\mathrm {pre}}_\forall $}{15}
+\contentsline {paragraph}{The case of Multi-Agent Systems}{16}
+\contentsline {subsection}{\numberline {2.3}Representing Boolean functions}{17}
+\contentsline {subsubsection}{\numberline {2.3.1}Ordered Binary Decision Diagrams}{17}
+\contentsline {paragraph}{The Reduction Algorithm}{17}
+\contentsline {subsubsection}{\numberline {2.3.2}A Knowledge Compilation Map}{18}
 \contentsline {subsubsection}{\numberline {2.3.3}Project Directions}{19}
-\contentsline {subsection}{\numberline {2.4}Sentential Decision Diagrams}{19}
-\contentsline {subsubsection}{\numberline {2.4.1}Preliminaries}{19}
+\contentsline {subsection}{\numberline {2.4}Sentential Decision Diagrams}{20}
+\contentsline {subsubsection}{\numberline {2.4.1}Preliminaries}{20}
 \contentsline {paragraph}{Vtrees}{21}
-\contentsline {subsubsection}{\numberline {2.4.2}Definition and Construction}{21}
+\contentsline {subsubsection}{\numberline {2.4.2}Definition and Construction}{22}
 \contentsline {paragraph}{Graphical Representation of SDDs}{22}
 \contentsline {subsubsection}{\numberline {2.4.3}Canonicity and Operations}{23}
 \contentsline {paragraph}{Operations on SDDs}{24}
@@ -36,39 +36,47 @@
 \contentsline {subsubsection}{\numberline {3.1.2}Standard Vtrees}{27}
 \contentsline {subsubsection}{\numberline {3.1.3}Dynamic SDD Minimisation}{28}
 \contentsline {subsubsection}{\numberline {3.1.4}Comparison with CUDD}{29}
-\contentsline {subsection}{\numberline {3.2}Preliminary II: MCMAS}{30}
+\contentsline {subsection}{\numberline {3.2}Preliminary II: MCMAS}{29}
 \contentsline {subsubsection}{\numberline {3.2.1}Important Classes and Methods}{30}
 \contentsline {subsubsection}{\numberline {3.2.2}Variable Allocation}{31}
 \contentsline {subsubsection}{\numberline {3.2.3}Standard Variable Orders}{32}
 \contentsline {subsubsection}{\numberline {3.2.4}Algebraic Decision Diagrams}{33}
-\contentsline {subsection}{\numberline {3.3}A Model Checker Based on SDDs}{34}
-\contentsline {subsubsection}{\numberline {3.3.1}Adapting MCMAS}{34}
-\contentsline {subsubsection}{\numberline {3.3.2}Existential Quantification}{35}
-\contentsline {subsection}{\numberline {3.4}SDD-Specific Features}{37}
-\contentsline {subsubsection}{\numberline {3.4.1}Vtrees and Variable Orders}{37}
+\contentsline {subsection}{\numberline {3.3}A Model Checker Based on SDDs}{33}
+\contentsline {subsubsection}{\numberline {3.3.1}Adapting MCMAS}{33}
+\contentsline {subsubsection}{\numberline {3.3.2}Existential Quantification}{34}
+\contentsline {subsection}{\numberline {3.4}SDD-Specific Features}{36}
+\contentsline {subsubsection}{\numberline {3.4.1}Vtrees and Variable Orders}{36}
 \contentsline {subsubsection}{\numberline {3.4.2}Dynamic Vtree Search in Multi-Agent Systems}{38}
 \contentsline {subsection}{\numberline {3.5}Software Engineering Issues and Challenges}{39}
 \contentsline {subsubsection}{\numberline {3.5.1}Garbage Collection}{39}
-\contentsline {subsubsection}{\numberline {3.5.2}Comparing SDDs and BDDs}{39}
-\contentsline {subsubsection}{\numberline {3.5.3}Correctness}{40}
-\contentsline {section}{\numberline {4}Evaluation (?)}{41}
-\contentsline {subsection}{\numberline {4.1}Setup and Evaluation Plan}{41}
-\contentsline {subsubsection}{\numberline {4.1.1}Evaluation Strategy}{41}
-\contentsline {subsubsection}{\numberline {4.1.2}Example Models}{41}
-\contentsline {subsubsection}{\numberline {4.1.3}Machine, Configurations, Benchmarking Process}{42}
-\contentsline {subsection}{\numberline {4.2}Comparisons with Standard Vtrees under Static Vtree Generation}{42}
-\contentsline {subsubsection}{\numberline {4.2.1}Right-Linear Vtrees}{42}
-\contentsline {subsubsection}{\numberline {4.2.2}Other Standard Vtrees}{43}
-\contentsline {subsubsection}{\numberline {4.2.3}Towards a Better Vtree: Observations}{43}
-\contentsline {subsection}{\numberline {4.3}Static Experiments with Alternative Vtrees}{43}
-\contentsline {subsubsection}{\numberline {4.3.1}A First Attempt}{43}
-\contentsline {subsubsection}{\numberline {4.3.2}An Upper Bound on Subtree Size}{43}
-\contentsline {subsubsection}{\numberline {4.3.3}Various Vtree Characteristics and Their Impact}{43}
-\contentsline {subsection}{\numberline {4.4}Using Dynamic Reordering and Minimisation}{44}
-\contentsline {subsubsection}{\numberline {4.4.1}Initial Observations}{44}
-\contentsline {subsubsection}{\numberline {4.4.2}Experiments}{44}
-\contentsline {subsubsection}{\numberline {4.4.3}Grouping Variables}{44}
-\contentsline {subsection}{\numberline {4.5}Summary}{45}
-\contentsline {section}{\numberline {5}Conclusion and future work}{46}
-\contentsline {subsection}{\numberline {5.1}Review}{46}
-\contentsline {subsection}{\numberline {5.2}Future work}{46}
+\contentsline {subsubsection}{\numberline {3.5.2}Comparing SDDs and BDDs}{40}
+\contentsline {subsubsection}{\numberline {3.5.3}Correctness}{41}
+\contentsline {section}{\numberline {4}Evaluation (?)}{42}
+\contentsline {subsection}{\numberline {4.1}Introduction}{42}
+\contentsline {subsubsection}{\numberline {4.1.1}Evaluation Strategy}{42}
+\contentsline {subsubsection}{\numberline {4.1.2}Example Models}{42}
+\contentsline {subsubsection}{\numberline {4.1.3}Experimental Protocol}{43}
+\contentsline {subsection}{\numberline {4.2}Static Comparisons with Standard Vtrees}{43}
+\contentsline {subsubsection}{\numberline {4.2.1}Right-Linear Vtrees}{43}
+\contentsline {subsubsection}{\numberline {4.2.2}Other Standard Vtrees}{45}
+\contentsline {subsubsection}{\numberline {4.2.3}Towards a Better Vtree: Observations}{46}
+\contentsline {paragraph}{What Is a Good Vtree?}{47}
+\contentsline {paragraph}{Analysis of an Example}{47}
+\contentsline {subsection}{\numberline {4.3}Static Comparisons with Alternative Vtrees}{49}
+\contentsline {subsubsection}{\numberline {4.3.1}A First Attempt}{49}
+\contentsline {subsubsection}{\numberline {4.3.2}An Upper Bound on Subtree Size}{49}
+\contentsline {subsubsection}{\numberline {4.3.3}Various Vtree Characteristics and Their Impact}{49}
+\contentsline {subsection}{\numberline {4.4}Using Dynamic Reordering and Minimisation}{50}
+\contentsline {subsubsection}{\numberline {4.4.1}Initial Observations}{50}
+\contentsline {subsubsection}{\numberline {4.4.2}Experiments}{50}
+\contentsline {subsubsection}{\numberline {4.4.3}Grouping Variables}{50}
+\contentsline {subsection}{\numberline {4.5}Summary}{50}
+\contentsline {subsection}{\numberline {4.6}Qualitative Evaluation}{51}
+\contentsline {section}{\numberline {5}Conclusion and future work}{52}
+\contentsline {subsection}{\numberline {5.1}Review}{52}
+\contentsline {subsection}{\numberline {5.2}Future work}{52}
+\contentsline {section}{\numberline {A}The Bit Transmission Problem}{55}
+\contentsline {subsection}{\numberline {A.1}The Problem}{55}
+\contentsline {subsection}{\numberline {A.2}The Model}{55}
+\contentsline {subsection}{\numberline {A.3}ISPL Specification}{55}
+\contentsline {section}{\numberline {B}Implementation Details}{55}

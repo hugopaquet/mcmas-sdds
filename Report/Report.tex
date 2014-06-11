@@ -10,8 +10,12 @@
 \usepackage{amsmath}
 \usepackage{MnSymbol}
 \usepackage{stmaryrd}
+\usepackage{multirow}
+\usepackage[margin=1.6in]{geometry}
+\usepackage{rotating}
 
 \newcommand{\sectionbreak}{\clearpage}
+
 
 \lstset{frame=tb,
   language=Java,
@@ -55,17 +59,36 @@
 \begin{document}
 
 \tableofcontents
-\section*{Abstract}
+\clearpage
+\begin{abstract}
+
+\end{abstract}
 
 \section{Introduction}
 
 \subsection{The Problem}
 
-We are becoming increasingly dependent on computer systems. Not only are they an essential part of our lives, ...vital!
+Verifying computer systems is essential. They have become such an important part of our lives that unforeseen software bugs and malfunction can lead to disastrous situations. [finir le paragraphe avec des exemples] 
+
+Our dependency on computer systems is increasing, but so is their \textit{complexity} which, more often than not, demands a large amount of skilled human maintenance. Financially, this has motivated the need for systems to be more independent, and consequently, a large number of the critical systems that we rely on are now \textit{autonomous}: they are able to ``make decisions" without human intervention, based on a variety of factors such as their current state or location. 
+
+The verification of autonomous systems has been a very active research area in the past few decades due to their rising importance, and a range of verification techniques have been developed based on formal methods for modelling systems. These include automated theorem proving, TODO, or \textit{model checking}, the latter being the focus of this project.
+\\\\
+
+ Model checking was introduced in 1981 by E. M. Clarke and E. A. Emerson \cite{original_model_checking}, and independently by J. P. Queille and J. Sifakis \cite{symbolic_model_checking}, and is found to have major advantages \cite{birth_of_model_checking}: no correctness proofs are required (it is an automatic process), it finds counterexamples (i.e. bugs), and it allows for many different properties to be checked, by means of temporal logics. 
+ 
+Unfortunately, an important disadvantage of model checking, known as the \textit{state explosion problem}, is the difficulty in verifying larger systems efficiently. In the past 20 years, several techniques attempting to solve the state explosion problem have been introduced, such as predicate abstraction, bounded model checking, symmetry reduction, and (perhaps more notably, at least for this project) symbolic model checking with \textit{ordered binary decision diagrams} (OBDDs).
+
+The idea of symbolic model checking, introduced in 1992 by K. L. McMillan \cite{symbolic}, is to encode states and transitions of the system as \textit{Boolean functions}, and represent these symbolically using efficient and compact data structures such as OBDDs. Symbolic model checking with OBDDs has allowed for much larger systems to be verified, and has therefore seen a rise in the popularity of model checking as a verification technique.
+\\\\
+
+Although OBDD-based techniques have significantly improved the efficiency of model checking, it is 
 
 
 
 \subsection{The Idea}
+
+In this project we propose an alternative to OBDDs for symbolic model checking: another representation of Boolean functions
 
 \subsection{The Deliverables}
 
@@ -903,6 +926,7 @@ It then considers two vtree fragments of $v$, the \textit{l-vtree} and the \text
 For each of the three vtree operations, users of the SDD package can set limits on the time needed to compute them, and the increase in size that they induce; this means that not all 24 vtree fragments above are necessarily computed. 
 
 \subsubsection{Comparison with CUDD}
+\label{comparison_with_cudd}
 
 CUDD is the C$++$ BDD library used by MCMAS (see below) for BDD manipulation, and it is therefore our reference for all practical comparisons between SDDs and BDDs. 
 
@@ -975,32 +999,32 @@ Suppose also that there are $k$ agents, and that for each $i$, agent $i$ has bee
 
 
 
-The manager will then have $2n + m$ variables in total, and the following are the possible four ordering options with respect to which BDDs will be constructed throughout the process:
+The manager will then have $2n + m$ variables in total, and the following are the possible four ordering options with respect to which BDDs will be constructed throughout the process.
+In options 2 to 4, variables are ordered using the agent order, so that we get an ordering of the form $$ [\mbox{variables for agent } 1, \mbox{variables for agent } 2, ...,  \mbox{variables for agent } k],$$ 
+and the difference lies in the way variables are ordered within each agent set.
 \begin{itemize}
-\item Ordering option 1:
-$$x_1, ..., x_n, x_1', ..., x_n', a_1, ..., a_m$$
+\item Ordering option 1 (no interest in agent allocation):
+$$[x_1, ..., x_n, x_1', ..., x_n', a_1, ..., a_m]$$
+\item Ordering option 2 (variables for agent $i$):
+$$
+ [x_{i_1}, x_{i_1}', x_{i_2}, x_{i_2}',..., x_{i_{n_i}}, x_{i_{n_1}}', a_{i_1}, ..., a_{i_{m_1}}]
+$$
+\item Ordering option 3 (variables for agent $i$):
+$$
+ [x_{i_1}, ..., x_{i_{n_i}},a_{i_1}, ..., a_{i_{m_1}}, x_{i_1}', ..., x_{i_{n_1}}']
+$$
+\item Ordering option 4 (variables for agent $i$):
+$$
+ [x_{i_1}, ..., x_{i_{n_i}}, x_{i_1}', ..., x_{i_{n_1}}', a_{i_1}, ..., a_{i_{m_1}}]
+$$
 \end{itemize}
-In options 2 to 4, variables are ordered using the agent order, so that we get an ordering of the form $$ \mbox{variables for agent } 1, \mbox{variables for agent } 2, ...,  \mbox{variables for agent } k.$$ 
-The difference lies in the way variables are ordered within each agent set:
-\begin{itemize}
-\item Ordering option 2:
-$$
- \mbox{variables for agent } i = x_{i_1}, x_{i_1}', x_{i_2}, x_{i_2}',..., x_{i_{n_i}}, x_{i_{n_1}}', a_{i_1}, ..., a_{i_{m_1}}
-$$
-\item Ordering option 3:
-$$
- \mbox{variables for agent } i = x_{i_1}, ..., x_{i_{n_i}},a_{i_1}, ..., a_{i_{m_1}}, x_{i_1}', ..., x_{i_{n_1}}'
-$$
-\item Ordering option 4:
-$$
- \mbox{variables for agent } i = x_{i_1}, ..., x_{i_{n_i}}, x_{i_1}', ..., x_{i_{n_1}}', a_{i_1}, ..., a_{i_{m_1}}
-$$
 
-\end{itemize}
+These different orderings can have a great impact on the size of the resulting BDD, and consequently on MCMAS computation times. It is generally accepted that the ordering option 2 is the best to use in model checking multi-agent systems. It is based on the concept of \textit{variable interleaving} in OBDDs \cite{interleaving}, and adapted to the concept of agents.
+
 
 \subsubsection{Algebraic Decision Diagrams}
 
-MCMAS supports bounded integer variables (e.g. \texttt{x : 0..3}), and allows Boolean conditions to be numeric identities (e.g. \texttt{(x > 2)} or \texttt{(x + y = 3)} for integer vars \texttt{x} and \texttt{y}). 
+MCMAS supports bounded integer variables (e.g. \texttt{x : 0..3}), and allows Boolean conditions to be numeric identities (e.g. \texttt{(x > 2)} or \texttt{(x + y = 3)} for integer vars \texttt{x} and \texttt{y}). \mbox{variables for agent } i = 
 
 If an agent has an integer variable with a large range of values, then the number of Boolean variables needed to represent its state is also large (if variable \texttt{x} has $n$ possible values, the corresponding agent needs at least $\log_2(n)$ state variables). 
 
@@ -1072,7 +1096,7 @@ In the SDD Package, existential quantification can only be done one variable at 
 
 \begin{lstlisting}[mathescape]
 
-SddNode* restrict_sdd(SddNode* f, SddNode* c, SddManager manager) 
+SddNode* restrict_sdd(SddNode* f, SddNode* c, SddManager* manager) 
 {
   if(sdd_node_is_false(c)) // not allowed
     return NULL; 
@@ -1092,7 +1116,7 @@ SddNode* restrict_sdd(SddNode* f, SddNode* c, SddManager manager)
 }
 
 \end{lstlisting}
-In the code above, \texttt{ite} refers to an implementation of the ITE (If-Then-Else) operator on Boolean functions, namely $$\mbox{ITE}(f, g, h) = (f \land g) \lor (\lnot f \land h).$$
+In the code above, we have omitted the calls to \texttt{sdd\_ref()} and \texttt{sdd\_deref()} for clarity. Also, \texttt{ite} refers to an implementation of the ITE (If-Then-Else) operator on Boolean functions, namely $$\mbox{ITE}(f, g, h) = (f \land g) \lor (\lnot f \land h).$$
 
 Another point worth discussing is the notion of ``top variable" for an SDD. In a BDD, this is unambiguously refering to the variable with which the root is labelled, and this choice of variable for the start of the algorithm is clearly induced by the conditioning algorithm on BDDs, which consists in removing the \textit{false} outcoming edge for each node labelled with the variable in question -- if this is the top variable, then this amounts to simply removing the right (or left) subtree of the BDD. 
 
@@ -1141,13 +1165,40 @@ To use \texttt{create\_vtree()}, we need to pass it the number of variables that
 
 \subsubsection{Dynamic Vtree Search in Multi-Agent Systems}
 
-In \ref{sdd_dao_algo}, we described the dynamic minimisation algorithm implemented in the SDD Package. This algorithm is focused on a complete restructuring of the manager's vtree in order to minimise the size of its SDD nodes. 
+In \ref{sdd_dao_algo}, we described the dynamic minimisation algorithm implemented in the SDD Package. This algorithm is focused on a complete restructuring of the manager's vtree in order to minimise the size of its SDD nodes.
+Early experiments with this algorithm \textit{sometimes }revealed large overheads due to the difficulty of searching the huge space of vtrees. We propose a new approach to vtree search adapted to multi-agent systems in those cases where the original approach is not efficient. In this section we focus on the implementation of this new approach, while a detailed description, and a practical comparison of both techniques is detailed in the evaluation section (\ref{comparison_dynamic_approaches}).
 
-Early experiments with this algorithm revealed large 
+The new approach to vtree search is analogous to some dynamic variable reordering techniques for BDDs, which involve defining \textit{groups} of variables, set to remain contiguous during the reordering process. Using those techniques, reordering can then be applied within each group, and groups themselves can be reordered. 
 
+We propose a comparable algorithm for vtree search where the variables for individual agents are grouped together into sub-vtrees, and the minimisation function is called on each of these separately. Note that in the SDD Package, the default implementation of the minimisation function can be modified using \texttt{sdd\_manager\_set\_minimize\_function()},  indicating which function should be used instead.
+The code for our replacement implementation is as follows: 
 
-However, in multi-agent systems, it is 
+\begin{lstlisting} [mathescape]
+Vtree* vtree_group_minimize(Vtree* vtree, SddManager* manager) {
+  // start from the root   
+  Vtree* current = vtree; 
+  // repeat until a leaf is reached
+  while (!sdd_vtree_is_leaf(sdd_vtree_right(current))) {
+    // minimise the left subtree using original algorithm
+    sdd_vtree_minimize(sdd_vtree_left(current), manager);
+    // and go down one step to the right
+    current = sdd_vtree_right(current);	
+  }
+  sdd_vtree_minimize(current);
+  return vtree;
+} 
+\end{lstlisting}
 
+This algorithm is appropriate for vtrees of a particular shape, which will constitute the focus our study in most of the evaluation section of this report. Without revealing too much information at this point, we simply say
+that these vtrees are built so that variables are separated into smaller groups, each group forming a left "branch" in the vtree. 
+Figure~\ref{fig:first_pseudo_right_linear} illustrate this with an example, showing the effect of \texttt{vtree\_group\_minimize()} on a particular vtree.
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{pseudorightlinearfirstexample.png}
+\caption{If called on this vtree, the \texttt{vtree\_group\_minimize()} function will attempt to minimise the subtrees rooted at nodes 26, 21, 28, and 29, while keeping these nodes, as well as their ancestors (30, 31, 32), unchanged.}
+\label{fig:first_pseudo_right_linear}
+\end{figure}
 
 \subsection{Software Engineering Issues and Challenges}
 
@@ -1176,24 +1227,20 @@ An useful alternative is to construct the SDD with respect to a right-linear vtr
 \end{itemize}
  This second option is nonetheless the only available solution in the case of very large SDDs and BDDs, which explains the difficulty in debugging larger examples.
 
-Reflecting back on this issue, it would have been much less time-consuming to write a small logic equivalence tool ensuring that the Boolean functions obtained from two equivalent data structure was not only equivalent, but also \textit{syntactically equal}, to reduce the problem to a simple comparison of strings. We did not anticipate enough the amount of work that would be required when debugging the model checker.
+Reflecting back on this issue, it would have been much less time-consuming to write a small logic equivalence tool ensuring that the Boolean functions obtained from two equivalent data structures was not only equivalent, but also \textit{syntactically equal}, to reduce the problem to a simple comparison of strings. We did not anticipate enough the amount of work that would be required when debugging the model checker.
 
 \subsubsection{Correctness}
 
-It is a little ironic that verifying correctness of a verification software was such a complicated task. Due to the reasons mentioned above, we had to use a few simple tricks to make sure that our code was indeed an implementation of the model checking algorithm. 
+ Due to the reasons mentioned above, we had to use a few simple tricks to make sure that our code was indeed an implementation of the model checking algorithm. 
 
 The first technique we used was that of comparing the \textit{output} of our model checker with that of MCMAS, on the set of examples that we had available (see \ref{ispl_examples} for a detailed description of these examples). Once we were certain that these were identical (so no obvious bugs existed), we did a more thorough search to ensure that there was nothing wrong with the code. 
 
-write more about this
-
 Although our set of examples was relatively diverse, it certainly did not cover the whole range of expressions, data types, etc. available in ISPL, nor did it use the full set of CTLK connectives that ISPL supports.
-
-
+Hence, our second approach to verification was to try and "invent" new formulae to check, using different combinations of connectives from those remaining. Furthermore, 
 
 \section{Evaluation (?)} 
 
-
-\subsection{Setup and Evaluation Plan}
+\subsection{Introduction}
 
 \subsubsection{Evaluation Strategy}
 
@@ -1202,9 +1249,9 @@ The ultimate objective of this project was either to establish, or to refute SDD
 There are suggested methods for the use of BDDs in model checking, in particular concerning initial variable orders~\cite{bdd_heuristics}. For the specific case of MCMAS we observe that the standard order number 2 (see \ref{std_orderings}) \textit{often} yields the best results.
 On the other hand, SDDs had not yet been explored in the context of model checking, and consequently no heuristics existed. 
 
-Through this evaluation we planned to remediate this by investigating various vtree constructions and comparing them with MCMAS. 
+Through this evaluation we planned to remediate this by investigating various vtree constructions and comparing the resulting model checker with MCMAS. 
 
-To start with, we decided to focus on the issue of \textit{static} vtree generation, for the situation where the vtree has to be determined \textit{before} SDDs are constructed, as opposed to continuously modified as the construction process happens (this is called \textit{dynamic} minimisation). 
+To start with, we decided to focus on the issue of \textit{static} vtree generation, for the situation where the vtree has to be determined \textit{before} SDDs are constructed, as opposed to continuously modified as the construction process happens -- this is called \textit{dynamic} minimisation. 
 
 Although it may seem like wasted effort, the importance of static vtree generation is non-negligible, for two reasons: firstly, it helps us understand what aspects of the vtree have the greatest impact on the final SDD; secondly, even though dynamic minimisation is generally the most efficient technique, it can also be a very time-consuming process which some applications might find less practical. 
 
@@ -1222,61 +1269,219 @@ We hoped that both of these analyses (static and dynamic) would provide enough i
 http://en.wikipedia.org/wiki/Needham-Schroeder\_protocol
 \end{itemize}
 
-also: choice of examples, why parametrised 
-\subsubsection{Machine, Configurations, Benchmarking Process} 
+also: choice of examples, why parametrised, describe the state spaces of each
 
+\subsubsection{Experimental Protocol} 
 
+Throughout this chapter, we report a large number of tables containing experimental results. In this section we attempt to describe as accurately as possible the framework in which these experiments took place, as well as the format in which we present the results. 
 
-\subsection{Comparisons with Standard Vtrees under Static Vtree Generation}
+All benchmarks were run on ...
 
-We started our investigation by experimenting with the standard vtrees, i.e. those pre-implemented in the SDD package, namely right-linear, left-linear, balanced, and vertical. Recall that this first investigation was focused exclusively on static vtree generation
+Most results are split into two tables: time and memory; time measurements are in seconds, memory usage in megabytes.
+
+In each table we indicate in bold the situations where SDDs outperform BDDs.
+
+in most cases we set parameters to be the most appropriate
+
+\subsection{Static Comparisons with Standard Vtrees}
+
+We started our investigation by experimenting with the standard vtrees, namely right-linear, left-linear, balanced, and vertical. Recall that this first investigation was focused exclusively on static vtree generation, so we disabled \textit{both }the dynamic SDD minimisation feature in our model checker, and the CUDD dynamic reordering feature in MCMAS. As automatic garbage collection was disabled in 
+
+We started with right-linear vtrees. 
 
 \subsubsection{Right-Linear Vtrees} 
 
-\begin{itemize}
-\item why it's important
-\item data: it's much slower
-\item various orderings make no difference but performance changes linearly compared to BDD orderings (which makes sense) -- does it??
-\item analysis
-\item for rest of static evaluation: if we find an improvement on right-linear vtrees, it can be an improvement on bdds if package performances are ever the same
-\end{itemize}
+Recall that BDDs are structurally identical to SDDs build using a right-linear vtree, and the same variable ordering (\ref{bdds_are_sdds}). Experimenting with this particular type of vtrees was therefore of significant importance, as it would allow us to compare both model checkers in the case where they are handling data structures of the exact same size.
+
+Tables \ref{table:rightlineartime} and \ref{table:rightlinearmemory} correspond, respectively, to the time and memory comparisons of our model checker with MCMAS, when SDDs are built using right-linear vtrees inducing the standard orderings 1, 2, 3 and 4. 
+
+\begin{table}
+\centering
+\begin{tabular}{|*{9}{c|}}
+\hline
+ & \multicolumn{2}{|c|}{Ordering 1} & \multicolumn{2}{|c|}{Ordering 2} & \multicolumn{2}{|c|}{Ordering 3} & \multicolumn{2}{|c|}{Ordering 4}\\
+\cline{2-9}
+& BDDs & SDDs & BDDs & SDDs & BDDs & SDDs & BDDs & SDDs\\ \hline
+cryptos7 & 2.06 & 12.35 & 2.64 &  6.39 & 3.33 & 12.77 & 3.83 & 15.186 \\ \hline
+cryptos8 & 11.85 & 56.02 & 17.24 & 30.42 & 20.41 & 58.70 & 23.85 & 69.54 \\ \hline
+cryptos9 & 853.17 & \textbf{221.16} & 98.95 & 145.313 & 617.32 & \textbf{266.84} & 911.70 & \textbf{305.17} \\ \hline
+pris9 & 50.14 & - & 11.47 & 252.21 & 12.52 & 369.83 & 17.31 & - \\ \hline
+pris10 & 236.15 & - & 35.11 & - & 42.12 & -& 52.13 & -\\ \hline
+nspk1 & 0.06 & 0.79 & 0.04 & 0.59 & 0.09 & 1.21 & 0.06 & 0.71 \\ \hline
+nspk2 & 11.25 & 154.46 & 2.71 & 76.32 & 7.36 & 120.42 & 4.55& 84.15 \\ \hline
+nspk4 & 1.29 & 27.29 & 0.32 & 9.79 & 1.75 & 23.74 & 0.95 & 14.68 \\ \hline
+nspk5 & - & - & 158.62 & - & - & - & - & - \\ \hline
+nspk6 & - & - & - &- & - & - & - & - \\ \hline
+\end{tabular}
+\\
+\caption{Computation Time: SDDs were built with right-linear vtrees, and standard orderings}
+\label{table:rightlineartime}
+\end{table}
+
+\begin{table}
+\centering
+\begin{tabular}{|*{9}{c|}}
+\hline
+\multirow{2}{*} & \multicolumn{2}{|c|}{Ordering 1} & \multicolumn{2}{|c|}{Ordering 2} & \multicolumn{2}{|c|}{Ordering 3} & \multicolumn{2}{|c|}{Ordering 4}\\
+\cline{2-9}
+& BDDs & SDDs & BDDs & SDDs & BDDs & SDDs & BDDs & SDDs\\ \hline
+cryptos7 & 198 & 782 & 160 & 306 & 248 & 656 & 272 & 791 \\ \hline
+cryptos8 & 758 & 3120 & 647 & 1308 & 1024 & 2630 & 1120 & 3166  \\ \hline
+cryptos9 & 3001 & 11556 & 2850 & 5566 & 4246 & 10134 & 4690 & 11927 \\ \hline
+pris9 & 594 & - & 313 & 7658 & 3502 & 12382 & 4349 & -\\ \hline
+pris10 & 1955 & - & 847 & - & 968 & - & 1218 & -\\ \hline
+nspk1 & 16 & 34 & 13 & 24 & 25 & 50 & 17 & 34 \\ \hline
+nspk2 & 324 & 2065 & 135 & 1012 & 493 & 1520 & 275 & 1104 \\ \hline
+nspk4 & 92 & 624 & 45 & 223  & 188 & 693 & 81 & 344 \\ \hline
+nspk5 & - & - & 3841 & - & - & - & - & -\\ \hline
+nspk6 & -&- &- &-  &- &- &- &- \\ \hline
+\end{tabular}
+\\
+\caption{Memory Usage: SDDs were built with right-linear vtrees, and standard orderings}
+\label{table:rightlinearmemory}
+\end{table}
+
+During this first phase of the investigation, it became quickly apparent that SDDs were \textit{not }better than BDDs in this situation, outperforming them in only three cases, and being slower in most cases (sometimes considerably, up to two orders of magnitude). The important difference in memory usage is explained by the garbage collector being off in the SDD Package. 
+
+We observed one thing in particular. Despite the SDD/BDD ratio being relatively consistent within each class of examples, it varies a lot more across the different classes. Going back to the characteristics of these classes, we realise that this ratio increases with the size of the model  
+\\\\\\
 
 
-Recall that BDDs are structurally identical to SDDs build using a right-linear vtree, and the same variable ordering (\ref{bdds_are_sdds}). Experimenting with this particular type of vtrees was therefore of significant importance, as it would allow us to compare both data structures at the same level.  
-
-The data in the table \ref{} below corresponds to runs of MCMAS vs...
-
-$$DATA$$
-
-During this first phase of the investigation, it became very quickly apparent that SDDs were \textit{significantly }). 
-When investigating further, the origin of the overhead slower than BDDs; their computation time even appeared to grow exponentially compared to BDDs (to do: this is just conjecture). 
-
-
-
+To conclude this first set of experiments, we make the following remark: in this situation the model checkers are dealing with the \textit{exact} same structures, so these numbers \textit{should }be the same for BDDs and SDDs. But they aren't, for the reasons explained above and in \ref{comparison_with_cudd}. However, \textit{should the SDD Package ever become as efficient as CUDD, any improvement on the SDD numbers in Tables~\ref{table:rightlineartime} and \ref{table:rightlinearmemory} would be an improvement on BDDs.} This is hypothetical, but it motivated the rest of our experiments, and in particular, the search for a better vtree.
+\\\\
+\textit{Note on BDD data: from now on, all the BDD data found in the comparison tables corresponds to computations using standard ordering number 2, the most efficient for BDDs in the vast majority of cases (\ref{std_orderings}).
+}
 
 \subsubsection{Other Standard Vtrees}
 
-\begin{itemize}
-\item data: it's much much slower: these vtrees are not appropriate.. except maybe balanced *sometimes*. 
-\item reason: too much weight on left child nodes of vtree 
-\end{itemize}
+We moved on from right-linear vtrees, hoping that one of the other standard vtrees would lead to more efficient computations. This was not the case. 
+
+
+
+\begin{table}
+\begin{tabular}{|*{10}{c|}}
+\hline
+\multirow{2}{*}{} & \multirow{2}{*}{BDDs} & \multicolumn{4}{c|}{Left-Linear} & \multicolumn{4}{c|}{Vertical}\\ \cline{3-10}
+& & O. 1 & O. 2 & O. 3 & O. 4  & O. 1 & O. 2 & O. 3 & O. 4 \\ \hline
+btp & 0.02& 44.3 & 8.36 & 6.42 & 6.56 & 0.61 & 0.13 & 0.09 & 0.10 \\ \hline
+cryptos4 & 0.02 & - & - & - & - & - & 21.72 & 57.67 & 47.15 \\ \hline
+pris3 & 0.01 & - & - & - & - & 1267.91 & 3.14 & 4.56 & 4.34 \\ \hline
+pris5 & 0.04 &- &- &- &- & - &-  &- & -\\ \hline
+nspk1 & 0.03 & - & - & & & & & & \\ \hline
+\end{tabular}
+\caption{Time Comparisons with left-linear vtrees.}
+\label{table:otherstandardvtrees1time}
+\end{table}
+~
+\begin{table}
+\centering
+\begin{tabular}{|*{10}{c|}}
+\hline
+\multirow{2}{*}{} & \multirow{2}{*}{BDDs} & \multicolumn{4}{c|}{Left-Linear} & \multicolumn{4}{c|}{Vertical}\\ \cline{3-10}
+& & O. 1 & O. 2 & O. 3 & O. 4  & O. 1 & O. 2 & O. 3 & O. 4 \\ \hline
+btp & 9 & 559 & 176 & 122 & 121 & 15 & 4 & 4 & 4 \\ \hline
+cryptos4 & 11 & - & - & -& - & -  & 267 & 522 & 407 \\ \hline
+pris3 & 9 & - & - & - & - & 7272 & 48 & 73 & 55 \\ \hline
+pris5 & 13 & - &- &- &- &- &- &-&- \\ \hline
+nspk1 & 12 & - &- & & & & & & \\ \hline
+\end{tabular}
+\caption{Memory with left-linear vtrees.}
+\label{table:otherstandardvtrees1memory}
+\end{table}
+
+Left-linear and vertical vtrees proved \textit{extremely} inefficient. As shown in Tables~\ref{table:otherstandardvtrees1time} and \ref{table:otherstandardvtrees1memory}, even on the small examples chosen they were significantly slower than BDDs. Furthermore, although the variable ordering chosen for the vtrees seems to have a big impact on the computation (much bigger in fact than on BDDs), even for the better ones there is no competition.  
+
+Before pushing the analysis further, we look at balanced vtrees; these are slightly more efficient, but still lead to much higher computations times than BDDs, or even right-linear vtrees (to do: check that). In Tables~\ref{table:otherstandardvtrees2memory} and \ref{table:otherstandardvtrees2memory}.
+
+\begin{table}
+\centering
+\begin{tabular}{|*{9}{c|}}
+\hline
+ & \multirow{2}{*}{BDDs} & \multicolumn{4}{c|}{Balanced} \\ \cline{3-6}
+ & & O. 1& O. 2 & O.3 & O.4 \\ \hline
+cryptos5 & & 0.92 & & & \\ \hline
+cryptos6 & & 5.78 & & & \\ \hline
+cryptos7 & & & & & \\ \hline
+pris5 & & & & & \\ \hline
+pris6 & & & & & \\ \hline
+pris9 & & & & & \\ \hline
+nspk1 & & & & & \\ \hline
+nspk2 & & & & & \\ \hline
+nspk4 & & & & & \\ \hline
+\end{tabular}
+\caption{Balanced Vtrees: Computation Time}
+\label{table:otherstandardvtrees2time}
+\end{table}
+\begin{table}
+\centering
+\begin{tabular}{|*{9}{c|}}
+\hline
+ & \multirow{2}{*}{BDDs} & \multicolumn{4}{c|}{Balanced} \\ \cline{3-6}
+ & & O. 1& O. 2 & O.3 & O.4 \\ \hline
+cryptos5 & & 29 & & & \\ \hline
+cryptos6 & & 136 & & & \\ \hline
+cryptos7 & & & & & \\ \hline
+pris5 & & & & & \\ \hline
+pris6 & & & & & \\ \hline
+pris9 & & & & & \\ \hline
+nspk1 & & & & & \\ \hline
+nspk2 & & & & & \\ \hline
+nspk4 & & & & & \\ \hline
+\end{tabular}
+\caption{Balanced Vtrees: Memory Usage}
+\label{table:otherstandardvtrees2memory}
+\end{table}
+
 
 \subsubsection{Towards a Better Vtree: Observations}
 
+Upon experimenting with all the 16 standard vtrees, it was clear that if SDDs were ever to be used in model checking, there would need to be a way of generating better vtrees. 
+
+\myparagraph{What Is a Good Vtree?}
+
+Our first investigation was an attempt at finding out how, for such small models, computation times could be so high. SDD nodes could not possibly be very large, so the overhead had to be elsewhere. We realised that the main characteristic that left-linear, vertical, and (to a lesser extend) balanced vtrees have in common is the size (i.e. the number of descendents) of the left branches of their nodes. 
+This is a \textit{very }important property, for the following reason. 
+
+Recall the construction of an SDD for function $f$ with respect to a vtree $v$. It involves creating an $X$-partition of $f$, where $X$ is the set of variables in $v^l$. If $X$ contains a lot of the variables in $f$, the \textit{subs} of $f$ will be large. But in SDDs, \textit{decisions} are based on \textit{sentences}, i.e. on subs, so if these are large, decisions will be slower to make. But SDD operations such as \texttt{apply} or \texttt{condition} rely on decisions, and these operations are the basis for the model checking algorithm. Hence the overhead.
+
+This is of course very much simplified, and if it were entirely true there would be absolutely no point in trying to replace BDDs (whose \textit{subs} are as light as possible -- they are just one literal!) with SDDs. But the general idea is there, and the ultimate objective of vtree optimisation is to construct subs in such a way that: \begin{itemize}
+\item The number of decisions to make is less than it would be in a BDD (in order to do this we simply put more than one variable in the left branches of the vtree),
+\item Decisions remain quick enough (this is the tricky part).
+\end{itemize}
+
+\myparagraph{Analysis of an Example}
+
+In order to get a better idea of the type of vtree which would make the computation more efficient, we ran the model checker on a set of examples using the dynamic minimisation feature, and we looked at the final vtree that the search algorithm produced (i.e. the manager's vtree immediately before the process terminated). The result was unambiguous: in \textit{all} cases, independently of the initial vtree, the final vtree had the same shape, a sort of right-linear vtree where the left branches contain a set of variables rather than single variable. For this vague description to make more sense, we illustrate it here with an example, shown in Figure~\ref{fig:large_vtree_after_reordering}. 
+We make a few remarks about the shape of this vtree (without examiniming the variable order yet):
+\begin{sidewaysfigure}
+\includegraphics[scale=0.3]{largevtreeafterdao.png}
+\caption{The manager's vtree at the end of a run of our model checker on crypto6, with an initial vtree of type balanced.}
+\label{fig:large_vtree_after_reordering}
+\end{sidewaysfigure}
+
+
 \begin{itemize}
-\item seems standard vtrees are not good enough with any orderings 
-\item where is the overhead and what would make it decrease? 
-\item we run the dynamic minimisation feature, what we find: 
+\item The vtree in Figure~\ref{fig:large_vtree_after_reordering} is \textit{typical}, and an absolutely fair representative of the vtrees obtained after dynamic minimisation (whatever the example, and whatever the initial vtree).
+\item Recall that the dynamic minimisation algorithm is ``symmetric" in the sense that it does \textit{not} force the vtree in one particular direction. It considers 24 vtrees (of which 12 are induced from the l-vtree by applying one of the usual vtree operations, and 12 arise from the r-vtree) and picks the best one. The fact that we get this vtree shape in all cases is evidence that it is in fact the \textit{ideal} configuration. 
+\item It tends to happen (and it is definitely the case in Figure~\ref{fig:large_vtree_after_reordering}) that the first few left-branches are slightly smaller than the ones below. A reasonable explanation for this is that the first few left-branches correspond to the subs in the first few levels of the corresponding SDD (starting from the root), 
+\item 
+\item 
+\end{itemize}
+
+
+
+
+
+we run the dynamic minimisation feature, what we find: 
 \begin{itemize}
-\item vtrees are pseudo-right-linear
+\item vtrees are pseudo right-linear
 \item how are variables arranged
 \item look at how vtree changes during the process
 \end{itemize}
-\item if we come up with new static heuristics, they need to make sense and we should be able to generate them automatically from the model 
-\end{itemize}
+if we come up with new static heuristics, they need to make sense and we should be able to generate them automatically from the model 
 
 
-\subsection{Static Experiments with Alternative Vtrees}
+\subsection{Static Comparisons with Alternative Vtrees}
 
 \subsubsection{A First Attempt}
 
@@ -1285,7 +1490,6 @@ inspired from MCMAS orderings we split the variables by agent
 \subsubsection{An Upper Bound on Subtree Size}
 
 important to explain why this improves computation times
-
 \subsubsection{Various Vtree Characteristics and Their Impact}
 
 \begin{itemize}
@@ -1330,6 +1534,10 @@ new vtree search method
 
 review of best techniques and heuristics
 
+\subsection{Qualitative Evaluation}
+
+Do SDDs compare with BDDs?
+
 \section{Conclusion and future work}
 
 \subsection{Review}
@@ -1342,6 +1550,14 @@ At some point I would like to have a go at implementing an ADD equivalent for SD
 
 
 \begin{thebibliography}{9}
+
+\bibitem{original_model_checking} E. M. Clarke, E. A. Emerson: \textit{Design and synthesis of synchronization skeletons using branching time temporal logic}, 1981.
+
+\bibitem{birth_of_model_checking} E. M. Clarke: \textit{The Birth Of Model Checking}, 2008.
+
+\bibitem{symbolic_model_checking} J. P. Queille, J. Sifakis: \textit{Specification and Verification of Concurrent Systems in CESAR}, 1981.
+
+\bibitem{symbolic} K. L. McMillan, \textit{Symbolic Model Checking: an Approach to the State Explosion Problem}, PhD Thesis, 1992. 
 
 
 \bibitem{sdd_1}
@@ -1378,6 +1594,8 @@ Algebraic decision diagrams and their applications}, 1993.
 
 \bibitem{bdd_heuristics} M. Rice, S. Kulhari:\textit{ A Survey of Static Variable Ordering Heuristics for Efficient BDD/MDD Construction}, 2008.
 
+\bibitem{interleaving} H. Fujii, G. Ootomo, C. Hori: \textit{Interleaving Based Variable Ordering Methods for Ordered Binary Decision Diagrams}, 1993.
+
 \bibitem{bryant} R. E. Bryant: \textit{Graph-Based Algorithms
 for Boolean Function Manipulation}, 1986.
 
@@ -1403,5 +1621,24 @@ for Boolean Function Manipulation}, 1986.
 \bibitem{notes_499} I. Hodkinson, Modal and Temporal logic, lecture notes (as taught in 2013-14)
 
 \end{thebibliography}
+
+\appendix
+
+\section{The Bit Transmission Problem}
+
+\subsection{The Problem}
+
+\subsection{The Model}
+
+\subsection{ISPL Specification}
+
+\section{Implementation Details}
+
+Code:
+\begin{itemize}
+\item the SDD params structure
+\item the compute reach function
+\item the getvarorder and createvtree functions
+\end{itemize}
 
 \end{document}
