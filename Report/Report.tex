@@ -11,9 +11,10 @@
 \usepackage{MnSymbol}
 \usepackage{stmaryrd}
 \usepackage{multirow}
-\usepackage[margin=1.6in]{geometry}
+\usepackage[margin=1.4in]{geometry}
 \usepackage{rotating}
-
+\usepackage{caption}
+\usepackage{subcaption}
 \newcommand{\sectionbreak}{\clearpage}
 
 
@@ -514,7 +515,113 @@ BDTs are a relatively inefficient way of storing Boolean formulas, since a BDT f
 \end{figure}
 
 \myparagraph{The Reduction Algorithm} 
+\begin{figure}
+\centering
+\begin{tikzpicture}
+\node[draw, rectangle] (01) at (0,0) {0};
+\node[draw, rectangle] (02) at (1,0) {0};
+\node[draw, rectangle] (03) at (2,0) {0};
+\node[draw, rectangle] (04) at (3,0) {0};
+\node[draw, rectangle] (05) at (4,0) {0};
+\node[draw, rectangle] (06) at (5,0) {0};
+\node[draw, rectangle] (07) at (6,0) {0};
+\node[draw, rectangle] (11) at (7,0) {1};
+\node[draw, circle] (z1) at (0.5,1) {$z$};
+\node[draw, circle] (z2) at (2.5,1) {$z$};
+\node[draw, circle] (z3) at (4.5,1) {$z$};
+\node[draw, circle] (z4) at (6.5,1) {$z$};
+\node[draw, circle] (y1) at (1.5,2) {$y$};
+\node[draw, circle] (y2) at (5.5,2) {$y$};
+\node[draw, circle] (x1) at (3.5,3) {$x$};
 
+\draw  (z1) -- (01)[dashed];
+\draw  (z1) -- (02);
+\draw  (z2) -- (03)[dashed];
+\draw  (z2) -- (04);
+\draw  (z3) -- (05)[dashed];
+\draw  (z3) -- (06);
+\draw  (z4) -- (07)[dashed];
+\draw  (z4) -- (11);
+\draw  (y1) -- (z1)[dashed];
+\draw  (y1) -- (z2);
+\draw  (y2) -- (z3)[dashed];
+\draw  (y2) -- (z4);
+\draw  (x1) -- (y1)[dashed];
+\draw  (x1) -- (y2);
+
+\draw [->,>=latex] (3.5, -0.7) -- (3.5,-2.2);
+
+\node[draw, rectangle] (08) at (2.5,-6) {0};
+\node[draw, rectangle] (12) at (4.5,-6) {1};
+\node[draw, circle] (z5) at (0.5,-5) {$z$};
+\node[draw, circle] (z6) at (2.3,-5) {$z$};
+\node[draw, circle] (z7) at (4.3,-4.9) {$z$};
+\node[draw, circle] (z8) at (6,-5) {$z$};
+\node[draw, circle] (y3) at (1.5,-4) {$y$};
+\node[draw, circle] (y4) at (5.5,-4) {$y$};
+\node[draw, circle] (x2) at (3.5,-3) {$x$};
+
+\draw  (z5) to [bend right=20] (08)[dashed];
+\draw  (z5) to [bend left=10] (08);
+\draw  (z6) to [bend right=20] (08)[dashed];
+\draw  (z6) to [bend left=20] (08);
+\draw  (z7) to [bend right=20] (08)[dashed];
+\draw  (z7) to [bend left=5] (08);
+\draw  (z8) --  (08)[dashed];
+\draw  (z8) -- (12);
+\draw  (y3) -- (z5)[dashed];
+\draw  (y3) -- (z6);
+\draw  (y4) -- (z7)[dashed];
+\draw  (y4) -- (z8);
+\draw  (x2) -- (y3)[dashed];
+\draw  (x2) -- (y4);
+
+\draw [->,>=latex] (3, -6.7) -- (1,-8.5);
+
+\node[draw, rectangle] (09) at (-1,-12) {0};
+\node[draw, rectangle] (13) at (1,-12) {1};
+\node[draw, circle] (z9) at (0,-10.7) {$z$};
+\node[draw, circle] (z10) at (1.5,-11) {$z$};
+\node[draw, circle] (y5) at (-1.5,-10) {$y$};
+\node[draw, circle] (y6) at (1.5,-10) {$y$};
+\node[draw, circle] (x3) at (0,-9) {$x$};
+
+\draw  (z9) to [bend right=20] (09)[dashed];
+\draw  (z9) to [bend left=10] (09);
+\draw  (z10) to  (09)[dashed];
+\draw  (z10) to  (13);
+\draw  (y5) to [bend right=16] (z9)[dashed];
+\draw  (y5) to [bend left=16]  (z9);
+\draw  (y6) -- (z9)[dashed];
+\draw  (y6) -- (z10);
+\draw  (x3) -- (y5)[dashed];
+\draw  (x3) -- (y6);
+
+\draw [->,>=latex] (2.5, -10.5) -- (4.7,-10.5);
+
+\node[draw, rectangle] (010) at (6,-12) {0};
+\node[draw, rectangle] (14) at (7, -12) {1};
+\node[draw, circle] (z11) at (7.2,-11) {$z$};
+\node[draw, circle] (y7) at (7,-10) {$y$};
+\node[draw, circle] (x4) at (6,-9) {$x$};
+
+\draw  (z11) to [bend right=20] (010)[dashed];
+\draw  (z11) to (14);
+\draw  (y7) to [bend right=16] (010)[dashed];
+\draw  (y7) -- (z11);
+\draw  (x4) to [bend right=20] (010)[dashed];
+\draw  (x4) -- (y7);
+
+\draw (2.85, -1.5) node {(1)};
+\draw (1.5, -7.2) node {(2)};
+\draw (3.6, -10) node {(3)};
+
+
+\end{tikzpicture}
+
+\label{bdd_reduction_example}
+\caption{Reduction to the OBDD for function $f(x, y, z) = x \land y \land z$ with variable order $[x, y, z]$. In this case, applying Steps (2) and (3) once is sufficient as the resulting diagram is reduced.}
+\end{figure}
 \noindent There are three steps in the reduction of BDTs to OBDDs:
 \begin{enumerate}
 \item Removal of duplicate terminals: we merge all the 0-nodes and 1-nodes into two unique terminal nodes
@@ -523,7 +630,8 @@ BDTs are a relatively inefficient way of storing Boolean formulas, since a BDT f
 \end{enumerate}
 Steps (2) and (3) are repeatedly applied until no further reduction is possible, and the resulting diagram is said to be a reduced ordered binary decision diagram. 
 
-[here need example of using reduction algorithm]
+
+
 
 The following key result makes the use of OBDDs viable in practice: 
 
@@ -540,96 +648,82 @@ OBDDs help us to manipulate Boolean functions with a high number of variables, a
 
 \noindent\textit{Note to the reader: throughout this report we often drop the `O' and refer to OBDDs as BDDs.}
 
-\subsubsection{A Knowledge Compilation Map}
+\subsubsection{Project Directions}
 
-In computer science, the field of \textit{knowledge compilation} is concerned with finding compact and efficient representations of propositional knowledge bases (such as symbolic representations of state-spaces, cf \ref{symbolic}).
- Such a representation is refered to as a \textit{target compilation language}, of which BDTs and OBDDs are examples. 
+The initial objective of this project was to investigate new representations of Boolean functions suitable for application to symbolic model checking, seeking a potential improvement on BDDs (which constitute so far the ``industry standard").
+
+In computer science, the field of \textit{knowledge compilation} is concerned with finding compact and efficient representations of \textit{propositional knowledge bases}, which correspond to sets of propositional formulae.
+Such a representation is refered to as a \textit{target compilation language}, of which BDTs and OBDDs are examples. 
  
- The main properties that we look for in a target compilation language are the canonicity of the representation, the succinctness of the representation, and a polynomial-time complexity for queries and operations on the language. 
- These properties will ensure that we can safely rely on a particular language for our model checking algorithm. 
- 
- OBDDs satisfy these two properties (with succintness remaining highly dependent on the variable order), and in fact a number of model checkers use them for state-space representation (e.g. NuSMV, MCMAS). 
- 
- In 2002, A. Darwiche and P. Marquis published \cite{compilation_map} a comparative analysis of most existing DAG-based target compilation languages in terms of their succintness and the polytime operations they support. They show that all of these languages are subsets of a broad language called \textit{negation normal form} (NNF). 
+In order for an target compilation language to be suitable for knowledge compilation, it must be \textit{succinct} (i.e. representations must be small), and it must support a number of important \textit{queries} in polynomial time. OBDDs, for instance, satisfy these two properties (with succinctness remaining highly dependent on the variable order).
+
+Symbolic model checking also recognises the need for succinct representations of propositional formulae, however an important difference must be noted: the model checking algorithm consists in a large series of \textit{operations} on Boolean functions, whereas knowledge compilation focuses on encoding a propositional knowledge base, in order to \textit{query} it more efficiently later on. 
+\\\\
+ In 2002, A. Darwiche and P. Marquis published \cite{compilation_map}, a comparative analysis of most existing DAG-based target compilation languages in terms of their succintness and the polytime operations they support (TO DO check que ya vmt les operations). They show that all of these languages are subsets of a broad language called \textit{negation normal form} (NNF). 
 
 \begin{definition}
 A sentence in \textit{NNF} is a rooted directed acyclic graph where each leaf node is labelled with $\top$, $\bot$, $X$ or $\lnot X$ for some propositional variable $X$, and each internal node is labelled with $\land$ or $\lor$ and can have arbitrarily many children. 
 
 \end{definition} 
 
-\noindent Remark: OBDDs are NNF sentences. Figure~\ref{nnf_obdd} shows an OBDD and its corresponding NNF sentence.  
+\noindent Observe that OBDDs are NNF sentences. Figure~\ref{nnf_obdd} shows an OBDD and the corresponding NNF sentence.  
 
 \begin{figure}
 \centering
 \begin{tikzpicture}
 
 
-	\node[circle, draw] (X) at (0, 5){$X$};
-	\node[circle, draw] (Y) {$Y$};
+	\node[circle, draw] (x) at (0, 3){$x$};
+	\node[circle, draw] (y) at (-0.5, 1.5) {$y$};
+	\node[rectangle, draw] (0) at (-1, 0) {0};
+	\node[rectangle, draw] (1) at (1, 0) {1};
 
+	\draw (x) -- (y)[dashed];
+	\draw (x) to[bend left=20] (1);
+	\draw (y) to (0)[dashed];
+	\draw (y) to (1);
 \end{tikzpicture}
-\qquad\quad
+\qquad\quad 
 \begin{tikzpicture}
-	[level 1/.style={sibling distance=34mm},
-	 level 2/.style={sibling distance=17mm},
-	 level 3/.style={sibling distance=40mm},
-	 level 4/.style={sibling distance=12mm},
-	 level 5/.style={sibling distance=23mm},
-	 level 6/.style={sibling distance=9mm}]
-	\node[circle, draw] (or1) {$\lor$}	 
-		child {node[circle,draw] (and1) {$\land$} [solid]
-			child {node[rectangle, solid, draw] (X1) {$\lnot X$}[solid]}
-			child {node[circle, solid, draw] (or2) {$\lor$} [solid]
-				child {node[circle,draw] (and3) {$\land$} [solid]
-					child {node[rectangle, solid, draw] (Y1) {$\lnot Y$}[solid]}
-					child {node[circle, solid, draw] (or5) {$\lor$} [solid]
-						child {node[circle,draw] (and5) {$\land$} [solid]
-							child {node[rectangle, solid, draw] (Z1) {$\lnot Z$}[solid]}
-							child {node[rectangle, solid, draw] (T2) {$\top$} [solid]} 	
-						}
-						child {node[circle,draw] (and6) {$\land$} [solid]
-							child {node[rectangle, solid, draw] (Z2) {$Z$}[solid]}
-							child {node[rectangle, solid, draw] (F1) {$\bot$} [solid]} 	
-						}
-					}
-				}
-				child {node[circle,draw] (and4) {$\land$} [solid]
-					child {node[rectangle, solid, draw] (Y2) {$Y$}[solid]}
-					child {node[circle, solid, draw] (or6) {$\lor$} [solid]
-						child {node[circle,draw] (and7) {$\land$} [solid]
-							child {node[rectangle, solid, draw] (Z3) {$\lnot Z$}[solid]}
-							child {node[rectangle, solid, draw] (F2) {$\bot$} [solid]} 	
-						}
-						child {node[circle,draw] (and8) {$\land$} [solid]
-							child {node[rectangle, solid, draw] (Z2) {$Z$}[solid]}
-							child {node[rectangle, solid, draw] (T2) {$\top$} [solid]} 	
-						}
-					}
-				}
-			}
-		}
-		child {node[circle,draw] (and2) {$\land$} [solid]
-			child {node[rectangle, solid, draw] (X2) {$X$} [solid]}
-			child {node[rectangle, solid, draw] (T1) {$\top$} [solid]}
-		};
+  \node (o1) at (0, 4) {$\lor$};
+  \node (a1) at (-0.7, 3.20) {$\land$};
+  \node (a2) at (0.7, 3.20) {$\land$};
+  \node (x1) at (-1.2, 2.40) {$\lnot x$};
+  \node (o2) at (-0.4, 2.40) {$\lor$};
+  \node (x2) at (0.4, 2.40) {$x$};
+  \node (a3) at (-0.7, 1.60) {$\land$};
+  \node (a4) at (0.25, 1.60){$\land$};
+  \node (y2) at (0, 0.8) {$\lnot y$};
+  \node (y1) at (-1.2, 0.8) {$y$};
+  \node (0) at (-0.6, 0){$\bot$};
+  \node (1) at (0.8, 0){$\top$};
+
+	\draw (o1) to (a1);
+	\draw (o1) to (a2);
+	\draw (a1) to (x1);
+	\draw (a1) to (o2);
+	\draw (a2) to (x2);
+	\draw (a2) to[bend left=30] (1);
+	\draw (o2) to (a3);
+	\draw (o2) to (a4);
+	\draw (a3) to (y1);
+	\draw (a3) to (0);
+	\draw (a4) to (y2);
+	\draw (a4) to (1);
+
+	
 \end{tikzpicture}
 
-	\caption{An OBDD (left) and its corresponding NNF sentence (right). Although the former seems much more compact, the difference in size is only linear and both representations are essentially the same. TODO sort this oout}
+	\caption{An OBDD (left) and the corresponding NNF sentence (right). Although the former seems much more compact, the difference in size is only linear and both representations are essentially the same.}
 \label{nnf_obdd}
 
 \end{figure}
  
- 
- 
-\subsubsection{Project Directions}
-
- This ``knowledge compilation map" was the starting point for this project, whose initial objective was to investigate new target compilation languages suitable for application to model checking, seeking a potential improvement on BDDs (which constitute so far the ``industry standard").
-
- Taking into account the various criteria for suitable representations described above, we searched the literature aiming to find a good candidate to replace BDDs. 
+ This ``knowledge compilation map" was the starting point for this project. Taking into account the various criteria for suitable representations described above, we searched the literature aiming to find a good candidate to replace BDDs. 
 
 After considering a number of different representations including tree-of-BDDs \cite{trees_of_bdds}, BDD-trees \cite{bdd_trees}, and several other subsets of NNF described in \cite{compilation_map}, we opted for a relatively novel target compilation language called \textit{sentential decision diagram} (SDD). 
 
-SDDs are a subset of NNF, possess the required properties, and had not yet been experimented with in the context of model checking and state-space representation. 
+SDDs are a subset of NNF, and they satisfy essential properties such as succintness and polynomial-time Boolean operations. Also, they had not yet been experimented with in the context of symbolic model checking, for state-space representation. 
 Moreover, some of the experimental results presented in \cite{sdd_1} and \cite{sdd_3} demonstrate that SDDs can lead to a significant improvement on BDDs in terms of computation time and memory usage. 
 
 In the next section we present SDDs in full details, delaying our own experimental results to the following chapters.
@@ -671,9 +765,12 @@ Let $f(x, y, z) = (x \land y) \lor (x \land z)$. Then $\alpha = \{(x, y\lor z)\}
 Let $\circ$ be a Boolean operator and let $\{(p_1, s_1),...,(p_n, s_n)\}$ and $\{(q_1, r_1),...,(q_m, r_m)\}$  be $X$-partitions of Boolean functions $f(X, Y)$ and $g(X, Y)$ respectively. Then $$\{(p_i \land q_j, s_i \circ r_j) \mid  p_i \land q_j  \neq \bot \}$$ is an $X$-partition of $f \circ g$.
 \end{theorem}
 \begin{proof}
- Since $p_1, ..., p_n$ and $q_1, ..., q_m$ are partitions, the $(p_i \land q_j)$ also form a partition for $i = 1, ..., n$, $j = 1, ..., m$ and $p_i \land q_j \neq \bot$. 
- 
-To do: finish proof 
+ Since $p_1, ..., p_n$ and $q_1, ..., q_m$ are partitions, the $(p_i \land q_j)$ also form a partition for $i = 1, ..., n$, $j = 1, ..., m$ and $p_i \land q_j \neq \bot$. So the given decomposition is an $X$-partition of some function.
+
+Consider now an instantiation \textbf{z} of variables $X\cup Y$, so \textbf{z} consists of an instantiation \textbf{x} of $X$, and an instantiation \textbf{y} of $Y$. 
+Then, since $\{p_k\}$ and $\{q_l\}$ are partitions, there must exist a unique $i$ and a unique $j$ such that $\textbf{x} \models p_i$ and $\textbf{x} \models q_j$, i.e $p_i(\textbf{x}) = q_j(\textbf{x}) = \top$. Then $f(\textbf{x}, \textbf{y}) = s_i(\textbf{y})$ and $g(\textbf{x}, \textbf{y}) = r_j(\textbf{y})$, so $(f\circ g)(\textbf{x}, \textbf{y}) = s_i(\textbf{y})\circ r_j(\textbf{y}).$
+
+Evaluating the given decomposition at instantiation \textbf{z} also gives $s_i(\textbf{y}) \circ r_j(\textbf{y})$, hence result. 
 \end{proof}
 
 As we see later on, an important consequence of Theorem~\ref{theorem_apply} is the polynomial time operations available on SDDs. Canonicity of SDDs is due to the following result:
@@ -683,7 +780,10 @@ As we see later on, an important consequence of Theorem~\ref{theorem_apply} is t
 A function $f(X, Y)$ has exaclty one compressed $X$-partition.
 \end{theorem}
 \begin{proof}
-proof
+Let $\textbf{x}_1, ..., \textbf{x}_k$ be \textit{all} instantiations of variables $X$. Then $\{(\textbf{x}_1, f|_{\textbf{x}_1}), ..., (\textbf{x}_k, f|_{\textbf{x}_k})\}$ is an $X$-partition of $f$. Let $s_1, ..., s_n$ be the distinct elements of $f|_{\textbf{x}_1}, ..., f|_{\textbf{x}_k}$, and for each $s_i$ define $p_i = \bigvee_{f|_{\textbf{x}_j} = s_i} \textbf{x}_j$.
+Then $\alpha = \{(p_1, s_1), ..., (p_n, s_n)\}$ is a compressed $X$-partition of $f$. 
+
+Suppose now that $\beta = \{(q_1, r_1), ..., (q_m, r_m)\}$ is another compressed $X$-partition of $f$. Then $\alpha$ and $\beta$ must have different partitions, i.e. $\{p_i\} \neq \{q_j\}$. Since they are both \textit{partitions}, there must exist a prime $p_i$ of $\alpha$ which overlaps with two different primes $q_j$ and $q_k$ of $\beta$, i.e. there exist distinct instantiations \textbf{x}, \textbf{x}' of $X$ such that $\textbf{x} \models p_i \land q_j$ and $\textbf{x}' \models p_i \land q_k$. Then we have $f|_\textbf{x} = \alpha_\textbf{x} = s_i = r_j = \beta_\textbf{x}$, and $f|_\textbf{x'} = \alpha_\textbf{x'} = s_i = r_k = \beta_\textbf{x'}$. So $r_j = r_k$, a contradiction as $\beta$ is compressed.  
 \end{proof}
 
 \myparagraph{Vtrees}
@@ -701,7 +801,7 @@ A \textit{vtree} for variables $X$ is a full binary tree whose leaves are in one
 \includegraphics[scale=0.5]{rightlinearABCD.png}
 
 
-\caption{Two vtrees for $X = \{A, B, C, D\}$ To Do sort out nodes IDs}
+\caption{Two vtrees for $X = \{A, B, C, D\}.$}
 \label{fig:vtree_examples} 
 
 \end{figure}
@@ -713,7 +813,17 @@ The construction of an SDD for a Boolean function $f$ with respect to a vtree $v
 
 Let $v$ be the vtree on the left of Figure~\ref{fig:vtree_examples}, and let $$f(A, B, C, D) = (A \land B) \lor (B \land C) \lor (C \land D).$$
 
-The decomposition of $f$ at the vtree node $v$ goes as follows: we split the variables in $X$ into two subsets by separating variables in $v^l$ from those in $v^r$: we obtain $\{A, B\}$ and $\{C, D\}$; we take the unique compressed $\{A, B\}$-partition of $f$, namely $\alpha = \{(\lnot B , C\land D), (\lnot A \land B, C), (A \land B, \top)\}$. The SDD for $f$ is the decomposition obtained by further decomposing the primes of $\alpha$ at $v^l$ and its subs at $v^r$. We continue this recursively until all elements consist of literals or constants. 
+The decomposition of $f$ at the vtree node $v$ goes as follows: we split the variables in $X$ into two subsets by separating variables in $v^l$ from those in $v^r$: we obtain $\{A, B\}$ and $\{C, D\}$. We compute the unique compressed $\{A, B\}$-partition $\alpha$ of $f$:
+\begin{align*}
+f(A, B, C, D) &= (A \land B) \lor (B \land C) \lor (C \land D)\\
+&= ((A \land B) \land \top) \lor ((\lnot A \land B) \land C) \lor (\lnot B \land (C \land D)).
+\end{align*}
+So $\alpha = \{(\lnot B , C\land D), (\lnot A \land B, C), (A \land B, \top)\}$. The next step is to decompose the primes of $\alpha$ with respect to $v^l$, and its subs with respect to $v^r$. 
+The vtree node $v^l$ splits the set $\{A, B\}$ into two subsets $\{A\}$ and $\{B\}$, so the non-trivial primes of $f$, namely $A \land B$ and $\lnot A \land B$ have SDDs $\{(A,B), (\lnot A, 
+\bot)\}$ and $\{(\lnot A, B), (A, \bot)\}$, respectively. Similarly, we compute a $\{C\}$-partition of the only non-trivial sub of $f$, namely $C \land D$, and get $\{(C, D), (\lnot C, \bot)\}$, which is also an SDD since all its elements are constants or literals. 
+The resulting SDD for $f$ is
+$$\{(\lnot B , \{(C, D), (\lnot C, \bot)\}), (\{(\lnot A, B), (A, \bot)\}, C), (\{(A, B), (\lnot A, \bot)\}, \top)\},$$
+which is very hard to read. But SDDs are generally written in their graphical representation, as shown below.
 
 \myparagraph{Graphical Representation of SDDs}
 
@@ -798,6 +908,8 @@ Write $\alpha = \{(p_1,s_1), ..., (p_n,s_n)\}$  and $\beta = \{(q_1,r_1), ..., (
 \myparagraph{Operations on SDDs} 
 
 We start right away by giving the pseudo-code for the \texttt{apply} algorithm on SDDs, which combines two SDDs $\alpha$ and $\beta$ using a Boolean operator $\circ$, provided they respect the same vtree node.
+
+\label{operations}
  
 \begin{lstlisting}[mathescape]
 
@@ -845,31 +957,48 @@ Suppose now that $B$ is a BDD for function $f$, and that $v$ is the \textit{only
 Figure~\ref{fig:bdds_are_sdds} illustrate this with an example. 
 
 \begin{figure}
-
+\centering
+\begin{subfigure}{.5\textwidth}
+\centering
 \begin{tikzpicture}
 
-	[level 1/.style={sibling distance=33mm},
-	 level 2/.style={sibling distance=23mm},
-	 level 3/.style={sibling distance=16mm}]
-	\node[circle, draw] (X) {$X$}	 
-		child {node[circle, solid, draw] (Y) {$Y$} [dashed]
-			child {node[circle, solid, draw] (Z1) {$Z$} [dashed]
-				child {node[rectangle, solid, draw] (0) {0} [solid]}
-				child {node[rectangle, solid, draw] (1) {1} [dashed]}}
-			child {node[circle, solid, draw] (Z2) {$Z$} [solid]}};
-	\draw[solid] (X) -- (1); 
+\node[draw] (0) at (2, 0) {0};
+\node[draw] (1) at (3, 0) {1};
+\node[draw, circle] (A) at (2.5, 5) {$A$};
+\node[draw, circle] (B1) at (1.75, 3.75) {$B$};
+\node[draw, circle] (B2) at (3.25, 3.75) {$B$};
+\node[draw, circle] (C1) at (1.5, 2.5) {$C$};
+\node[draw, circle] (C2) at (3.5, 2.5) {$C$};
+\node[draw, circle] (D) at (2, 1.25) {$D$};
+
+\draw (D) to (0)[dashed];
+\draw (D) to (1);
+\draw (A) -- (B1);
+\draw (A) -- (B2)[dashed];
+\draw (B1) -- (C1)[dashed];
+\draw (B2) -- (C1)[dashed];
+\draw (B1) -- (1);
+\draw (B2) -- (C2);
+\draw (C1) to[bend right=20] (0)[dashed];
+\draw (C1) -- (D);
+\draw (C2) to (0)[dashed];
+\draw (C2) -- (1);
+
+
 \end{tikzpicture}
-
-%\includegraphics[scale=•]{•}
-
-\caption{The BDD for $f = $ with variable order $[]$ (left), and the SDD respecting the right-linear vtree inducing the same order (right)}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+\includegraphics[scale=0.35]{rightlinearfirstexample.png}
+\end{subfigure}
+\caption{The BDD for  $f = (A \land B) \lor (B \land C) \lor (C \land D)$ with variable order $[A, B, C, D]$ (left), and the SDD respecting the right-linear vtree inducing the same order (right). Note that this is the vtree depicted on the right of Figure \ref{fig:vtree_examples}.}
 \label{fig:bdds_are_sdds}
+
 \end{figure}
 
 A very general consequence of this is that any application of BDDs in computer science could be implemented using SDDs instead, as it would retain the attractive properties of BDDs while benefiting from the potential reduction in size that SDDs present. In the more specific case of this project, we will see in a later chapter that this correspondence was extremely useful in helping us compare the efficiency of SDDs with that of BDDs in model checking: by restricting our SDD implementation to right-linear vtrees, we were able to compare both programs more accurately by taking into account the overhead due to the difference in \textit{implementation} (as opposed to a difference in size between the two structures -- we knew these were the same!).
 
 
-\section{Implementation}
+\section{A First Model Checker Based on SDDs}
 
 This chapter is devoted to the implementation of the model checker itself. We start by giving an overview of the existing code base and libraries upon which it relies, before presenting the important design decisions and algorithms, and finally discussing the challenges that occured during the implementation of this new model checker. 
 
@@ -1019,12 +1148,13 @@ $$
 $$
 \end{itemize}
 
-These different orderings can have a great impact on the size of the resulting BDD, and consequently on MCMAS computation times. It is generally accepted that the ordering option 2 is the best to use in model checking multi-agent systems. It is based on the concept of \textit{variable interleaving} in OBDDs \cite{interleaving}, and adapted to the concept of agents.
+These different orderings can have a great impact on the size of the resulting BDD, and consequently on MCMAS computation times. It is generally accepted that the ordering option 2 is the best to use in model checking multi-agent systems. It is based on the concept of \textit{variable interleaving} in OBDDs \cite{interleaving}, and adapted to agents.
 
 
 \subsubsection{Algebraic Decision Diagrams}
+\label{algebraic_decision_diagrams}
 
-MCMAS supports bounded integer variables (e.g. \texttt{x : 0..3}), and allows Boolean conditions to be numeric identities (e.g. \texttt{(x > 2)} or \texttt{(x + y = 3)} for integer vars \texttt{x} and \texttt{y}). \mbox{variables for agent } i = 
+MCMAS supports bounded integer variables (e.g. \texttt{x : 0..3}), and allows Boolean conditions to be numeric identities (e.g. \texttt{(x > 2)} or \texttt{(x + y = 3)} for integer vars \texttt{x} and \texttt{y}). 
 
 If an agent has an integer variable with a large range of values, then the number of Boolean variables needed to represent its state is also large (if variable \texttt{x} has $n$ possible values, the corresponding agent needs at least $\log_2(n)$ state variables). 
 
@@ -1037,7 +1167,65 @@ could be declared as $$\texttt{x : \{zero, one, two, three\}}$$
 and expressions such as $$\texttt{if (x > 1)}$$ could be translated to $$\texttt{if (x = two) or (x = three)}.$$
 With ADDs being beyond the scope of this project, we did not study them further (in particular we did not look into the ADD reduction done by CUDD in the background), and therefore thought better not to implement this to keep the comparison fair between MCMAS and our model checker. 
 
-\subsection{A Model Checker Based on SDDs}
+\subsection{Model Checking with Sentential Decision Diagrams}
+
+In this section, we discuss the feasibility of implementing a model checker based on SDDs and the choices involved. We also reflect on the \textit{potential }that SDDs have to outperform BDDs, and we explore from a theoretical point of view the different ways of using them.
+
+\subsubsection{Suitability of SDDs for Model Cheking}
+
+SDDs are representations of Boolean functions, and as such, they can theoretically be used to represent state-spaces and transition relations of a model. 
+
+\subsubsection{The Importance of the Vtree}
+
+We have seen that the size of an SDD can be significantly affected by the vtree with respect to which is is constructed. However, it turns out that the vtree also has a huge impact on the efficiency of some SDD operations such as \texttt{apply} or \texttt{condition}. 
+
+In particular, a characteristic of a vtree $v$ that we will look at very carefully is the size and configuration of its \textit{left subtrees}, by which we mean the left children of the nodes of $v$, and their descendents.	This is not a formally defined vtree characteristic, but it is of fundamental importance to the suitability of a particular vtree for model checking. 
+
+Recall the construction of an SDD for function $f$ with respect to a vtree $v$. It involves creating an $X$-partition of $f$, where $X$ is the set of variables in $v^l$. If $X$ contains a lot of the variables in $f$, the \textit{primes} of $f$ will be large. But in SDDs, primes are given more importance than subs, as shown for example in the \texttt{apply} algorithm in \ref{operations}, where the recursive call on subs is only made if the recursive call on corresponding primes did not return $\bot$.
+
+The search for a good vtree does \textit{not }amount to reducing primes as much as possible: if this were the case, there would be absolutely no point in trying to replace BDDs (whose \textit{primes} are as small as possible -- they are just one literal!) with SDDs. But the ultimate objective of vtree optimisation is to construct primes in such a way that: \begin{itemize}
+\item The number of decisions to make is less than it would be in a BDD;
+\item Decisions remain quick enough.
+\end{itemize}
+The word ``decision" is deliberately used in a vague sense here, to incorporate both the combination of two SDD elements in an execution of \texttt{apply}, or the evaluation of an SDD on a variable instantiation (for \texttt{condition}).
+
+\subsubsection{A New Perspective on Vtrees}
+
+Taking into account the fact that the efficiency of a vtree fundamentally depends on the composition of its left children, we introduce a more precise way of describing vtrees which emphasises this point and facilitates our explanations in the rest of this report. Recall first that for a vtree node $v$, its left and right children are respectively refered to as $v^l$ and $v^r$. By slight abuse of notation, we write $v^{r^2}$ for the right child of the right child of $v$, etc.
+
+\begin{definition} Let $v$ be a vtree. An \textit{l-subtree} of $v$ is an element of the sequence $$v^l, (v^r)^l, (v^{r^2})^l, ..., (v^{r^{k-1}})^l, v^{r^k},$$ where $k \geq 0$ is the smallest integer such that $(v^{r^{k+1}})$ is a leaf.
+\end{definition}
+
+An example is given in Figure~\ref{fig:lsubtrees_vtree_example}. Observe that for a right-linear vtree $v$, l-subtrees of $v$ are all leaves (expect for the last one which is a node with two leaves). Also, if $v$ is left-linear or vertical, the only l-subtree of $v$ is $v$ itself (we set $v^{r^0} = v$). 
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{pseudorightlinearfirstexample.png}
+\caption{The l-subtrees of this vtree are the subtrees rooted at nodes 26, 21, 28, and 29.}
+\label{fig:lsubtrees_vtree_example}
+\end{figure}
+
+We also want to emphasise the fact that each variable of $v$ lies on one of its l-subtrees, and furthermore, the sets of variables induced by the l-subtrees form a partition of the set of variables of $v$.
+
+Our ``new perspective" on a vtree consists in identifying it using the partition of the variables that its l-subtrees induces. That is, from now on we will be \textit{comparing }vtrees by comparing their l-subtrees, and we will be \textit{constructing }vtrees by creating a partition of the variable set, which will be used as a basis for constructing l-subtrees that we can then arrange and link together.
+
+\subsubsection{Vtree Options in Practice}
+
+The formalism defined in the previous section will facilitate the task of exploring the space of vtrees for applications to model checking, as we can now more easily characterise ``good" vtrees. In practice however, whatever these good vtrees turn out to be, we need to be able to \textit{generate} them automatically from a model of the multi-agent system we wish to verify. This means that this characterisation needs to have some \textit{meaningful} links to the model itself (as a random partition is unlikely to do the job well, and doesn't constitute a very good heuristic!).
+
+Recall that during the encoding process of an interpreted system for a multi-agent system, we assign a set of variables to each agent, separated into state variables, ``primed" state variables, and action variables. This gives us a \textit{natural} splitting of the full set of variables, made up of three different sets for each agent.
+
+We now have a wide range of meaningful, easy to generate options to investigate, as a variable partition can lead to a lot of different vtrees: we can change the shape of the l-subtrees we create from it, their order, or even combine them, split them further, etc. These options will be thoroughly evaluated in a later chapter. 
+
+\subsubsection{Dynamic Minimisation in Multi-Agent Systems}
+
+Dynamic minimisation is an essential element to the use of symbolic model checking in practice. When state spaces grow larger, 
+
+In \ref{sdd_dao_algo} we have described the dynamic vtree search algorithm implemented in the SDD Package. 
+
+
+
+\subsection{Implementation Specifics}
 
 \subsubsection{Adapting MCMAS}
 
@@ -1163,7 +1351,7 @@ In practical applications, the number of variables is not known in advance but w
 
 To use \texttt{create\_vtree()}, we need to pass it the number of variables that the vtree should consist of, as well as the desired \textit{vtree type}. This is an integer corresponding to one of the various vtrees which we implemented: vtree types 1-4 correspond to the standard vtrees defined in \ref{std_vtrees}, whereas types 4-8 are ``new" vtrees which we found to have more potential in the context of model checking. We leave out the details for now and use the evaluation section to describe the process leading to their discovery. 
 
-\subsubsection{Dynamic Vtree Search in Multi-Agent Systems}
+\subsubsection{A New Dynamic Vtree Search Algorithm}
 
 In \ref{sdd_dao_algo}, we described the dynamic minimisation algorithm implemented in the SDD Package. This algorithm is focused on a complete restructuring of the manager's vtree in order to minimise the size of its SDD nodes.
 Early experiments with this algorithm \textit{sometimes }revealed large overheads due to the difficulty of searching the huge space of vtrees. We propose a new approach to vtree search adapted to multi-agent systems in those cases where the original approach is not efficient. In this section we focus on the implementation of this new approach, while a detailed description, and a practical comparison of both techniques is detailed in the evaluation section (\ref{comparison_dynamic_approaches}).
@@ -1193,12 +1381,7 @@ This algorithm is appropriate for vtrees of a particular shape, which will const
 that these vtrees are built so that variables are separated into smaller groups, each group forming a left "branch" in the vtree. 
 Figure~\ref{fig:first_pseudo_right_linear} illustrate this with an example, showing the effect of \texttt{vtree\_group\_minimize()} on a particular vtree.
 
-\begin{figure}
-\centering
-\includegraphics[scale=0.5]{pseudorightlinearfirstexample.png}
-\caption{If called on this vtree, the \texttt{vtree\_group\_minimize()} function will attempt to minimise the subtrees rooted at nodes 26, 21, 28, and 29, while keeping these nodes, as well as their ancestors (30, 31, 32), unchanged.}
-\label{fig:first_pseudo_right_linear}
-\end{figure}
+
 
 \subsection{Software Engineering Issues and Challenges}
 
@@ -1236,7 +1419,10 @@ Reflecting back on this issue, it would have been much less time-consuming to wr
 The first technique we used was that of comparing the \textit{output} of our model checker with that of MCMAS, on the set of examples that we had available (see \ref{ispl_examples} for a detailed description of these examples). Once we were certain that these were identical (so no obvious bugs existed), we did a more thorough search to ensure that there was nothing wrong with the code. 
 
 Although our set of examples was relatively diverse, it certainly did not cover the whole range of expressions, data types, etc. available in ISPL, nor did it use the full set of CTLK connectives that ISPL supports.
-Hence, our second approach to verification was to try and "invent" new formulae to check, using different combinations of connectives from those remaining. Furthermore, 
+Hence, our second approach to verification was to "invent" new formulae to check, using different combinations of connectives from those to be tested. Also, we made a series of modifications to the example ISPL files to check that most (not all, see \ref{algebraic_decision_diagrams}) of the ISPL syntax was handled by our model checker. This even revealed a bug in the MCMAS source code (which had persisted in our code) causing a segmentation fault when the input ISPL file used more than one bitwise XOR (\^{}). This bug has now been fixed (in both model checkers).
+
+Although these verification techniques are not guaranteed to have caught all bugs, we are confident that they were sufficient for our purposes, and that in all the examples considered, both model checkers had the same outcome.
+
 
 \section{Evaluation (?)} 
 
@@ -1357,7 +1543,6 @@ To conclude this first set of experiments, we make the following remark: in this
 We moved on from right-linear vtrees, hoping that one of the other standard vtrees would lead to more efficient computations. This was not the case. 
 
 
-
 \begin{table}
 \begin{tabular}{|*{10}{c|}}
 \hline
@@ -1391,7 +1576,7 @@ nspk1 & 12 & - &- & & & & & & \\ \hline
 
 Left-linear and vertical vtrees proved \textit{extremely} inefficient. As shown in Tables~\ref{table:otherstandardvtrees1time} and \ref{table:otherstandardvtrees1memory}, even on the small examples chosen they were significantly slower than BDDs. Furthermore, although the variable ordering chosen for the vtrees seems to have a big impact on the computation (much bigger in fact than on BDDs), even for the better ones there is no competition.  
 
-Before pushing the analysis further, we look at balanced vtrees; these are slightly more efficient, but still lead to much higher computations times than BDDs, or even right-linear vtrees (to do: check that). In Tables~\ref{table:otherstandardvtrees2memory} and \ref{table:otherstandardvtrees2memory}.
+Before pushing the analysis further, we look at balanced vtrees; these are slightly more efficient, but still lead to much higher computations times than BDDs, or even right-linear vtrees. This results appear very clearly in Tables~\ref{table:otherstandardvtrees2time} and \ref{table:otherstandardvtrees2memory}.
 
 \begin{table}
 \centering
@@ -1399,15 +1584,15 @@ Before pushing the analysis further, we look at balanced vtrees; these are sligh
 \hline
  & \multirow{2}{*}{BDDs} & \multicolumn{4}{c|}{Balanced} \\ \cline{3-6}
  & & O. 1& O. 2 & O.3 & O.4 \\ \hline
-cryptos5 & & 0.92 & & & \\ \hline
-cryptos6 & & 5.78 & & & \\ \hline
-cryptos7 & & & & & \\ \hline
-pris5 & & & & & \\ \hline
-pris6 & & & & & \\ \hline
-pris9 & & & & & \\ \hline
-nspk1 & & & & & \\ \hline
-nspk2 & & & & & \\ \hline
-nspk4 & & & & & \\ \hline
+cryptos5 & 0.06& 0.92 & 23.56 & 13.78 & 8.38\\ \hline
+cryptos6 & 0.44 & 5.78 & 254.3& 109.28 & 62.26\\ \hline
+cryptos7 & 2.06& 40.76 & - & 2514.66 & 714.31 \\ \hline
+pris5 & 0.04 & 43.01 & 2.46& 2.23 & 4.46 \\ \hline
+pris6 & 0.15 & - & 16.55 & 11.37 & 50.20 \\ \hline
+pris9 & 50.14 & - & - & 3182.7& - \\ \hline
+nspk1 &0.06 & 7.73 & 1.11 & 19.01 & 4.34 \\ \hline
+nspk2 &11.25 & - & 1063.2 &- & - \\ \hline
+nspk4 & 1.29& - & 18.33 & 88.12& -\\ \hline
 \end{tabular}
 \caption{Balanced Vtrees: Computation Time}
 \label{table:otherstandardvtrees2time}
@@ -1418,15 +1603,15 @@ nspk4 & & & & & \\ \hline
 \hline
  & \multirow{2}{*}{BDDs} & \multicolumn{4}{c|}{Balanced} \\ \cline{3-6}
  & & O. 1& O. 2 & O.3 & O.4 \\ \hline
-cryptos5 & & 29 & & & \\ \hline
-cryptos6 & & 136 & & & \\ \hline
-cryptos7 & & & & & \\ \hline
-pris5 & & & & & \\ \hline
-pris6 & & & & & \\ \hline
-pris9 & & & & & \\ \hline
-nspk1 & & & & & \\ \hline
-nspk2 & & & & & \\ \hline
-nspk4 & & & & & \\ \hline
+cryptos5 & 18 & 29 & 610 & 329 & 229 \\ \hline
+cryptos6 & 45 & 136 & 4314 & 1687 & 1402\\ \hline
+cryptos7 & 198& 612 & - & 8900 & 8134 \\ \hline
+pris5 & 14 & 1562 & 45 & 33& 59 \\\hline
+pris6 &31 & - & 178 & 120& 215 \\ \hline
+pris9 &594 & - & - & 8827& -\\ \hline
+nspk1 & 16 & 206 & 16 & 652& 63 \\ \hline
+nspk2 &324 & - & 3970 & - &- \\ \hline
+nspk4 &92 & - & 189 & 960& - \\ \hline
 \end{tabular}
 \caption{Balanced Vtrees: Memory Usage}
 \label{table:otherstandardvtrees2memory}
@@ -1435,19 +1620,8 @@ nspk4 & & & & & \\ \hline
 
 \subsubsection{Towards a Better Vtree: Observations}
 
-Upon experimenting with all the 16 standard vtrees, it was clear that if SDDs were ever to be used in model checking, there would need to be a way of generating better vtrees. 
+Upon experimenting with all the 16 standard vtrees, it was clear that if SDDs were ever to be used in model checking, there would need to be a way of generating better vtrees. In this section we provide 
 
-\myparagraph{What Is a Good Vtree?}
-
-Our first investigation was an attempt at finding out how, for such small models, computation times could be so high. SDD nodes could not possibly be very large, so the overhead had to be elsewhere. We realised that the main characteristic that left-linear, vertical, and (to a lesser extend) balanced vtrees have in common is the size (i.e. the number of descendents) of the left branches of their nodes. 
-This is a \textit{very }important property, for the following reason. 
-
-Recall the construction of an SDD for function $f$ with respect to a vtree $v$. It involves creating an $X$-partition of $f$, where $X$ is the set of variables in $v^l$. If $X$ contains a lot of the variables in $f$, the \textit{subs} of $f$ will be large. But in SDDs, \textit{decisions} are based on \textit{sentences}, i.e. on subs, so if these are large, decisions will be slower to make. But SDD operations such as \texttt{apply} or \texttt{condition} rely on decisions, and these operations are the basis for the model checking algorithm. Hence the overhead.
-
-This is of course very much simplified, and if it were entirely true there would be absolutely no point in trying to replace BDDs (whose \textit{subs} are as light as possible -- they are just one literal!) with SDDs. But the general idea is there, and the ultimate objective of vtree optimisation is to construct subs in such a way that: \begin{itemize}
-\item The number of decisions to make is less than it would be in a BDD (in order to do this we simply put more than one variable in the left branches of the vtree),
-\item Decisions remain quick enough (this is the tricky part).
-\end{itemize}
 
 \myparagraph{Analysis of an Example}
 
@@ -1463,29 +1637,55 @@ We make a few remarks about the shape of this vtree (without examiniming the var
 \begin{itemize}
 \item The vtree in Figure~\ref{fig:large_vtree_after_reordering} is \textit{typical}, and an absolutely fair representative of the vtrees obtained after dynamic minimisation (whatever the example, and whatever the initial vtree).
 \item Recall that the dynamic minimisation algorithm is ``symmetric" in the sense that it does \textit{not} force the vtree in one particular direction. It considers 24 vtrees (of which 12 are induced from the l-vtree by applying one of the usual vtree operations, and 12 arise from the r-vtree) and picks the best one. The fact that we get this vtree shape in all cases is evidence that it is in fact the \textit{ideal} configuration. 
-\item It tends to happen (and it is definitely the case in Figure~\ref{fig:large_vtree_after_reordering}) that the first few left-branches are slightly smaller than the ones below. A reasonable explanation for this is that the first few left-branches correspond to the subs in the first few levels of the corresponding SDD (starting from the root), 
-\item 
-\item 
+\item One of the left-branches in the middle is very large -- it contains 30 variables, over a third of the total. This shows that smaller subs are not \textit{necessary }for an efficient computation, and that larger sets of variables may in fact present an improvement. 
+\item It tends to happen (and it is definitely the case in Figure~\ref{fig:large_vtree_after_reordering}) that the first few left-branches are slightly smaller than the ones below. A reasonable explanation for this is that the first few left-branches correspond to the subs in the first few levels of the corresponding SDD (starting from the root), i.e the subs which need to be evaluated most often.
 \end{itemize}
-
-
-
-
-
-we run the dynamic minimisation feature, what we find: 
-\begin{itemize}
-\item vtrees are pseudo right-linear
-\item how are variables arranged
-\item look at how vtree changes during the process
-\end{itemize}
-if we come up with new static heuristics, they need to make sense and we should be able to generate them automatically from the model 
+Vtrees of this shape were the basis of the next set of experiments we conducted in static generation; these are detailed in Section \ref{alternative}.
 
 
 \subsection{Static Comparisons with Alternative Vtrees}
+\label{alternative}
 
 \subsubsection{A First Attempt}
+\begin{table}
+\centering
+\begin{tabular}{|*{5}{c|}}
+\hline
+& \multirow{2}{*}{BDDs} & \multicolumn{3}{c|}{Vtree Option 5} \\ \cline{3-5}
+& & Agent & Inverse & Ascending \\ \hline
+cryptos4 & 0.02 & 2.41 & 1.31 & 1.31 \\ \hline
+cryptos5 & 0.06 & 31.32 & 32.08 & 32.08 \\ \hline
+cryptos6 & 0.44 & 993.71& - & - \\ \hline
+pris6 & 0.15 & 7.43 & 3.94 & 2.52 \\ \hline
+pris7 & 0.57 & 48.01 & 21.36 & 10.22 \\ \hline
+pris8 & 2.08 & 303.73 & 96.39 & 48.76 \\ \hline
+nspk1 & 0.03 & 1.85 & 2.01 & 2.12 \\ \hline
+nspk2 & 11.25 & 542.32&- &- \\ \hline
+nspk4 & 1.29 & 68.95 &54.69 & 55.65 \\ \hline
+\end{tabular}
+\label{table:vtree5time}
+\caption{Vtree Option 5 -- Time}
+\end{table}
 
-inspired from MCMAS orderings we split the variables by agent
+\begin{table}
+\centering
+\begin{tabular}{|*{5}{c|}}
+\hline
+& \multirow{2}{*}{BDDs} & \multicolumn{3}{c|}{Vtree Option 5} \\ \cline{3-5}
+& & Agent & Inverse & Ascending \\ \hline
+cryptos4 & 11 & 59 & 44 & 44 \\ \hline
+cryptos5 & 18 & 673 & 574 & 574 \\ \hline
+cryptos6 & 45 & 8716 & 8241 & 8241 \\ \hline
+pris6 & 31 & 76 & 45 & 52 \\ \hline
+pris7 & 48 & 316 & 141 & 158 \\ \hline
+pris8 & 102 & 1558 & 483 & 744\\ \hline
+nspk1 & 16 & 27 & 29 & 25 \\ \hline
+nspk2 & 324 & 2949 & - & - \\ \hline
+nspk4 & 92 & 685 & 884 & 901\\ \hline
+\end{tabular}
+\label{table:vtree5memory}
+\caption{Vtree Option 5 -- Memory}
+\end{table}
 
 \subsubsection{An Upper Bound on Subtree Size}
 
