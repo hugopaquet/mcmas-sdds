@@ -8,6 +8,7 @@
 \usepackage{tikz}
 \usepackage{amssymb}
 \usepackage{amsmath}
+\usepackage{amsthm}
 \usepackage{MnSymbol}
 \usepackage{stmaryrd}
 \usepackage{multirow}
@@ -37,8 +38,8 @@
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{corollary}[theorem]{Corollary}
 
-\newenvironment{proof}[1][Proof]{\begin{trivlist}
-\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+%\newenvironment{proof}[1][Proof]{\begin{trivlist}
+%\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
 \newenvironment{definition}[1][Definition]{\begin{trivlist}
 \item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
 \newenvironment{example}[1][Example]{\begin{trivlist}
@@ -48,10 +49,6 @@
 
 
 
-\newcommand{\qed}{\nobreak \ifvmode \relax \else
-      \ifdim\lastskip<1.5em \hskip-\lastskip
-      \hskip1.5em plus0em minus0.5em \fi \nobreak
-      \vrule height0.75em width0.5em depth0.25em\fi}
 \newcommand{\pre}{\mathop{\mathrm{pre}}}
 \newcommand{\myparagraph}[1]{\paragraph{#1}\mbox{}\\}
 
@@ -67,25 +64,23 @@
 
 \section{Introduction}
 
-\subsection{The Problem}
-
 Verifying computer systems is essential. They have become such an important part of our lives that unforeseen software bugs and malfunction can lead to disastrous situations. [finir le paragraphe avec des exemples] 
 
 Our dependency on computer systems is increasing, but so is their \textit{complexity} which, more often than not, demands a large amount of skilled human maintenance. Financially, this has motivated the need for systems to be more independent, and consequently, a large number of the critical systems that we rely on are now \textit{autonomous}: they are able to ``make decisions" without human intervention, based on a variety of factors such as their current state or location. 
 
-The verification of autonomous systems has been a very active research area in the past few decades due to their rising importance, and a range of verification techniques have been developed based on formal methods for modelling systems. These include automated theorem proving, TODO, or \textit{model checking}, the latter being the focus of this project.
+The verification of autonomous systems has been a very active research area in the past few decades due to their rising importance, and a range of verification techniques have been developed based on formal methods for modelling systems. These include automated theorem proving or \textit{model checking}, the latter being the focus of this project.
 \\\\
 
  Model checking was introduced in 1981 by E. M. Clarke and E. A. Emerson \cite{original_model_checking}, and independently by J. P. Queille and J. Sifakis \cite{symbolic_model_checking}, and is found to have major advantages \cite{birth_of_model_checking}: no correctness proofs are required (it is an automatic process), it finds counterexamples (i.e. bugs), and it allows for many different properties to be checked, by means of temporal logics. 
  
-Unfortunately, an important disadvantage of model checking, known as the \textit{state explosion problem}, is the difficulty in verifying larger systems efficiently. In the past 20 years, several techniques attempting to solve the state explosion problem have been introduced, such as predicate abstraction, bounded model checking, symmetry reduction, and (perhaps more notably, at least for this project) symbolic model checking with \textit{ordered binary decision diagrams} (OBDDs).
+Unfortunately, an important disadvantage of model checking, known as the \textit{state explosion problem}, is the difficulty in verifying larger systems efficiently. In the past 20 years, several techniques attempting to solve the state explosion problem have been introduced, such as predicate abstraction, bounded model checking, symmetry reduction, and (perhaps more notably, at least for this project) symbolic model checking with \textit{ordered binary decision diagrams} (OBDDs, \cite{bryant}).
 
 The idea of symbolic model checking, introduced in 1992 by K. L. McMillan \cite{symbolic}, is to encode states and transitions of the system as \textit{Boolean functions}, and represent these symbolically using efficient and compact data structures such as OBDDs. Symbolic model checking with OBDDs has allowed for much larger systems to be verified, and has therefore seen a rise in the popularity of model checking as a verification technique.
 \\\\
 
-Although OBDD-based techniques have significantly improved the efficiency of model checking, it is 
+Although OBDD-based techniques have significantly improved the efficiency of model checking, they still have limitations and only allow systems up to about $10^{20}$ states to be verified. Beyond, the OBDDs generated become too large to be efficiently handled by today's computers. Several alternative symbolic model checking techniques have been , including TODO.
 
-
+In this project, we explore a new representation of Boolean functions known as \textit{sentential decision diagram} (SDD, \cite{sdd_1}), and its application to model checking. 
 
 \subsection{The Idea}
 
@@ -659,7 +654,7 @@ In order for an target compilation language to be suitable for knowledge compila
 
 Symbolic model checking also recognises the need for succinct representations of propositional formulae, however an important difference must be noted: the model checking algorithm consists in a large series of \textit{operations} on Boolean functions, whereas knowledge compilation focuses on encoding a propositional knowledge base, in order to \textit{query} it more efficiently later on. 
 \\\\
- In 2002, A. Darwiche and P. Marquis published \cite{compilation_map}, a comparative analysis of most existing DAG-based target compilation languages in terms of their succintness and the polytime operations they support (TO DO check que ya vmt les operations). They show that all of these languages are subsets of a broad language called \textit{negation normal form} (NNF). 
+ In 2002, A. Darwiche and P. Marquis published \cite{compilation_map}, a comparative analysis of most existing DAG-based target compilation languages in terms of their succintness and the polytime operations they support. They show that all of these languages are subsets of a broad language called \textit{negation normal form} (NNF). 
 
 \begin{definition}
 A sentence in \textit{NNF} is a rooted directed acyclic graph where each leaf node is labelled with $\top$, $\bot$, $X$ or $\lnot X$ for some propositional variable $X$, and each internal node is labelled with $\land$ or $\lor$ and can have arbitrarily many children. 
@@ -786,7 +781,7 @@ Then $\alpha = \{(p_1, s_1), ..., (p_n, s_n)\}$ is a compressed $X$-partition of
 Suppose now that $\beta = \{(q_1, r_1), ..., (q_m, r_m)\}$ is another compressed $X$-partition of $f$. Then $\alpha$ and $\beta$ must have different partitions, i.e. $\{p_i\} \neq \{q_j\}$. Since they are both \textit{partitions}, there must exist a prime $p_i$ of $\alpha$ which overlaps with two different primes $q_j$ and $q_k$ of $\beta$, i.e. there exist distinct instantiations \textbf{x}, \textbf{x}' of $X$ such that $\textbf{x} \models p_i \land q_j$ and $\textbf{x}' \models p_i \land q_k$. Then we have $f|_\textbf{x} = \alpha_\textbf{x} = s_i = r_j = \beta_\textbf{x}$, and $f|_\textbf{x'} = \alpha_\textbf{x'} = s_i = r_k = \beta_\textbf{x'}$. So $r_j = r_k$, a contradiction as $\beta$ is compressed.  
 \end{proof}
 
-\myparagraph{Vtrees}
+\subsubsection*{Vtrees}
 
 Vtrees (for ``variable trees") are to SDDs what variable orders are to BDDs. A vtree completely determines the structure of an SDD, so they are crucial to the viability of SDDs in practice.
 
@@ -1043,14 +1038,130 @@ Throughout this report we refer to these as the \textit{standard} vtrees. An exa
 \label{sdd_dao_algo}
 One particularly important feature of the SDD Package is \textit{dynamic SDD minimisation}. When enabled, this feature automatically attempts to minimise the size of a manager's SDD nodes by searching for a better vtree. Unfortunately this is not always a more efficient solution as searching the space of vtrees is a very lengthy process: there are $\frac{(2n -2)!}{(n-1)!}$ distinct vtrees over $n$ variables!
 
-An vtree search algorithm was proposed in \cite{sdd_3} for more efficient dynamic minimisation of SDDs. This algorithm relies on three standard binary tree operations: left-rotation, right-rotation, and swap; these operations are sufficient for navigating the space of all vtrees \cite{knuth}.
-The following example shows in what way these operations affect vtrees: 
-\begin{example}
-take a vtree with 4 nodes
-\end{example}
+An vtree search algorithm was proposed in \cite{sdd_3} for more efficient dynamic minimisation of SDDs. This algorithm relies on three standard binary tree operations: left-rotation, right-rotation, and swap; these operations can be applied on any node of a vtree, and they are sufficient for navigating the space of all vtrees \cite{knuth}. They are implemented in the SDD Package as \texttt{swap\_vnode()}, \texttt{lr\_vnode()}, and \texttt{rr\_vnode()}. Figure~\ref{fig:vtree_operations} shows in what way these operations affect vtrees.
+\begin{figure}
+\centering
+\begin{tikzpicture}
+\node (a1) at (0, 0) {$a$};
+\node (b1) at (-0.5, -1.3) {$b$};
+\node (c1) at (0.5, -1.3) {$c$};
+\node (a2) at (4, 0) {$a$};
+\node (b2) at (3.5, -1.3) {$c$};
+\node (c2) at (4.5, -1.3) {$b$};
 
-We now give an informal description of the algorithm in \cite{ recursive calls on $v_l$ and $v_r$. We then consider two subtreesdd_3} (the one implemented in the SDD Package). We start with a vtree node $v$ (typically, the current vtree of the manager). The algorithm first makes two recursive calls on the children of $v$, ensuring that their structure is optimal. 
-It then considers two vtree fragments of $v$, the \textit{l-vtree} and the \textit{r-vtree}. As shown on Figure~\ref{fig:lrvtrees}, each of these is a binary tree with 3 leaves (which might not be leaves in $v$). The algorithm attempts to compute the 24 distinct vtree fragments obtained by applying rotations and swaps to the l- and r-vtrees, and then selects the one leading to the best reduction in size for the SDD nodes depending on $v$. 
+\draw (a1) to (b1);
+\draw (a1) to (c1);
+\draw (a1) to (0, 0.5)[dotted];
+\draw (b1) to (-0.8, -2)[dotted];
+\draw (b1) to (-0.2, -2)[dotted];
+\draw (c1) to (0.2, -2)[dotted];
+\draw (c1) to (0.8, -2)[dotted];
+
+\draw (a2) to (b2);
+\draw (a2) to (c2);
+\draw (a2) to (4, 0.5)[dotted];
+\draw (b2) to (3.2, -2)[dotted];
+\draw (b2) to (3.8, -2)[dotted];
+\draw (c2) to (4.2, -2)[dotted];
+\draw (c2) to (4.8, -2)[dotted];
+
+\draw (1.3, -0.3) to (2.7, -0.3) [->, =<latex];
+\draw (2.7, -1) to (1.3, -1) [->, =<latex];
+\node (s1) at (2, 0) {\texttt{swap(}$a$\texttt{)}};
+\node (s2) at (2, -1.3) {\texttt{swap(}$a$\texttt{)}};
+
+
+\end{tikzpicture}
+\\
+\begin{tikzpicture}
+\node (0) at (0, 1) {};
+\node (a1) at (0, 0) {$a$};
+\node (b1) at (-0.5, -1.3) {$b$};
+\node (c1) at (0.5, -1.3) {$c$};
+\node (d1) at (-1.1, -2.6) {$d$};
+\node (e1) at (-0.1, -2.6) {$e$};
+\node (a2) at (4, 0) {$b$};
+\node (b2) at (3.5, -1.3) {$d$};
+\node (c2) at (4.5, -1.3) {$a$};
+\node (d2) at (3.9, -2.6) {$e$};
+\node (e2) at (4.9, -2.6) {$c$};
+
+\draw (a1) to (b1);
+\draw (a1) to (c1);
+\draw (a1) to (0, 0.5)[dotted];
+\draw (b1) to (d1);
+\draw (b1) to (e1);
+\draw (d1) to (-1.4, -3.3)[dotted];
+\draw (d1) to (-0.8, -3.3)[dotted];
+\draw (e1) to (-0.4, -3.3)[dotted];
+\draw (e1) to (0.2, -3.3)[dotted];
+\draw (c1) to (0.2, -2)[dotted];
+\draw (c1) to (0.8, -2)[dotted];
+
+
+\draw (a2) to (b2);
+\draw (a2) to (c2);
+\draw (a2) to (4, 0.5)[dotted];
+\draw (c2) to (d2);
+\draw (c2) to (e2);
+\draw (d2) to (3.6, -3.3)[dotted];
+\draw (d2) to (4.2, -3.3)[dotted];
+\draw (e2) to (4.6, -3.3)[dotted];
+\draw (e2) to (5.2, -3.3)[dotted];
+\draw (b2) to (3.2, -2)[dotted];
+\draw (b2) to (3.8, -2)[dotted];
+
+\draw (1.3, -0.8) to (2.7, -0.8) [->, =<latex];
+\draw (2.7, -1.5) to (1.3, -1.5) [->, =<latex];
+\node (s1) at (2, -0.5) {\texttt{rr(}$a$\texttt{)}};
+\node (s2) at (2, -1.8) {\texttt{lr(}$a$\texttt{)}};
+
+
+\end{tikzpicture}
+\caption{The main vtree operations and their effect.}
+\label{fig:vtree_operations}
+\end{figure}
+
+
+
+We now give an informal description of the algorithm in \cite{ recursive calls on $v_l$ and $v_r$. We then consider two subtreesdd_3} (the one implemented in the SDD Package). We start with a vtree node $v$ (typically, the current vtree of the manager). The algorithm first makes two recursive calls on the children of $v$, ensuring that their structure is optimal. Suppose that the vtree obtained is the one represented below:
+
+\begin{tikzpicture}
+
+\node (0) at (-1, 0.8) {};
+\node (0) at (-1, -3.6) {};
+
+\node (v) at (5, 0) {$v$};
+\node (b) at (4.2, -1.3) {$x$};
+\node (c) at (5.8, -1.3) {$y$};
+\node (d) at (3.6, -2.6) {$a$};
+\node (e) at (4.6, -2.6) {$b$};
+\node (f) at (5.4, -2.6) {$c$};
+\node (g) at (6.4, -2.6) {$d$};
+
+
+\draw (v) to (b);
+\draw (v) to (c);
+\draw (v) to (5, 0.5)[dotted];
+\draw (b) to (d);
+\draw (b) to (e);
+\draw (d) to (3.3, -3.3)[dotted];
+\draw (d) to (3.9, -3.3)[dotted];
+\draw (e) to (4.3, -3.3)[dotted];
+\draw (e) to (4.9, -3.3)[dotted];
+\draw (f) to (5.1, -3.3)[dotted];
+\draw (f) to (5.7, -3.3)[dotted];
+\draw (g) to (6.1, -3.3)[dotted];
+\draw (g) to (6.7, -3.3)[dotted];
+
+\draw (c) to (f);
+\draw (c) to (g);
+
+\end{tikzpicture}
+
+
+Then, the algorithm considers two vtree \textit{fragments} of $v$, the \textit{l-vtree} and the \textit{r-vtree}. The l-vtree is the binary tree with leaves $a, b$ and $y$, and the r-vtree is the binary tree with leaves $x, c$ and $d$. The algorithm attempts to compute the 24 distinct vtree fragments obtained by applying rotations and swaps to the l- and r-vtrees, and then selects the one leading to the most effective reduction in size for the SDD nodes depending on $v$. 
+
 
 For each of the three vtree operations, users of the SDD package can set limits on the time needed to compute them, and the increase in size that they induce; this means that not all 24 vtree fragments above are necessarily computed. 
 
@@ -1173,11 +1284,13 @@ In this section, we discuss the feasibility of implementing a model checker base
 
 \subsubsection{Suitability of SDDs for Model Cheking}
 
-SDDs are representations of Boolean functions, and as such, they can theoretically be used to represent state-spaces and transition relations of a model. 
+SDDs are representations of Boolean functions, and as such, they can theoretically be used to represent state spaces and transition relations of a model. We have seen in the background section of this report that there exist polynomial-time algorithms for Boolean operations (AND, OR, NOT) on SDDs, as well as for conditioning an SDD on a literal, both of these being \textit{essential} to an efficient model checker implementation. We showed also that these two operations (generally refered to in this report as \texttt{apply} and \texttt{condition}) are sufficient for implementing the entire model checking algorithm defined in \ref{explicit}. Hence, the SDD data structure is \textit{a priori} a suitable representation for symbolic model checking, and its early success \cite{sdd_3} in knowledge compilation gives us hope that it might even constitute an improvement on BDDs. 
 
-\subsubsection{The Importance of the Vtree}
+One of the directions of our investigation will be to search the space of vtrees in order to compare them, and give a first assessment of some specific vtree constructions in terms of their efficiency in the context of model checking. Before we launch into this search, we start by analysing \textit{theoretically} the impact that the vtree will have on the overall performance of the model checker. This should give us some insights into how to structure this search, which would otherwise be very unpromising considering the size of the space of vtrees.
 
-We have seen that the size of an SDD can be significantly affected by the vtree with respect to which is is constructed. However, it turns out that the vtree also has a huge impact on the efficiency of some SDD operations such as \texttt{apply} or \texttt{condition}. 
+\subsubsection{The Importance of Vtrees} 
+
+We have seen that the size of an SDD can be significantly affected by the vtree with respect to which is is constructed. But in addition, the vtree has a huge impact on the efficiency of some SDD operations such as \texttt{apply} or \texttt{condition}. 
 
 In particular, a characteristic of a vtree $v$ that we will look at very carefully is the size and configuration of its \textit{left subtrees}, by which we mean the left children of the nodes of $v$, and their descendents.	This is not a formally defined vtree characteristic, but it is of fundamental importance to the suitability of a particular vtree for model checking. 
 
@@ -1190,7 +1303,7 @@ The search for a good vtree does \textit{not }amount to reducing primes as much 
 The word ``decision" is deliberately used in a vague sense here, to incorporate both the combination of two SDD elements in an execution of \texttt{apply}, or the evaluation of an SDD on a variable instantiation (for \texttt{condition}).
 
 \subsubsection{A New Perspective on Vtrees}
-
+\label{new_perspective}
 Taking into account the fact that the efficiency of a vtree fundamentally depends on the composition of its left children, we introduce a more precise way of describing vtrees which emphasises this point and facilitates our explanations in the rest of this report. Recall first that for a vtree node $v$, its left and right children are respectively refered to as $v^l$ and $v^r$. By slight abuse of notation, we write $v^{r^2}$ for the right child of the right child of $v$, etc.
 
 \begin{definition} Let $v$ be a vtree. An \textit{l-subtree} of $v$ is an element of the sequence $$v^l, (v^r)^l, (v^{r^2})^l, ..., (v^{r^{k-1}})^l, v^{r^k},$$ where $k \geq 0$ is the smallest integer such that $(v^{r^{k+1}})$ is a leaf.
@@ -1215,14 +1328,15 @@ The formalism defined in the previous section will facilitate the task of explor
 
 Recall that during the encoding process of an interpreted system for a multi-agent system, we assign a set of variables to each agent, separated into state variables, ``primed" state variables, and action variables. This gives us a \textit{natural} splitting of the full set of variables, made up of three different sets for each agent.
 
-We now have a wide range of meaningful, easy to generate options to investigate, as a variable partition can lead to a lot of different vtrees: we can change the shape of the l-subtrees we create from it, their order, or even combine them, split them further, etc. These options will be thoroughly evaluated in a later chapter. 
+We now have a wide range of easily generated, meaningful options to investigate, as a variable partition can lead to a lot of different vtrees: we can change the shape of the l-subtrees we create from it, their order, or even combine them, split them further, etc. These options will be thoroughly explored in the Evaluation chapter of this report. 
 
-\subsubsection{Dynamic Minimisation in Multi-Agent Systems}
+\subsubsection{Dynamic Minimisation in Symbolic Model Checking}
+\label{dynamic_with_sdds}
+Dynamic minimisation is an essential element to symbolic model checking in practice. When state spaces grow larger, model checking without dynamic minimisation is often very impractical. 
 
-Dynamic minimisation is an essential element to the use of symbolic model checking in practice. When state spaces grow larger, 
+In \ref{sdd_dao_algo}, we described the dynamic vtree search algorithm implemented in the SDD Package, which our model checker relies upon. Recall that this algorithm automatically searches through the \textit{whole} space of vtrees, i.e. it may lead to a complete re-structuring of the vtree if it improves the size of the SDDs considered. Although this might be a very good option for knowledge compilation, where the goal is to find the most compact representation possible, it seems to be a considerable effort in symbolic model checking, where a large number of different SDDs will be used at the same time (by the same \textit{manager}), and modified a lot within a short period of time.
 
-In \ref{sdd_dao_algo} we have described the dynamic vtree search algorithm implemented in the SDD Package. 
-
+For this reason, we introduce the idea of limiting this automatic search to only \textit{some} vtrees. The main option we will look at consists in re-structuring the l-subtrees only. It seems that this would constitute a faster search (as far less vtrees will be considered), while retaining the potential advantage which was originally brought by the particular choice of l-subtrees. So far this is of course just conjecture, and we will need to demonstrate (or refute) this idea using practical examples.
 
 
 \subsection{Implementation Specifics}
@@ -1353,13 +1467,11 @@ To use \texttt{create\_vtree()}, we need to pass it the number of variables that
 
 \subsubsection{A New Dynamic Vtree Search Algorithm}
 
-In \ref{sdd_dao_algo}, we described the dynamic minimisation algorithm implemented in the SDD Package. This algorithm is focused on a complete restructuring of the manager's vtree in order to minimise the size of its SDD nodes.
-Early experiments with this algorithm \textit{sometimes }revealed large overheads due to the difficulty of searching the huge space of vtrees. We propose a new approach to vtree search adapted to multi-agent systems in those cases where the original approach is not efficient. In this section we focus on the implementation of this new approach, while a detailed description, and a practical comparison of both techniques is detailed in the evaluation section (\ref{comparison_dynamic_approaches}).
+In \ref{dynamic_with_sdds}, we introduced the idea of a new dynamic vtree search algorithm, focusing on a re-structuring of the l-subtrees only. In this subsection we describe our implementation of this new algorithm.
 
-The new approach to vtree search is analogous to some dynamic variable reordering techniques for BDDs, which involve defining \textit{groups} of variables, set to remain contiguous during the reordering process. Using those techniques, reordering can then be applied within each group, and groups themselves can be reordered. 
 
-We propose a comparable algorithm for vtree search where the variables for individual agents are grouped together into sub-vtrees, and the minimisation function is called on each of these separately. Note that in the SDD Package, the default implementation of the minimisation function can be modified using \texttt{sdd\_manager\_set\_minimize\_function()},  indicating which function should be used instead.
-The code for our replacement implementation is as follows: 
+First note that in the SDD Package, the default implementation of the minimisation function can be modified using \texttt{sdd\_manager\_set\_minimize\_function()},  indicating which function should be used instead.
+The code for our replacement function is as follows: 
 
 \begin{lstlisting} [mathescape]
 Vtree* vtree_group_minimize(Vtree* vtree, SddManager* manager) {
@@ -1377,11 +1489,7 @@ Vtree* vtree_group_minimize(Vtree* vtree, SddManager* manager) {
 } 
 \end{lstlisting}
 
-This algorithm is appropriate for vtrees of a particular shape, which will constitute the focus our study in most of the evaluation section of this report. Without revealing too much information at this point, we simply say
-that these vtrees are built so that variables are separated into smaller groups, each group forming a left "branch" in the vtree. 
-Figure~\ref{fig:first_pseudo_right_linear} illustrate this with an example, showing the effect of \texttt{vtree\_group\_minimize()} on a particular vtree.
-
-
+To illustrate this, we refer the reader to the vtree in Figure~\ref{fig:lsubtrees_vtree_example} above. If called on this vtree, the \texttt{vtree\_group\_minimize()} function will \textit{only }search for an improvement of the subtrees rooted at nodes 26, 21, 28 and 29 (i.e. the l-subtrees). 
 
 \subsection{Software Engineering Issues and Challenges}
 
@@ -1424,7 +1532,7 @@ Hence, our second approach to verification was to "invent" new formulae to check
 Although these verification techniques are not guaranteed to have caught all bugs, we are confident that they were sufficient for our purposes, and that in all the examples considered, both model checkers had the same outcome.
 
 
-\section{Evaluation (?)} 
+\section{Evaluation} 
 
 \subsection{Introduction}
 
@@ -1445,29 +1553,60 @@ After this first investigation, we planned to look at the performance of SDDs wh
 
 We hoped that both of these analyses (static and dynamic) would provide enough information to know whether or not SDDs (as implemented in the SDD Package) are suitable for model checking multi-agent systems.
 
-	\subsubsection{Example Models}
-	\label{ispl_examples}
-\begin{itemize}
-\item Bit transmission problem 
-\item Dining Cryptographers
-\item Prisoners' dilemma 
-\item NSPK - 
+\subsubsection{Example Models}
+\label{ispl_examples}
+
+In this section, we describe the example models used as benchmarks throughout this chapter. This is to provide the reader with some context before launching into numerous tables of results, and to help understand the analysis we make of these results. 
+
+Our set of examples is made up of three main classes of models, presented below. The (very trivial) Bit Trans (Appendix~\ref{BTP}) is also sometimes used to demonstrate the \textit{inefficiency} of a particular technique, so we also provide some useful characteristics about this particular model. 
+
+\subsection*{The Dining Cryptographers}
+
+The original dining cryprographers problem was introduced by D. Chaum in 1988, refering to the following situation: three cryptographers go out for dinner, and at the end of the meal, the waiter informs them that the bill has already been paid by someone, who could either be one of the cryptographers, or the National Security Agency (NSA). While respecting each other's right to remain anonymous, they would like to find out if the NSA has paid. They use the following two-step protocol: in the first step, each cryptographer flips a coin behind a menu, so that only them and the cryptographer to their right can see the outcome; then, they each know the outcome of two out of the three coin flips, and in the second step, the cryptographers that haven't paid publicly announce whether or not these two outcomes are the same. If one cryptographer \textit{has} paid for the meal, they announce the opposite. The NSA has paid for the meal only if there is an even number of "same". 
+
+This problem can be generalised to any number of cryptographers, and modelled by a multi-agent system consisting of one agent for each cryptographer, and an environment holding information about the coin flipping outcomes and the cryptographers' announces.
+
+With the help of an ISPL file generator, we use a \textit{parametrised} version of the dining cryptographers problem, allowing us to easily rescale the model depending on the efficiency of the approach considered. 
+
+The CTLK formula we are verifying in the model is 
+$$AG\left[(\mbox{odd} \land \lnot \mbox{c1paid}) \rightarrow (K_{c1} (\mbox{c2paid} \lor ... \lor \mbox{c$n$paid}) \land \lnot K_{c1} \mbox{c2paid} \land ...  \land \lnot K_{c1} \mbox{c$n$paid})\right],$$
+which encodes the following property:
+\textit{ ``At any point, if we know that there is an odd number of `same' and the first cryptographer is not the one that paid for dinner, then the first cryptographer knows that one of the other cryptographers paid, without knowing which one''.}
+
+- abbreviation 
+- no. reachable states
+- depth of model 
+- no. of variables 
+- no. of agents 
+
+\begin{tabular}{c}
+
+\end{tabular}
+
+
+\subsection*{The Prisoners' Challenge}
+
+
+
+\subsection*{The Needham-Schroeder Protocol}
+
+\subsection*{The Bit Transmission Protocol}
+
 http://en.wikipedia.org/wiki/Needham-Schroeder\_protocol
-\end{itemize}
 
 also: choice of examples, why parametrised, describe the state spaces of each
 
-\subsubsection{Experimental Protocol} 
+\subsubsection{Experimental Framework} 
 
-Throughout this chapter, we report a large number of tables containing experimental results. In this section we attempt to describe as accurately as possible the framework in which these experiments took place, as well as the format in which we present the results. 
+Throughout this chapter, we report a number of tables containing experimental results. Here, we attempt to describe as accurately as possible the framework in which these experiments took place, as well as the format in which we present the results. 
 
-All benchmarks were run on ...
+All benchmarks were run on a Linux Ubuntu 13.04 64-bit machine, with 16GB memory and a Intel Core i7-4770 processor at 3.40GHz. 
 
-Most results are split into two tables: time and memory; time measurements are in seconds, memory usage in megabytes.
+Results of all experiments are split into two tables: computation time and memory usage, where time measurements are in seconds, memory usage in megabytes. All computations were performed three times and averaged (although the memory used by our model checker, or MCMAS, is always the same on a particular example). We indicate by a dash `-' the cases where the system either ran out of memory, or reached a timeout of an hour. In each table we indicate in bold the situations where SDDs outperform BDDs.
 
-In each table we indicate in bold the situations where SDDs outperform BDDs.
+For each situation we investigate, we selected a set of 5-10 models from the ones described in \ref{examples}, including several of the same type with different parameters. This selection was done to give a range of results as broad as possible, while remaining within the timeout/memory limit. 
 
-in most cases we set parameters to be the most appropriate
+In addition to the results of the experiments conducted, all tables contain the best BDD results obtained on the same model, in order to facilitate a fair comparison.
 
 \subsection{Static Comparisons with Standard Vtrees}
 
@@ -1502,9 +1641,7 @@ nspk6 & - & - & - &- & - & - & - & - \\ \hline
 \\
 \caption{Computation Time: SDDs were built with right-linear vtrees, and standard orderings}
 \label{table:rightlineartime}
-\end{table}
-
-\begin{table}
+\vspace{1in}
 \centering
 \begin{tabular}{|*{9}{c|}}
 \hline
@@ -1577,7 +1714,7 @@ nspk1 & 12 & - &- & & & & & & \\ \hline
 Left-linear and vertical vtrees proved \textit{extremely} inefficient. As shown in Tables~\ref{table:otherstandardvtrees1time} and \ref{table:otherstandardvtrees1memory}, even on the small examples chosen they were significantly slower than BDDs. Furthermore, although the variable ordering chosen for the vtrees seems to have a big impact on the computation (much bigger in fact than on BDDs), even for the better ones there is no competition.  
 
 Before pushing the analysis further, we look at balanced vtrees; these are slightly more efficient, but still lead to much higher computations times than BDDs, or even right-linear vtrees. This results appear very clearly in Tables~\ref{table:otherstandardvtrees2time} and \ref{table:otherstandardvtrees2memory}.
-
+\label{balanced_comparisons}
 \begin{table}
 \centering
 \begin{tabular}{|*{9}{c|}}
@@ -1619,6 +1756,7 @@ nspk4 &92 & - & 189 & 960& - \\ \hline
 
 
 \subsubsection{Towards a Better Vtree: Observations}
+\label{analysis_example}
 
 Upon experimenting with all the 16 standard vtrees, it was clear that if SDDs were ever to be used in model checking, there would need to be a way of generating better vtrees. In this section we provide 
 
@@ -1646,74 +1784,232 @@ Vtrees of this shape were the basis of the next set of experiments we conducted 
 \subsection{Static Comparisons with Alternative Vtrees}
 \label{alternative}
 
-\subsubsection{A First Attempt}
+In this section we explore and evaluate the various vtree constructions permitted by the l-subtree decomposition described in \ref{new_perspective}, and induced by the partition of the set of variables corresponding to the agents' variable allocation. We are still focusing on static vtree generation, so the dynamic minimisation features of both CUDD and the SDD Package are turned off.
+
+This section is split into multiple subsections, each corresponding to a new investigation (but using the same construction process). At the beginning of each subsection, we describe the goal of the corresponding investigation and the particular vtree construction considered. We then present some experimental results and discuss any potential conclusions, which led us to the next investigation. 
+
+Before we start, let us recall the setup: we are in the middle of verifying an interpreted system of agents, variable allocation \textit{has} taken place, and to each agent have been assigned three (distinct) sets of variables: state variables, primed state variables, and action variables. The union of the sets of each agent is the full set of variables used to encode the model. In order to construct a vtree for the model checker, we want to create a partition of this set which will be used to create the l-subtrees of the vtree. 
+
+\subsubsection{A First Attempt Using Agent Variables}
+\label{first_attempt}
+
+The first vtree construction we consider is the most natural: we take the partition consisting of the variables allocated to each agent. That is, each agent corresponds to an l-subtree in the final vtree (strictly speaking, the last agent corresponds to the last \textit{few }l-subtrees of the vtree constructed). 
+
+More specifically, for each agent we choose to construct a balanced subtree as according to the observations made in \ref{analysis_example}, it is the closest to the ideal vtree. We need to point out however, that constructing a perfectly balanced vtree for each agent is not often possible, as for this we would need the number of variables of each agent to be a power of 2.
+We are particulatly interested in the following: \begin{enumerate}
+\item The efficiency of this particular l-subtree decomposition;
+\item The effect of changing the l-subtree order of the vtree;
+\item The effect of changing the variable ordering induced by each l-subtree. 
+\end{enumerate}
+To evaluate these three parameters, we started our investigation with the most basic configuration: the l-subtrees were ordered using the \textit{agent order} (i.e. the way agent definitions are ordered in the ISPL file), and the variable ordering within each agent subtree was simply [state variables, primed state variables, action variables].
+
+Then, we looked at the effect of changing the l-subtree order, by trying successively the \textit{inverse} of the agent order, and the \textit{ascending }order (in terms of the number of variables needed for each agent).
+
 \begin{table}
 \centering
-\begin{tabular}{|*{5}{c|}}
+\begin{tabular}{|*{8}{c|}}
 \hline
-& \multirow{2}{*}{BDDs} & \multicolumn{3}{c|}{Vtree Option 5} \\ \cline{3-5}
-& & Agent & Inverse & Ascending \\ \hline
-cryptos4 & 0.02 & 2.41 & 1.31 & 1.31 \\ \hline
-cryptos5 & 0.06 & 31.32 & 32.08 & 32.08 \\ \hline
-cryptos6 & 0.44 & 993.71& - & - \\ \hline
-pris6 & 0.15 & 7.43 & 3.94 & 2.52 \\ \hline
-pris7 & 0.57 & 48.01 & 21.36 & 10.22 \\ \hline
-pris8 & 2.08 & 303.73 & 96.39 & 48.76 \\ \hline
-nspk1 & 0.03 & 1.85 & 2.01 & 2.12 \\ \hline
-nspk2 & 11.25 & 542.32&- &- \\ \hline
-nspk4 & 1.29 & 68.95 &54.69 & 55.65 \\ \hline
+& \multirow{2}{*}{BDDs} & \multicolumn{3}{c|}{$[s, s', a]$}& \multicolumn{3}{c|}{$[(s_1, s_1', ..., s_n, s_n'), a]$}\\ \cline{3-8}
+& & Agent & Inverse & Ascending & Agent & Inverse &  Ascending \\ \hline
+cryptos4 & 0.02 & 2.41 & 1.31 & 1.31& 0.24 & 0.15 & 0.15 \\ \hline
+cryptos5 & 0.06 & 31.32 & 32.08 & 32.08&0.68& 0.31 & 0.31 \\ \hline
+cryptos6 & 0.44 & 993.71& - & - & 4.05 & 1.01 & 1.01 \\ \hline
+cryptos7 & 2.64 & - & - & - & 34.59 & 5.84 & 5.04\\ \hline
+cryptos8 & 17.24 & - & - & - & - & 36.94 & 32.91 \\ \hline
+cryptos9 & 98.95 & - & - & - & - & 271.16 & 248.18\\ \hline
+pris6 & 0.15 & 7.43 & 3.94 & 2.52 & 2.02 & 2.16 & 1.03 \\ \hline
+pris7 & 0.57 & 48.01 & 21.36 & 10.22& 8.31 & 8.63 & 3.61 \\ \hline
+pris8 & 2.08 & 303.73 & 96.39 & 48.76 & 24.64 & 23.17 & 9.43 \\ \hline
+pris9 & 11.47 &  &  &  & 120.17& 109.24 & 38.75 \\ \hline
+pris10 & 35.11 &  &  &  & 445.36& 347.23 & 128.1\\ \hline
+nspk1 & 0.03 & 1.85 & 2.01 & 2.12 & 0.71 &0.81&  0.99\\ \hline
+nspk2 & 11.25 & 542.32& - & - & 133.53 & 163.57 &  124.32\\ \hline
+nspk4 & 1.29 & 68.95 &54.69 & 55.65 & 4.62 & 10.47 & 8.47\\ \hline
 \end{tabular}
-\label{table:vtree5time}
 \caption{Vtree Option 5 -- Time}
+\label{table:vtree5time}
 \end{table}
+
+\begin{table}
+\centering
+\begin{tabular}{|*{8}{c|}}
+\hline
+& \multirow{2}{*}{BDDs} & \multicolumn{3}{c|}{$[s, s', a]$}& \multicolumn{3}{c|}{$[(s_1, s_1', ..., s_n, s_n'), a]$}\\ \cline{3-8}
+& & Agent & Inverse & Ascending & Agent & Inverse & Ascending\\ \hline
+cryptos4 & 11 & 59 & 44 & 44 & 6 & 3 &  \textbf{3}\\ \hline
+cryptos5 & 18 & 673 & 574 & 574 &31 & 7 &  \textbf{7}\\ \hline
+cryptos6 & 45 & 8716 & 
+- & - & 196& 33 &  \textbf{33} \\ \hline
+cryptos7 & 160 & - & - & - & 1367 & 170 & 165 \\ \hline
+cryptos8 & 647 & - & - & - & - & 997 & 974\\ \hline
+cryptos9 & 2850 & - & - & - & - & 5270 & 5066 \\ \hline
+pris6 & 31 & 76 & 45 & 52 & 42&31&  \textbf{29}\\ \hline
+pris7 & 48 & 316 & 141 & 158 & 127 &88 & 83\\ \hline
+pris8 & 102 & 1558 & 483 & 744& 387 & 116 & 233\\ \hline
+pris9 & 313 &  &  &  & 1418 & 700 & 724\\ \hline
+pris10 & 847 &  &  &  & 5255 & 2059 & 2435\\ \hline
+nspk1 & 16 & 27 & 29 & 25  & 11 & 13 &\textbf{13} \\ \hline
+nspk2 & 324 & 2949 & - & - & 1301 & 1374 & 1396 \\ \hline
+nspk4 & 92 & 685 & 884 & 901& 63&81&  \textbf{85}\\ \hline
+\end{tabular}
+\caption{Vtree Option 5 -- Memory}
+\label{table:vtree5memory}
+\end{table}
+
+
+Finally, we evaluated the impact of the variable order of each balanced subtree, and tried various orderings, in particular the equivalent of the MCMAS standard ordering 2, namely $$[\mbox{(states and primed states interleaved)}, \mbox{actions}].$$
+
+Tables~\ref{table:vtree5time} and \ref{table:vtree5memory} contain our experimental results. It appears very clearly that the second variable ordering (MCMAS number 2) is \textit{much }more efficient than the original one, in all cases. This is somewhat surprising, since when we compared balanced subtrees in \ref{balanced_comparisons}, we concluded that the impact of the variable ordering differed a lot depending on the model. Yet, when these balanced subtrees are used as l-subtrees of a larger vtree, the results are more constistent, and there is a clear winner.
+
+Concerning the impact of the l-subtree order in the vtree, the conclusion is less obvious from the tables alone, and again, it seems to depend on the model. We inspect the results a little more closely. In a majority of cases, it appears that leaving the bigger agent subtrees at the bottom of the vtree (using the ascending order) reduces computation times. But this is not always the case.
+
+For the dining cryptographers in particular, when the SDD sizes exceed a certain number, it is more efficient to leave the Environment subtree (the bigger one by far, and the first in the agent order) at the top of the vtree. One possible explanation is that in this model, the transition relation for the Environment is \textit{considerably} larger than that of individual Cryptographers, therefore the major part of the computation time is spent in the reachable state-space computation, applying this particular relation (the others are negligible). The time gained by facilitating this unique operation therefore makes a more significant difference than that of facilitating all the others. 
+
+We suspect that for the NSPK examples, where results are also a little inconsistent, the same problem occurs. However, this is harder to analyse, considering agents in these examples have comparable numbers of variables. 
+
+It is also interesting to compare the time and memory usage in different runs of the same example, but with different vtrees. A few ``irregularities" can be found there too, which confirms the fact that the size of the data structures is not the only thing affected by the vtree, but the efficiency of operations is too. 
+This was much less appearant in the case of right-linear vtrees (i.e. changing the variable ordering of a right-linear vtree keeps the ratio constant, whereas changing the structure of the vtree makes it vary). 
+
+We can conclude that when l-subtrees correspond to agent variable sets,\begin{itemize}
+\item The most efficient variable order with this is the equivalent of the standard order number 2 in MCMAS;
+\item Ordering the subtrees with respect to their size is unpredictable.
+\end{itemize}
+To prevent this uncertainty, we had the idea of setting an \textit{upper bound} on the size of the l-subtrees in the vtree that we construct. This is the next investigation.
+
+\subsubsection{An Upper Bound on the Size of Subtrees}
+
+Theoretically, setting a maximum number of variables per l-subtree should prevent the lengthy operations sometimes caused by an irregularity in the number of variables allocated to various agents, as described above. Whether or not this will reduce the \textit{total} computation time, or the size of the resulting SDDs, is still to determine. 
+
+In this subsection, we start with the same partition of the set of variable as in the previous one (i.e. the partition arising from agents), however we \textit{bound }the size of each set in the partition by a given integer $N$. This means that if an agent has been allocated more than $N$ variables, it will be ``represented" by two or more l-subtrees in the final vtree.
+With these experiments, we try to explore the following questions:\begin{enumerate}
+\item What is an appropriate upper bound $N$? Should it depend on the total number of variables?
+\item When l-subtrees are limited to a size of $N$ variables, does their order still matter?
+\item If we need to split an agent's variable set into multiple subsets, how should we arrange the variables? 
+\item Does any of the above lead to an improvement on the vtree defined in the previous subsection?
+\end{enumerate}
+To investigate these questions, and draw conclusions as accurately as possible, we make some experiments.
+
+We start by comparing different values of the upper bound $N$, which we define as a function of the total number of variables, denoted $n$. The main reason for using a function rather than a constant is that for larger-scale models, where agents have a large number of variables, a small upper bound is likely to slow down the process rather than accelerate it -- we do not want to lose the value that l-subtrees are here to add in the first place (that is, to lower the number of \textit{decisions} to make). That said, we choose functions which "grow slowly", so that even for \textit{very }large-scale models, the upper bound is still reasonably low. 
+
+As shown in Tables~\ref{table:upperboundvaluestime} and \ref{table:upperboundvaluesmemory}, we used three different functions for this experiment: $N = log_2(n), N = \sqrt{n}$ and  $N = 2log_2(n)$, where for each example, we round up $N$ to the nearest integer. These functions almost behave like constants on the set of examples that we look at. As an indication, we give the actual values of $N$ for each example, in each case, in the table below: \\
 
 \begin{table}
 \centering
 \begin{tabular}{|*{5}{c|}}
 \hline
-& \multirow{2}{*}{BDDs} & \multicolumn{3}{c|}{Vtree Option 5} \\ \cline{3-5}
-& & Agent & Inverse & Ascending \\ \hline
-cryptos4 & 11 & 59 & 44 & 44 \\ \hline
-cryptos5 & 18 & 673 & 574 & 574 \\ \hline
-cryptos6 & 45 & 8716 & 8241 & 8241 \\ \hline
-pris6 & 31 & 76 & 45 & 52 \\ \hline
-pris7 & 48 & 316 & 141 & 158 \\ \hline
-pris8 & 102 & 1558 & 483 & 744\\ \hline
-nspk1 & 16 & 27 & 29 & 25 \\ \hline
-nspk2 & 324 & 2949 & - & - \\ \hline
-nspk4 & 92 & 685 & 884 & 901\\ \hline
+& \multirow{2}{*}{BDDs} & \multicolumn{3}{c|}{Values of $N$}  \\ \cline{3-5}
+&  & $log_2(n)$ & $\sqrt{n}$ & $2log_2(n)$  \\ \hline
+cryptos7 & 2.64 &1.51 & 1.21 & 1.02 \\ \hline
+cryptos8 & 17.24 & 5.70 & 4.78 & 4.90 \\ \hline
+cryptos9 & 98.95 & 30.46& 27.51  & 63.06 \\ \hline
+pris9 & 11.47 & 42.17 & 32.86 & 27.98  \\ \hline
+pris10 & 35.11 & 157.01 & 112.781  & 102.0 \\ \hline
+nspk1 & 0.03 & 0.55 & 0.48& 0.65 \\ \hline
+nspk2 & 11.25 & 27.88 &20.15 & 20.05 \\ \hline
+nspk4 & 1.29 & 3.94 & 5.12 & 4.16 \\ \hline
+nspk5 & 158.62 & -& 859.42& 782.07 \\ \hline
 \end{tabular}
-\label{table:vtree5memory}
-\caption{Vtree Option 5 -- Memory}
+\caption{Time Comparisons With Different Values of the Upper Bound $N$. In the table, $n$ denotes the total number of variables in the model.}
+\label{table:upperboundvaluestime}
+\vspace{1in}
+\centering
+\begin{tabular}{|*{5}{c|}}
+\hline
+ & \multirow{2}{*}{BDDs} & \multicolumn{3}{c|}{Values of $N$}  \\ \cline{3-5}
+ & & $log_2(n)$ & $\sqrt{n}$ & $2log_2(n)$  \\ \hline
+cryptos7 & 160 & 65 & 56  & 51 \\ \hline
+cryptos8 & 647 & 216 & 188 & 154 \\ \hline
+cryptos9 &2850& 1117 & 886  & 1350\\ \hline
+pris9 & 313 &1086 & 718  & 698\\ \hline
+pris10 & 847& 3464 & 2576 & 2262\\ \hline
+nspk1 & 13 & 12 & 12  &  12\\ \hline
+nspk2 & 135 & 370 & 273  & 257\\ \hline
+nspk4 & 45 & 89&78  & 72 \\ \hline
+nspk5 & 3841 & - & 6378 & 5876  \\ \hline
+\end{tabular}
+\caption{Memory: Different Values of the Upper Bound $N$. }
+\label{table:upperboundvaluesmemory}
 \end{table}
 
-\subsubsection{An Upper Bound on Subtree Size}
+{\centering
+\begin{tabular}{*{3}{c|}c}
+Example & $log_2(n)$ & $\sqrt{n}$ & $2log_2(n)$  \\
+\hline
+cryptos7 & 7 & 10 & 14   \\
+cryptos8 & 7 & 11& 14 \\
+cryptos9 & 7& 11 & 14  \\
+pris9 & 7& 9 & 13   \\
+pris10 & 7& 10 & 13   \\
+nspk1 & 7& 9 & 13   \\
+nspk2 & 7& 11 & 14  \\
+nspk4 & 7& 11 & 14   \\
+nspk5 & 8& 14 & 15   \\
+\end{tabular}
+\\\vspace{0.5in}}
 
-important to explain why this improves computation times
+\noindent It is clear from the results that setting an upper bound \textit{does} reduce SDD computation times significantly, to the point where the SDD computations are around \textit{three times faster} than the BDD computations in the case of the dining cryptographers, and at a comparable level (the difference being less than an order of magnitude) in all other cases. 
+
+On the other hand, the upper bound itself doesn't seem to have such a big impact on the computation: none of the ones we tried seems to come out as a more efficient solution than the others in the general case. TODO write more
+\\\\
+
+Recall that in \ref{first_attempt} we experimented with different \textit{orderings }of the vtree's l-subtrees. We saw that these had a relatively important effect on the efficiency of the computation, and we concluded that the \textit{irregularity} in the number of variables allocated to each agent was the main cause of this effect, as changing the order would mean shifting very large l-subtrees up and down the vtree (leading to an important change in the SDDs themselves). 
+
+Now that we have an upper bound on the l-subtree size, we would like to find out whether changing this ordering still has such a big impact. More generally, we would like to know the impact of the way we re-arrange variables when splitting an l-subtree due to its size exceeding the upper bound $N$. In the following experiment, we set the upper bound to be $N = \sqrt{n},$ and we compare the following three vtree constructions: 
+\begin{enumerate}
+\item The l-subtrees are still balanced and in the agent order, and if one of them has size $> N$, we split it into two (or more) l-subtree and put the second one (and the ones after, if any) immediately after in the final vtree.
+\item The l-subtrees are still constructed and split in the same way, but in the final vtree we order them in ascending order of size. 
+\item Instead of starting with one l-subtree per agent, we start with two: one containing state and primed state variables, and another containing action variables. We then split any of them whose size exceeds $N$, and leave them in the same order as agents to construct the vtree. 
+\end{enumerate}
+The first of these three constructions is essentially the one used in the last experiment, which we include here for comparison purposes. The second one will help us explore whether the l-subtree order matters, and the third will tell us whether re-arranging the variables in a more meaningful way \textit{might} lead to an improvement of the computation time (more meaningful, because a split is less likely to occur in a random place in the variable list, considering we force it to happen between action and state variables).
+
+\begin{table}
+\centering
+\begin{tabular}{|*{5}{c|}}
+\hline
+& \multirow{2}{*}{BDDs} & \multicolumn{3}{c|}{Vtree Construction} \\ \cline{3-5}
+& & 1. & 2. & 3.\\ \hline
+cryptos7 & 2.64 &  1.21& 1.33 & 2.26 \\\hline
+cryptos8 & 17.24&  4.78& 4.09 & 8.36 \\\hline
+cryptos9 & 98.95 &27.51 & 20.343 & 42.60 \\\hline
+pris9 & 11.47&32.86 & 41.14 & 86.98\\\hline
+pris10 & 35.11&112.78& 105.16 & -\\\hline
+nspk1 & 0.03 &0.48  & 0.46 & 0.31 \\\hline
+nspk2 & 11.25 &  20.15& 36.675 & 20.63 \\\hline
+nspk4 & 1.29 & 5.12& 4.94 & 3.11 \\\hline
+nspk5 & 158.62 &859.2 & - & 1062.52\\\hline
+\end{tabular}
+\caption{Time}
+\label{table:vtree6time}
+\vspace{1in}
+\begin{tabular}{|*{5}{c|}}
+\hline
+& \multirow{2}{*}{BDDs} & \multicolumn{3}{c|}{Vtree Construction} \\  \cline{3-5}
+& & 1. & 2. & 3.\\ \hline
+cryptos7 & 160 & 56 & 47 & 95 \\\hline
+cryptos8 & 647 & 188 & 175& 350 \\\hline
+cryptos9 & 2850 & 886 & 732 & 1751 \\\hline
+pris9 & 313 & 1086 & 844& 2796 \\\hline
+pris10 & 847 & 3464 & 1919 & - \\\hline
+nspk1 & 13 & 12& 13 & 9 \\\hline
+nspk2 & 135 & 370 & 482 & 291 \\\hline
+nspk4 & 45 & 78  & 120 & 69 \\\hline
+nspk5 & 3841 & 6378 & - & 7849 \\\hline
+\end{tabular}
+\caption{Memory}
+\label{table:vtree6memory}
+\end{table}
+
+The results are in Tables~\ref{table:vtree6time} and \ref{table:vtree6memory}. We can see that none of the new configurations (2. and 3. in the tables) are particularly striking improvements on the one we had before (1. in the table). 
+
+Perhaps surprisingly, the ``more meaningful" third construction actually seems to make things worse in a majority of cases. We also tried (although without showing the results here) similar constructions where all action l-subtrees are kept at the top, or the bottom of the vtree, rather than next to their corresponding state l-subtrees, as in 3. These were even more inefficient (on our set of models).
+ The conclusion we draw from this is that when considering the bounded vtree construction presented in this section, any reordering set to occur \textit{after} splitting is not particularly efficient; although it may not necessarily lead to worse computation times, in all the cases we tried it never improved them. TODO need explanation why it's inefficient
+ \\\\
+Overall, it seems that setting an upper bound on the l-subtree size does lead to a much more efficient performance, and this was very clear in all of our experiments. 	
+
+ 
 \subsubsection{Various Vtree Characteristics and Their Impact}
 
-\begin{itemize}
-\item changing the way variables are allocated to subtrees
-\item changing variable order \textit{within} subtrees and subtree type
-\item changing subtree order, and possibly adapting compute\_reach algorithm
-\item 
 
-\end{itemize}
-
-We aim to find an initial vtree leading to faster computations. We notice that whatever the initial vtree, dynamic reduction algorithms always result in a particular type of vtree, which we call \textit{pseudo-right-linear}. 
-All our experiments are with pseudo-right-linear vtrees.
-\begin{itemize}
-\item vtree experiment 1 (option 5): one balanced subtree per agent. 
-
-This does \textit{not} work well.
-\item vtree experiment 2 (option 6): We set a maximum size for agent subtrees. An upper bound of $\log_2(n^2)$ (where $n$ is the number of vars) has proved relatively efficient. If an agent has more variables then we create more subtrees for it. Variables of a subtree come from the same agent. Subtrees are balanced, and we experiment with different orderings for them. We observe that the best results are obtained when two principles are followed: action variables are close to each other in the subtree (i.e they alone form a balanced vtree of size \texttt{action\_count}) and states variables are 
-paired with their primed counterpart. (TODO: confirm this!)
-
-\item vtree experiment 3 (option 7): Each subtree contains one variable for each agent, as well as its corresponding primed variable. Action variables for each agent form their own subtree. We order state subtrees 'largest to smallest' and put action subtrees at the bottom. This seems to be the best ordering but TODO need to try: intercaler actions/states.
-
-\item vtree experiment 4 (option 8): Think of something! 
-
-\end{itemize}
 
 \subsection{Using Dynamic Reordering and Minimisation}
 
@@ -1733,6 +2029,8 @@ new vtree search method
 \subsection{Summary}
 
 review of best techniques and heuristics
+
+\subsection{The Exists function}
 
 \subsection{Qualitative Evaluation}
 
@@ -1825,7 +2123,7 @@ for Boolean Function Manipulation}, 1986.
 \appendix
 
 \section{The Bit Transmission Problem}
-
+\label{BTP}
 \subsection{The Problem}
 
 \subsection{The Model}

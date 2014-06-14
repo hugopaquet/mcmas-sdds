@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2014.5.30)  12 JUN 2014 22:21
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2014.5.30)  14 JUN 2014 16:11
 entering extended mode
  %&-line parsing enabled.
 **Report.tex
@@ -406,6 +406,18 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 568.
 LaTeX Info: Redefining \[ on input line 2666.
 LaTeX Info: Redefining \] on input line 2667.
 )
+(/usr/share/texmf-texlive/tex/latex/amscls/amsthm.sty
+Package: amsthm 2004/08/06 v2.20
+\thm@style=\toks32
+\thm@bodyfont=\toks33
+\thm@headfont=\toks34
+\thm@notefont=\toks35
+\thm@headpunct=\toks36
+\thm@preskip=\skip48
+\thm@postskip=\skip49
+\thm@headsep=\skip50
+\dth@everypar=\toks37
+)
 (/usr/share/texmf-texlive/tex/latex/mnsymbol/MnSymbol.sty
 Package: MnSymbol 2007/01/21 v1.4 support for the MnSymbol font
 
@@ -578,7 +590,7 @@ Package ifvtex Info: VTeX not detected.
 \Gm@wd@mp=\dimen172
 \Gm@odd@mp=\dimen173
 \Gm@even@mp=\dimen174
-\Gm@dimlist=\toks32
+\Gm@dimlist=\toks38
 
 (/usr/share/texmf-texlive/tex/xelatex/xetexconfig/geometry.cfg))
 (/usr/share/texmf-texlive/tex/latex/rotating/rotating.sty
@@ -588,10 +600,10 @@ Package: rotating 2009/03/28 v2.16a rotated objects in LaTeX
 Package: ifthen 2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
 )
 \c@r@tfl@t=\count130
-\rotFPtop=\skip48
-\rotFPbot=\skip49
+\rotFPtop=\skip51
+\rotFPbot=\skip52
 \rot@float@box=\box40
-\rot@mess@toks=\toks33
+\rot@mess@toks=\toks39
 )
 (/usr/share/texmf-texlive/tex/latex/caption/caption.sty
 Package: caption 2009/10/09 v3.1k Customizing captions (AR)
@@ -621,25 +633,25 @@ File: lstlang1.sty 2004/09/05 1.3 listings language file
  (./Report.aux)
 \openout1 = `Report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 60.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 60.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 57.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 57.
 
 (/usr/share/texmf-texlive/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 60.
+LaTeX Font Info:    ... okay on input line 57.
 
 (/usr/share/texmf-texlive/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -648,11 +660,11 @@ LaTeX Font Info:    ... okay on input line 60.
 \scratchbox=\box41
 \nofMPsegments=\count136
 \nofMParguments=\count137
-\everyMPshowfont=\toks34
+\everyMPshowfont=\toks40
 \MPscratchCnt=\count138
 \MPscratchDim=\dimen182
 \MPnumerator=\count139
-\everyMPtoPDFconversion=\toks35
+\everyMPtoPDFconversion=\toks41
 )
 \c@lstlisting=\count140
  ABD: EveryShipout initializing macros
@@ -721,22 +733,22 @@ LaTeX Font Info:    Try loading font information for U+stmry on input line 2.
  [2] [3
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 76--78
+Underfull \hbox (badness 10000) in paragraph at lines 71--73
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 76--78
+Underfull \hbox (badness 10000) in paragraph at lines 71--73
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 83--85
+Underfull \hbox (badness 10000) in paragraph at lines 78--80
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 83--85
+Underfull \hbox (badness 10000) in paragraph at lines 78--80
 
  []
 
@@ -745,48 +757,48 @@ Underfull \hbox (badness 10000) in paragraph at lines 83--85
 ] [5] [6
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 173--174
+Underfull \hbox (badness 10000) in paragraph at lines 168--169
 
  []
 
 [7] [8] [9]
 
-LaTeX Warning: Citation `need ref' on page 10 undefined on input line 305.
+LaTeX Warning: Citation `need ref' on page 10 undefined on input line 300.
 
 [10]
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 313.
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 308.
  [11] [12]
 <symbolic_model_checking_example.PNG, id=65, 349.305pt x 196.48407pt>
 File: symbolic_model_checking_example.PNG Graphic file (type png)
 
 <use symbolic_model_checking_example.PNG>
-Underfull \hbox (badness 10000) in paragraph at lines 428--430
+Underfull \hbox (badness 10000) in paragraph at lines 423--425
 
  []
 
 [13 <./symbolic_model_checking_example.PNG>]
-Underfull \hbox (badness 10000) in paragraph at lines 431--444
+Underfull \hbox (badness 10000) in paragraph at lines 426--439
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 431--444
+Underfull \hbox (badness 10000) in paragraph at lines 426--439
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 448--449
+Underfull \hbox (badness 10000) in paragraph at lines 443--444
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 458--459
+Underfull \hbox (badness 10000) in paragraph at lines 453--454
 
  []
 
 [14]
-Overfull \hbox (25.92278pt too wide) in paragraph at lines 473--474
+Overfull \hbox (25.92278pt too wide) in paragraph at lines 468--469
 []\OT1/cmr/m/n/10.95 Existentially quan-tify all primed vari-ables away from $\
 OML/cmm/m/it/10.95 f[]$\OT1/cmr/m/n/10.95 , i.e. com-pute $\U/MnSymbolC/m/n/10.
 95 ß\OML/cmm/m/it/10.95 x[]:::\U/MnSymbolC/m/n/10.95 ß\OML/cmm/m/it/10.95 x[]f[
@@ -794,49 +806,44 @@ OML/cmm/m/it/10.95 f[]$\OT1/cmr/m/n/10.95 , i.e. com-pute $\U/MnSymbolC/m/n/10.
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 477--478
+Underfull \hbox (badness 10000) in paragraph at lines 472--473
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 482--485
+Underfull \hbox (badness 10000) in paragraph at lines 477--480
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 482--485
+Underfull \hbox (badness 10000) in paragraph at lines 477--480
 
  []
 
 [15] [16] [17]
-Underfull \hbox (badness 10000) in paragraph at lines 660--663
+Underfull \hbox (badness 10000) in paragraph at lines 655--658
 
  []
 
 [18] [19]
-Overfull \hbox (52.79294pt too wide) in paragraph at lines 765--765
-[]\OT1/cmr/m/it/10.95 Let $\U/MnSymbolC/m/n/10.95 X$ \OT1/cmr/m/it/10.95 be a B
-oolean op-er-a-tor and let $\OMX/MnSymbolE/m/n/10.95 òà\OML/cmm/m/it/10.95 p[];
- s[]\OMX/MnSymbolE/m/n/10.95 ç\OML/cmm/m/it/10.95 ; :::; \OMX/MnSymbolE/m/n/10.
-95 à\OML/cmm/m/it/10.95 p[]; s[]\OMX/MnSymbolE/m/n/10.95 çù$ \OT1/cmr/m/it/10.9
-5 and $\OMX/MnSymbolE/m/n/10.95 òà\OML/cmm/m/it/10.95 q[]; r[]\OMX/MnSymbolE/m/
-n/10.95 ç\OML/cmm/m/it/10.95 ; :::; \OMX/MnSymbolE/m/n/10.95 à\OML/cmm/m/it/10.
-95 q[]; r[]\OMX/MnSymbolE/m/n/10.95 çù$
+Overfull \hbox (53.41667pt too wide) in paragraph at lines 760--760
+[]\OT1/cmr/bx/n/10.95 Theorem 2.2. []\OT1/cmr/m/it/10.95 Let $\U/MnSymbolC/m/n/
+10.95 X$ \OT1/cmr/m/it/10.95 be a Boolean op-er-a-tor and let $\OMX/MnSymbolE/m
+/n/10.95 òà\OML/cmm/m/it/10.95 p[]; s[]\OMX/MnSymbolE/m/n/10.95 ç\OML/cmm/m/it/
+10.95 ; :::; \OMX/MnSymbolE/m/n/10.95 à\OML/cmm/m/it/10.95 p[]; s[]\OMX/MnSymbo
+lE/m/n/10.95 çù$ \OT1/cmr/m/it/10.95 and $\OMX/MnSymbolE/m/n/10.95 òà\OML/cmm/m
+/it/10.95 q[]; r[]\OMX/MnSymbolE/m/n/10.95 ç\OML/cmm/m/it/10.95 ; :::; \OMX/MnS
+ymbolE/m/n/10.95 à\OML/cmm/m/it/10.95 q[]; r[]\OMX/MnSymbolE/m/n/10.95 çù$
  []
 
 [20]
-Overfull \hbox (2.60893pt too wide) in paragraph at lines 783--785
+Overfull \hbox (0.85995pt too wide) in paragraph at lines 778--780
 []\OT1/cmr/m/n/10.95 Let $[][]\OML/cmm/m/it/10.95 ; :::; [][]$ \OT1/cmr/m/n/10.
 95 be \OT1/cmr/m/it/10.95 all \OT1/cmr/m/n/10.95 in-stan-ti-a-tions of vari-abl
 es $\OML/cmm/m/it/10.95 X$\OT1/cmr/m/n/10.95 . Then $\OMX/MnSymbolE/m/n/10.95 ò
 à[][]\OML/cmm/m/it/10.95 ; f\OMX/MnSymbolE/m/n/10.95 S[]ç\OML/cmm/m/it/10.95 ; 
 :::; \OMX/MnSymbolE/m/n/10.95 à[][]\OML/cmm/m/it/10.95 ; f\OMX/MnSymbolE/m/n/10
 .95 S[]çù$
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 789--790
-
  []
 
 <balancedABCD.png, id=96, 179.67125pt x 168.63pt>
@@ -847,7 +854,7 @@ File: rightlinearABCD.png Graphic file (type png)
 
 <use rightlinearABCD.png> [21 <./balancedABCD.png (PNG copy)> <./rightlinearABC
 D.png (PNG copy)>]
-Underfull \hbox (badness 10000) in paragraph at lines 828--829
+Underfull \hbox (badness 10000) in paragraph at lines 823--824
 
  []
 
@@ -859,7 +866,7 @@ File: balancedfirstexample.png Graphic file (type png)
 File: rightlinearfirstexample.png Graphic file (type png)
 
 <use rightlinearfirstexample.png>
-Overfull \hbox (2.63435pt too wide) in paragraph at lines 849--850
+Overfull \hbox (2.63435pt too wide) in paragraph at lines 844--845
 []$\OML/cmm/m/it/10.95 v$ \OT1/cmr/m/n/10.95 is an in-ter-nal node (i.e. it has
  chil-dren), and $\OML/cmm/m/it/10.95 $ \OT1/cmr/m/n/10.95 is a par-ti-tion $\
 OMX/MnSymbolE/m/n/10.95 òà\OML/cmm/m/it/10.95 p[]; s[]\OMX/MnSymbolE/m/n/10.95 
@@ -868,7 +875,7 @@ s[]\OMX/MnSymbolE/m/n/10.95 çù$
  []
 
 [22]
-Overfull \hbox (25.6017pt too wide) in paragraph at lines 885--887
+Overfull \hbox (25.6017pt too wide) in paragraph at lines 880--882
 \OT1/cmr/m/n/10.95 travers-ing it bottom-up and re-plac-ing de-com-po-si-tions 
 of the form $\OMX/MnSymbolE/m/n/10.95 òà\U/MnSymbolC/m/n/10.95 ó\OML/cmm/m/it/1
 0.95 ; \OMX/MnSymbolE/m/n/10.95 çù$ \OT1/cmr/m/n/10.95 or $\OMX/MnSymbolE/m/n/
@@ -879,7 +886,7 @@ cmm/m/it/10.95 ; \U/MnSymbolC/m/n/10.95 ñ\OMX/MnSymbolE/m/n/10.95 çù$
 
 [23 <./balancedfirstexample.png (PNG copy)> <./rightlinearfirstexample.png (PNG
  copy)>]
-Underfull \hbox (badness 10000) in paragraph at lines 908--909
+Underfull \hbox (badness 10000) in paragraph at lines 903--904
 
  []
 
@@ -901,18 +908,15 @@ File: verticalABCDE.png Graphic file (type png)
 ]
 
 LaTeX Warning: Citation `recursive calls on $v_l$ and $v_r$. We then consider t
-wo subtreesdd_3' on page 28 undefined on input line 1052.
-
-
-LaTeX Warning: Reference `fig:lrvtrees' on page 28 undefined on input line 1053
-.
+wo subtreesdd_3' on page 28 undefined on input line 1127.
 
 [28 <./leftlinearABCD.png (PNG copy)> <./verticalABCDE.png (PNG copy)>]
-
-LaTeX Warning: Citation `mcmas' on page 29 undefined on input line 1076.
-
 [29]
-Overfull \hbox (70.14159pt too wide) in paragraph at lines 1089--1090
+
+LaTeX Warning: Citation `mcmas' on page 30 undefined on input line 1187.
+
+
+Overfull \hbox (70.14159pt too wide) in paragraph at lines 1200--1201
 []\OT1/cmtt/m/n/10.95 variable\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 basic[]t
 ype\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 int[]value\OT1/cmr/m/n/10.95 , \OT1
 /cmtt/m/n/10.95 enum[]value\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 bool[]value
@@ -921,111 +925,118 @@ t/m/n/10.95 atomic[]proposition\OT1/cmr/m/n/10.95 ,
  []
 
 [30]
-Overfull \hbox (46.14291pt too wide) in paragraph at lines 1116--1117
+Overfull \hbox (46.14291pt too wide) in paragraph at lines 1227--1228
 \OT1/cmr/m/n/10.95 the afore-men-tioned sets by calls to the func-tions \OT1/cm
 tt/m/n/10.95 state[]BDD[]length() \OT1/cmr/m/n/10.95 and \OT1/cmtt/m/n/10.95 ac
 tion[]BDD[]length()\OT1/cmr/m/n/10.95 . 
  []
 
 
-Overfull \hbox (36.68607pt too wide) in paragraph at lines 1118--1119
+Overfull \hbox (36.68607pt too wide) in paragraph at lines 1229--1230
 []\OT1/cmr/m/n/10.95 The \OT1/cmtt/m/n/10.95 basic[]agent \OT1/cmr/m/n/10.95 fu
 nc-tions \OT1/cmtt/m/n/10.95 allocate[]BDD[]2[]variables() \OT1/cmr/m/n/10.95 a
 nd \OT1/cmtt/m/n/10.95 allocate[]BDD[]2[]actions()
  []
 
-
-Overfull \hbox (2.28543pt too wide) in paragraph at lines 1126--1128
+[31]
+Overfull \hbox (2.28543pt too wide) in paragraph at lines 1237--1239
 \OT1/cmr/m/n/10.95 Suppose MC-MAS is run-ning on an ex-am-ple re-quir-ing $\OML
 /cmm/m/it/10.95 n$ \OT1/cmr/m/n/10.95 state vari-ables de-noted $\OML/cmm/m/it/
 10.95 x[]; :::; x[]$\OT1/cmr/m/n/10.95 ,
  []
 
-[31]
-LaTeX Font Info:    Try loading font information for OMS+cmtt on input line 116
-6.
-LaTeX Font Info:    No file OMScmtt.fd. on input line 1166.
+[32]
+LaTeX Font Info:    Try loading font information for OMS+cmtt on input line 127
+7.
+LaTeX Font Info:    No file OMScmtt.fd. on input line 1277.
 
 
 LaTeX Font Warning: Font shape `OMS/cmtt/m/n' undefined
 (Font)              using `OMS/cmsy/m/n' instead
-(Font)              for symbol `textbraceleft' on input line 1166.
+(Font)              for symbol `textbraceleft' on input line 1277.
 
-[32] [33]
-<pseudorightlinearfirstexample.png, id=148, 549.05125pt x 380.42125pt>
+[33] [34]
+<pseudorightlinearfirstexample.png, id=151, 549.05125pt x 380.42125pt>
 File: pseudorightlinearfirstexample.png Graphic file (type png)
 
-<use pseudorightlinearfirstexample.png> [34 <./pseudorightlinearfirstexample.pn
-g (PNG copy)>] [35]
-Overfull \hbox (88.53448pt too wide) in paragraph at lines 1264--1265
+<use pseudorightlinearfirstexample.png> [35 <./pseudorightlinearfirstexample.pn
+g (PNG copy)>] [36]
+Overfull \hbox (88.53448pt too wide) in paragraph at lines 1378--1379
 []\OT1/cmr/m/n/10.95 In CUDD, the func-tion re-spon-si-ble for ex-is-ten-tial v
 ari-able quan-tifi-ca-tion is \OT1/cmtt/m/n/10.95 Cudd[]bddExistAbstract()\OT1/
 cmr/m/n/10.95 .
  []
 
-[36] [37]
-Overfull \hbox (12.58409pt too wide) in paragraph at lines 1327--1328
+[37] [38]
+Overfull \hbox (12.58409pt too wide) in paragraph at lines 1441--1442
 \OT1/cmr/m/n/10.95 to file in or-der to re-use them in the fu-ture. The func-ti
 on \OT1/cmtt/m/n/10.95 sdd[]vtree[]save[]to[]file()
  []
 
-[38]
+[39] [40] [41] [42] [43] [44
 
-LaTeX Warning: Reference `comparison_dynamic_approaches' on page 39 undefined o
-n input line 1357.
+] [45]
+
+LaTeX Warning: Reference `examples' on page 46 undefined on input line 1607.
 
 
-Overfull \hbox (24.60805pt too wide) in paragraph at lines 1361--1363
-\OT1/cmr/m/n/10.95 of the min-imi-sa-tion func-tion can be mod-i-fied us-ing \O
-T1/cmtt/m/n/10.95 sdd[]manager[]set[]minimize[]function()\OT1/cmr/m/n/10.95 ,
- []
-
-[39]
-
-LaTeX Warning: Reference `fig:first_pseudo_right_linear' on page 40 undefined o
-n input line 1382.
-
-[40] [41] [42] [43
-
-]
-Underfull \hbox (badness 10000) in paragraph at lines 1532--1534
+Underfull \hbox (badness 10000) in paragraph at lines 1669--1671
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1532--1534
+Underfull \hbox (badness 10000) in paragraph at lines 1669--1671
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1532--1534
+Underfull \hbox (badness 10000) in paragraph at lines 1669--1671
 
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 1536--1540
-
- []
-
-[44] [45] [46] [47]
-Underfull \hbox (badness 10000) in paragraph at lines 1626--1627
+[46] [47]
+Underfull \hbox (badness 10000) in paragraph at lines 1673--1677
 
  []
 
-<largevtreeafterdao.png, id=194, 2124.93875pt x 1247.66125pt>
+[48]
+Underfull \hbox (badness 10000) in paragraph at lines 1764--1765
+
+ []
+
+<largevtreeafterdao.png, id=197, 2124.93875pt x 1247.66125pt>
 File: largevtreeafterdao.png Graphic file (type png)
 
 <use largevtreeafterdao.png>
-Overfull \hbox (44.87167pt too wide) in paragraph at lines 1631--1632
+Overfull \hbox (44.87167pt too wide) in paragraph at lines 1769--1770
 [][] 
  []
 
-[48] [49 <./largevtreeafterdao.png (PNG copy)>] [50] [51] [52] [53
+[49] [50] [51 <./largevtreeafterdao.png (PNG copy)>] [52] [53] [54]
+Underfull \hbox (badness 10000) in paragraph at lines 1894--1895
 
-] [54
+ []
 
-]
-[55] [56
+
+Underfull \hbox (badness 10000) in paragraph at lines 1952--1954
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1952--1954
+
+ []
+
+[55] [56]
+Underfull \hbox (badness 10000) in paragraph at lines 2004--2008
+
+ []
+
+[57] [58] [59] [60
+
+] [61
+
+] [62] [63
 
 ] (./Report.aux)
 
@@ -1036,13 +1047,13 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 15695 strings out of 493867
- 269437 string characters out of 1153842
- 346812 words of memory out of 3000000
- 18655 multiletter control sequences out of 15000+50000
+ 15898 strings out of 493867
+ 272098 string characters out of 1153842
+ 360015 words of memory out of 3000000
+ 18854 multiletter control sequences out of 15000+50000
  25176 words of font info for 92 fonts, out of 3000000 for 9000
  714 hyphenation exceptions out of 8191
- 56i,12n,55p,1045b,1514s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 56i,12n,55p,1045b,1512s stack positions out of 5000i,500n,10000p,200000b,50000s
 {/usr/share/texmf-texlive/fonts/enc/dvips/mnsymbol/MnSymbolC.enc}{/usr/share/
 texmf-texlive/fonts/enc/dvips/mnsymbol/MnSymbolA.enc}{/usr/share/texmf-texlive/
 fonts/enc/dvips/mnsymbol/MnSymbolE.enc}{/usr/share/texmf-texlive/fonts/enc/dvip
@@ -1069,9 +1080,9 @@ r/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/share/tex
 mf-texlive/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texmf/fon
 ts/type1/public/cm-super/sfrm1095.pfb></usr/share/texmf-texlive/fonts/type1/hoe
 kwater/stmaryrd/stmary10.pfb>
-Output written on Report.pdf (56 pages, 701891 bytes).
+Output written on Report.pdf (63 pages, 729451 bytes).
 PDF statistics:
- 312 PDF objects out of 1000 (max. 8388607)
+ 334 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  58 words of extra memory for PDF output out of 10000 (max. 10000000)
 
