@@ -1,85 +1,91 @@
-\contentsline {section}{\numberline {1}Introduction}{4}
-\contentsline {subsection}{\numberline {1.1}The Idea}{5}
-\contentsline {subsection}{\numberline {1.2}The Deliverables}{5}
-\contentsline {section}{\numberline {2}Background}{6}
-\contentsline {subsection}{\numberline {2.1}Logics for Multi-Agent Systems}{6}
-\contentsline {subsubsection}{\numberline {2.1.1}Multi-Agent Systems}{6}
-\contentsline {subsubsection}{\numberline {2.1.2}Interpreted Systems}{6}
-\contentsline {subsubsection}{\numberline {2.1.3}Linear Temporal Logic}{7}
-\contentsline {paragraph}{Semantics}{7}
-\contentsline {subsubsection}{\numberline {2.1.4}Computation Tree Logic}{8}
-\contentsline {subsubsection}{\numberline {2.1.5}The Epistemic Logic CTLK}{9}
-\contentsline {subsection}{\numberline {2.2}Model Checking}{10}
-\contentsline {subsubsection}{\numberline {2.2.1}Explicit Model Checking}{10}
-\contentsline {subsubsection}{\numberline {2.2.2}Symbolic Model Checking}{13}
-\contentsline {paragraph}{Symbolic Representation of Sets of States}{13}
-\contentsline {paragraph}{Symbolic Representation of a Transition Relation}{14}
-\contentsline {paragraph}{The functions $\mathop {\mathrm {pre}}_\exists $ and $\mathop {\mathrm {pre}}_\forall $}{14}
-\contentsline {paragraph}{The case of Multi-Agent Systems}{15}
-\contentsline {subsection}{\numberline {2.3}Representing Boolean functions}{16}
-\contentsline {subsubsection}{\numberline {2.3.1}Ordered Binary Decision Diagrams}{16}
-\contentsline {paragraph}{The Reduction Algorithm}{16}
-\contentsline {subsubsection}{\numberline {2.3.2}Project Directions}{18}
-\contentsline {subsection}{\numberline {2.4}Sentential Decision Diagrams}{19}
-\contentsline {subsubsection}{\numberline {2.4.1}Preliminaries}{20}
-\contentsline {subsubsection}{\numberline {2.4.2}Definition and Construction}{21}
-\contentsline {paragraph}{Graphical Representation of SDDs}{22}
-\contentsline {subsubsection}{\numberline {2.4.3}Canonicity and Operations}{23}
-\contentsline {paragraph}{Operations on SDDs}{24}
-\contentsline {subsubsection}{\numberline {2.4.4}OBDDs are SDDs}{25}
-\contentsline {section}{\numberline {3}A First Model Checker Based on SDDs}{27}
-\contentsline {subsection}{\numberline {3.1}Preliminary I: The SDD Package}{27}
-\contentsline {subsubsection}{\numberline {3.1.1}Description}{27}
-\contentsline {subsubsection}{\numberline {3.1.2}Standard Vtrees}{27}
-\contentsline {subsubsection}{\numberline {3.1.3}Dynamic SDD Minimisation}{28}
-\contentsline {subsubsection}{\numberline {3.1.4}Comparison with CUDD}{29}
-\contentsline {subsection}{\numberline {3.2}Preliminary II: MCMAS}{30}
-\contentsline {subsubsection}{\numberline {3.2.1}Important Classes and Methods}{30}
-\contentsline {subsubsection}{\numberline {3.2.2}Variable Allocation}{31}
-\contentsline {subsubsection}{\numberline {3.2.3}Standard Variable Orders}{32}
-\contentsline {subsubsection}{\numberline {3.2.4}Algebraic Decision Diagrams}{33}
-\contentsline {subsection}{\numberline {3.3}Model Checking with Sentential Decision Diagrams}{33}
-\contentsline {subsubsection}{\numberline {3.3.1}Suitability of SDDs for Model Cheking}{33}
-\contentsline {subsubsection}{\numberline {3.3.2}The Importance of Vtrees}{34}
-\contentsline {subsubsection}{\numberline {3.3.3}A New Perspective on Vtrees}{35}
-\contentsline {subsubsection}{\numberline {3.3.4}Vtree Options in Practice}{36}
-\contentsline {subsubsection}{\numberline {3.3.5}Dynamic Minimisation in Symbolic Model Checking}{36}
-\contentsline {subsection}{\numberline {3.4}Implementation Specifics}{36}
-\contentsline {subsubsection}{\numberline {3.4.1}Adapting MCMAS}{36}
-\contentsline {subsubsection}{\numberline {3.4.2}Existential Quantification}{37}
-\contentsline {subsection}{\numberline {3.5}SDD-Specific Features}{39}
-\contentsline {subsubsection}{\numberline {3.5.1}Vtrees and Variable Orders}{39}
-\contentsline {subsubsection}{\numberline {3.5.2}A New Dynamic Vtree Search Algorithm}{40}
-\contentsline {subsection}{\numberline {3.6}Software Engineering Issues and Challenges}{41}
-\contentsline {subsubsection}{\numberline {3.6.1}Garbage Collection}{41}
-\contentsline {subsubsection}{\numberline {3.6.2}Comparing SDDs and BDDs}{41}
-\contentsline {subsubsection}{\numberline {3.6.3}Correctness}{42}
-\contentsline {section}{\numberline {4}Evaluation}{44}
-\contentsline {subsection}{\numberline {4.1}Introduction}{44}
-\contentsline {subsubsection}{\numberline {4.1.1}Evaluation Strategy}{44}
-\contentsline {subsubsection}{\numberline {4.1.2}Example Models}{44}
-\contentsline {subsubsection}{\numberline {4.1.3}Experimental Framework}{45}
-\contentsline {subsection}{\numberline {4.2}Static Comparisons with Standard Vtrees}{46}
-\contentsline {subsubsection}{\numberline {4.2.1}Right-Linear Vtrees}{46}
-\contentsline {subsubsection}{\numberline {4.2.2}Other Standard Vtrees}{48}
-\contentsline {subsubsection}{\numberline {4.2.3}Towards a Better Vtree: Observations}{49}
-\contentsline {paragraph}{Analysis of an Example}{49}
-\contentsline {subsection}{\numberline {4.3}Static Comparisons with Alternative Vtrees}{50}
-\contentsline {subsubsection}{\numberline {4.3.1}A First Attempt Using Agent Variables}{52}
-\contentsline {subsubsection}{\numberline {4.3.2}An Upper Bound on the Size of Subtrees}{54}
-\contentsline {subsubsection}{\numberline {4.3.3}Various Vtree Characteristics and Their Impact}{59}
-\contentsline {subsection}{\numberline {4.4}Using Dynamic Reordering and Minimisation}{59}
-\contentsline {subsubsection}{\numberline {4.4.1}Initial Observations}{59}
-\contentsline {subsubsection}{\numberline {4.4.2}Experiments}{59}
-\contentsline {subsubsection}{\numberline {4.4.3}Grouping Variables}{59}
-\contentsline {subsection}{\numberline {4.5}Summary}{59}
-\contentsline {subsection}{\numberline {4.6}The Exists function}{59}
-\contentsline {subsection}{\numberline {4.7}Qualitative Evaluation}{59}
-\contentsline {section}{\numberline {5}Conclusion and future work}{60}
-\contentsline {subsection}{\numberline {5.1}Review}{60}
-\contentsline {subsection}{\numberline {5.2}Future work}{60}
-\contentsline {section}{\numberline {A}The Bit Transmission Problem}{63}
-\contentsline {subsection}{\numberline {A.1}The Problem}{63}
-\contentsline {subsection}{\numberline {A.2}The Model}{63}
-\contentsline {subsection}{\numberline {A.3}ISPL Specification}{63}
-\contentsline {section}{\numberline {B}Implementation Details}{63}
+\contentsline {chapter}{\numberline {1}Introduction}{1}
+\contentsline {section}{\numberline {1.1}Contributions}{2}
+\contentsline {chapter}{\numberline {2}Background}{3}
+\contentsline {section}{\numberline {2.1}Logics for Multi-Agent Systems}{3}
+\contentsline {subsection}{\numberline {2.1.1}Multi-Agent Systems}{3}
+\contentsline {subsection}{\numberline {2.1.2}Interpreted Systems}{3}
+\contentsline {subsection}{\numberline {2.1.3}Linear Temporal Logic}{4}
+\contentsline {paragraph}{Semantics}{5}
+\contentsline {subsection}{\numberline {2.1.4}Computation Tree Logic}{6}
+\contentsline {subsection}{\numberline {2.1.5}The Epistemic Logic CTLK}{7}
+\contentsline {section}{\numberline {2.2}Model Checking}{7}
+\contentsline {subsection}{\numberline {2.2.1}Explicit Model Checking}{8}
+\contentsline {subsection}{\numberline {2.2.2}Symbolic Model Checking}{9}
+\contentsline {paragraph}{Symbolic Representation of Sets of States}{9}
+\contentsline {subsubsection}{Symbolic Representation of a Transition Relation}{12}
+\contentsline {subsubsection}{Set Operations with Boolean Functions}{13}
+\contentsline {subsubsection}{The functions $\mathop {\mathrm {pre}}_\exists $ and $\mathop {\mathrm {pre}}_\forall $}{13}
+\contentsline {subsubsection}{The case of Multi-Agent Systems}{14}
+\contentsline {section}{\numberline {2.3}Representing Boolean functions}{14}
+\contentsline {subsection}{\numberline {2.3.1}Ordered Binary Decision Diagrams}{14}
+\contentsline {subsection}{\numberline {2.3.2}Project Directions}{17}
+\contentsline {section}{\numberline {2.4}Sentential Decision Diagrams}{18}
+\contentsline {subsection}{\numberline {2.4.1}Preliminaries}{18}
+\contentsline {subsubsection}{Vtrees}{20}
+\contentsline {subsection}{\numberline {2.4.2}Definition and Construction}{20}
+\contentsline {subsubsection}{Graphical Representation of SDDs}{21}
+\contentsline {subsection}{\numberline {2.4.3}Canonicity and Operations}{22}
+\contentsline {subsubsection}{Operations on SDDs}{23}
+\contentsline {subsection}{\numberline {2.4.4}OBDDs are SDDs}{25}
+\contentsline {chapter}{\numberline {3}A First Model Checker Based on SDDs}{27}
+\contentsline {section}{\numberline {3.1}Preliminary I: The SDD Package}{27}
+\contentsline {subsection}{\numberline {3.1.1}Description}{27}
+\contentsline {subsection}{\numberline {3.1.2}Standard Vtrees}{28}
+\contentsline {subsection}{\numberline {3.1.3}Dynamic SDD Minimisation}{28}
+\contentsline {subsection}{\numberline {3.1.4}Comparison with CUDD}{30}
+\contentsline {section}{\numberline {3.2}Preliminary II: MCMAS}{30}
+\contentsline {subsection}{\numberline {3.2.1}Important Classes and Methods}{31}
+\contentsline {subsection}{\numberline {3.2.2}Variable Allocation}{32}
+\contentsline {subsection}{\numberline {3.2.3}Standard Variable Orders}{32}
+\contentsline {subsection}{\numberline {3.2.4}Algebraic Decision Diagrams}{33}
+\contentsline {section}{\numberline {3.3}Model Checking with Sentential Decision Diagrams}{34}
+\contentsline {subsection}{\numberline {3.3.1}Suitability of SDDs for Model Cheking}{34}
+\contentsline {subsection}{\numberline {3.3.2}The Importance of Vtrees}{35}
+\contentsline {subsection}{\numberline {3.3.3}A New Perspective on Vtrees}{36}
+\contentsline {subsection}{\numberline {3.3.4}Vtree Options in Practice}{37}
+\contentsline {subsection}{\numberline {3.3.5}Dynamic Minimisation in Symbolic Model Checking}{37}
+\contentsline {section}{\numberline {3.4}Implementation Specifics}{38}
+\contentsline {subsection}{\numberline {3.4.1}Adapting MCMAS}{38}
+\contentsline {subsection}{\numberline {3.4.2}Existential Quantification}{39}
+\contentsline {section}{\numberline {3.5}SDD-Specific Features}{41}
+\contentsline {subsection}{\numberline {3.5.1}Vtrees and Variable Orders}{41}
+\contentsline {subsection}{\numberline {3.5.2}A New Dynamic Vtree Search Algorithm}{42}
+\contentsline {section}{\numberline {3.6}Software Engineering Issues and Challenges}{43}
+\contentsline {subsection}{\numberline {3.6.1}Garbage Collection}{43}
+\contentsline {subsection}{\numberline {3.6.2}Comparing SDDs and BDDs}{43}
+\contentsline {subsection}{\numberline {3.6.3}Correctness}{44}
+\contentsline {chapter}{\numberline {4}Evaluation}{46}
+\contentsline {section}{\numberline {4.1}Introduction}{46}
+\contentsline {subsection}{\numberline {4.1.1}Evaluation Strategy}{46}
+\contentsline {subsection}{\numberline {4.1.2}Example Models}{47}
+\contentsline {subsubsection}{The Dining Cryptographers}{47}
+\contentsline {subsubsection}{100 Prisoners and a Lightbulb}{48}
+\contentsline {subsubsection}{The Needham-Schroeder Public-Key Protocol}{49}
+\contentsline {subsubsection}{The Bit Transmission Problem}{50}
+\contentsline {subsubsection}{Diversity}{50}
+\contentsline {subsection}{\numberline {4.1.3}Experimental Framework}{50}
+\contentsline {section}{\numberline {4.2}Static Comparisons with Standard Vtrees}{51}
+\contentsline {subsection}{\numberline {4.2.1}Right-Linear Vtrees}{51}
+\contentsline {subsection}{\numberline {4.2.2}Other Standard Vtrees}{53}
+\contentsline {subsection}{\numberline {4.2.3}Towards a Better Vtree: Analysis \& Observations}{53}
+\contentsline {subsubsection}{An ``Ideal" Example}{55}
+\contentsline {section}{\numberline {4.3}Static Comparisons with Alternative Vtrees}{55}
+\contentsline {subsection}{\numberline {4.3.1}A First Attempt Using Agent Variables}{57}
+\contentsline {subsection}{\numberline {4.3.2}An Upper Bound on the Size of Subtrees}{60}
+\contentsline {subsection}{\numberline {4.3.3}A Different Partition of the Set of Variables}{63}
+\contentsline {section}{\numberline {4.4}Dynamic Variable Reordering and Minimisation}{65}
+\contentsline {subsection}{\numberline {4.4.1}The Default Dynamic Minimisation Function}{66}
+\contentsline {subsection}{\numberline {4.4.2}Changing the Configuration}{67}
+\contentsline {subsection}{\numberline {4.4.3}The New Dynamic Minimisation Function}{70}
+\contentsline {subsection}{\numberline {4.4.4}Comparison with the MCMAS dynamic minimisation feature}{70}
+\contentsline {section}{\numberline {4.5}Existential Quantification}{71}
+\contentsline {section}{\numberline {4.6}Summary}{71}
+\contentsline {section}{\numberline {4.7}Qualitative Evaluation}{71}
+\contentsline {chapter}{\numberline {5}Conclusion and future work}{72}
+\contentsline {section}{\numberline {5.1}Review}{72}
+\contentsline {section}{\numberline {5.2}Future work}{72}
+\contentsline {chapter}{\numberline {A}The Bit Transmission Problem}{75}
+\contentsline {section}{\numberline {A.1}The Problem}{75}
+\contentsline {section}{\numberline {A.2}The Model}{75}
+\contentsline {section}{\numberline {A.3}ISPL Specification}{76}
+\contentsline {chapter}{\numberline {B}Implementation Details}{80}
