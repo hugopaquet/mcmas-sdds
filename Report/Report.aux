@@ -3,92 +3,101 @@
 \citation{symbolic_model_checking}
 \citation{birth_of_model_checking}
 \citation{bryant}
-\citation{symbolic}
-\citation{1020_beyond}
 \@writefile{toc}{\contentsline {chapter}{\numberline {1}Introduction}{1}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
+\citation{symbolic}
+\citation{1020_beyond}
+\citation{sat_based_smc3}
+\citation{sat_based_smc}
+\citation{sat_based_smc2}
+\citation{evmdd}
+\citation{multivalued_data_structures}
 \citation{sdd_1}
 \@writefile{toc}{\contentsline {section}{\numberline {1.1}Contributions}{2}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {2}Background}{3}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {2}Background}{4}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {2.1}Logics for Multi-Agent Systems}{3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.1}Multi-Agent Systems}{3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.2}Interpreted Systems}{3}}
-\newlabel{IS}{{2.1.2}{3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.3}Linear Temporal Logic}{4}}
-\newlabel{LTL}{{2.1.3}{4}}
-\@writefile{toc}{\contentsline {paragraph}{Semantics}{5}}
-\newlabel{model_checking}{{2.1.3}{5}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.1}Logics for Multi-Agent Systems}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.1}Multi-Agent Systems}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.2}Interpreted Systems}{4}}
+\newlabel{IS}{{2.1.2}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.3}Linear Temporal Logic}{5}}
+\newlabel{LTL}{{2.1.3}{5}}
+\@writefile{toc}{\contentsline {paragraph}{Semantics}{6}}
+\newlabel{model_checking}{{2.1.3}{6}}
 \citation{ctl*}
 \citation{ctlk}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.4}Computation Tree Logic}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.4}Computation Tree Logic}{7}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1.5}The Epistemic Logic CTLK}{7}}
-\@writefile{toc}{\contentsline {section}{\numberline {2.2}Model Checking}{7}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.2}Model Checking}{8}}
 \citation{original_model_checking}
 \citation{mas_verification}
 \citation{need ref}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.1}Explicit Model Checking}{8}}
-\newlabel{explicit}{{2.2.1}{8}}
-\citation{logic_in_computer_science}
 \@writefile{lof}{\contentsline {figure}{\numberline {2.1}{\ignorespaces test\relax }}{9}}
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
 \newlabel{algo}{{2.1}{9}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.2}Symbolic Model Checking}{9}}
-\@writefile{toc}{\contentsline {paragraph}{Symbolic Representation of Sets of States}{9}}
-\newlabel{symbolic}{{2.2.2}{9}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2.2}{\ignorespaces A model\relax }}{12}}
-\newlabel{fig:model_example}{{2.2}{12}}
-\@writefile{toc}{\contentsline {subsubsection}{Symbolic Representation of a Transition Relation}{12}}
-\@writefile{toc}{\contentsline {subsubsection}{Set Operations with Boolean Functions}{13}}
-\@writefile{toc}{\contentsline {subsubsection}{The functions $\mathop {\mathrm  {pre}}_\exists $ and $\mathop {\mathrm  {pre}}_\forall $}{13}}
-\newlabel{exist}{{2.2.2}{13}}
-\@writefile{toc}{\contentsline {subsubsection}{The case of Multi-Agent Systems}{14}}
-\@writefile{toc}{\contentsline {section}{\numberline {2.3}Representing Boolean functions}{14}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.1}Ordered Binary Decision Diagrams}{14}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.1}Explicit Model Checking}{9}}
+\newlabel{explicit}{{2.2.1}{9}}
+\citation{logic_in_computer_science}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.2}Symbolic Model Checking}{12}}
+\@writefile{toc}{\contentsline {paragraph}{Symbolic Representation of Sets of States}{12}}
+\newlabel{symbolic}{{2.2.2}{12}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.2}{\ignorespaces A model\relax }}{13}}
+\newlabel{fig:model_example}{{2.2}{13}}
+\@writefile{toc}{\contentsline {subsubsection}{Symbolic Representation of a Transition Relation}{13}}
+\@writefile{toc}{\contentsline {subsubsection}{Set Operations with Boolean Functions}{14}}
+\@writefile{toc}{\contentsline {subsubsection}{The Functions $\mathop {\mathrm  {pre}}_\exists $ and $\mathop {\mathrm  {pre}}_\forall $}{14}}
+\newlabel{exist}{{2.2.2}{14}}
+\@writefile{toc}{\contentsline {subsubsection}{The Case of Multi-Agent Systems}{15}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.3}Representing Boolean functions}{15}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.1}Ordered Binary Decision Diagrams}{15}}
 \citation{bryant}
-\@writefile{lof}{\contentsline {figure}{\numberline {2.3}{\ignorespaces BDT for $f(x_1, x_2) = x_1 \land \lnot x_2$ under the ordering $[x_1, x_2]$\relax }}{15}}
-\newlabel{fig:BDT}{{2.3}{15}}
-\newlabel{obdd_uniqueness}{{2.3.1}{15}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2.4}{\ignorespaces Reduction to the OBDD for function $f(x, y, z) = x \land y \land z$ with variable order $[x, y, z]$. In this case, applying Steps (2) and (3) once is sufficient as the resulting diagram is reduced.\relax }}{16}}
-\newlabel{fig:bdd_reduction_example}{{2.4}{16}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.3}{\ignorespaces BDT for $f(x_1, x_2) = x_1 \land \lnot x_2$ under the ordering $[x_1, x_2]$\relax }}{16}}
+\newlabel{fig:BDT}{{2.3}{16}}
+\newlabel{obdd_uniqueness}{{2.3.1}{16}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.4}{\ignorespaces Reduction to the OBDD for function $f(x, y, z) = x \land y \land z$ with variable order $[x, y, z]$. In this case, applying Steps (2) and (3) once is sufficient as the resulting diagram is reduced.\relax }}{17}}
+\newlabel{fig:bdd_reduction_example}{{2.4}{17}}
 \citation{compilation_map}
 \citation{trees_of_bdds}
 \citation{bdd_trees}
 \citation{compilation_map}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.2}Project Directions}{17}}
 \citation{sdd_1}
 \citation{sdd_3}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.2}Project Directions}{18}}
 \citation{sdd_1}
-\@writefile{lof}{\contentsline {figure}{\numberline {2.5}{\ignorespaces An OBDD (left) and the corresponding NNF sentence (right). Although the former seems much more compact, the difference in size is only linear and both representations are essentially the same.\relax }}{18}}
-\newlabel{nnf_obdd}{{2.5}{18}}
-\@writefile{toc}{\contentsline {section}{\numberline {2.4}Sentential Decision Diagrams}{18}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.1}Preliminaries}{18}}
-\newlabel{theorem_apply}{{2.4.1}{19}}
-\newlabel{unique_compressed}{{2.4.2}{19}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2.6}{\ignorespaces Two vtrees for $X = \{A, B, C, D\}.$\relax }}{20}}
-\newlabel{fig:vtree_examples}{{2.6}{20}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.5}{\ignorespaces An OBDD (left) and the corresponding NNF sentence (right). Although the former seems much more compact, the difference in size is only linear and both representations are essentially the same.\relax }}{19}}
+\newlabel{nnf_obdd}{{2.5}{19}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.4}Sentential Decision Diagrams}{19}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.1}Preliminaries}{19}}
+\newlabel{theorem_apply}{{2.4.1}{20}}
+\newlabel{unique_compressed}{{2.4.2}{20}}
 \@writefile{toc}{\contentsline {subsubsection}{Vtrees}{20}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.2}Definition and Construction}{20}}
-\@writefile{toc}{\contentsline {subsubsection}{Graphical Representation of SDDs}{21}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.6}{\ignorespaces Two vtrees for $X = \{A, B, C, D\}$, both inducing the order $[A, B, C, D]$.\relax }}{21}}
+\newlabel{fig:vtree_examples}{{2.6}{21}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.2}Definition and Construction}{21}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2.7}{\ignorespaces SDDs for $f = (A \land B) \lor (B \land C) \lor (C \land D)$ corresponding to the vtrees in Figure\nobreakspace  {}2.6\hbox {}. Notice that identical SDD nodes have been merged.\relax }}{22}}
 \newlabel{fig:sddexample1}{{2.7}{22}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.3}Canonicity and Operations}{22}}
-\newlabel{unique_vtree_function}{{2.4.3}{22}}
+\@writefile{toc}{\contentsline {subsubsection}{Graphical Representation of SDDs}{22}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.3}Canonicity and Operations}{23}}
+\newlabel{unique_vtree_function}{{2.4.3}{23}}
 \newlabel{unique_vtree_sdd}{{2.4.4}{23}}
 \newlabel{canonicity}{{2.4.5}{23}}
-\@writefile{toc}{\contentsline {subsubsection}{Operations on SDDs}{23}}
-\newlabel{operations}{{2.4.3}{23}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2.8}{\ignorespaces The BDD for $f = (A \land B) \lor (B \land C) \lor (C \land D)$ with variable order $[A, B, C, D]$ (left), and the SDD respecting the right-linear vtree inducing the same order (right). Note that this is the vtree depicted on the right of Figure 2.6\hbox {}.\relax }}{25}}
-\newlabel{fig:bdds_are_sdds}{{2.8}{25}}
+\citation{sdd_1}
+\@writefile{toc}{\contentsline {subsubsection}{Operations on SDDs}{24}}
+\newlabel{operations}{{2.4.3}{24}}
+\citation{sdd_1}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.4.4}OBDDs are SDDs}{25}}
 \newlabel{bdds_are_sdds}{{2.4.4}{25}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.8}{\ignorespaces The BDD for $f = (A \land B) \lor (B \land C) \lor (C \land D)$ with variable order $[A, B, C, D]$ (left), and the SDD respecting the right-linear vtree inducing the same order (right). Note that this is the vtree depicted on the right of Figure 2.6\hbox {}.\relax }}{26}}
+\newlabel{fig:bdds_are_sdds}{{2.8}{26}}
+\citation{SDD_website}
 \@writefile{toc}{\contentsline {chapter}{\numberline {3}A First Model Checker Based on SDDs}{27}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
 \@writefile{toc}{\contentsline {section}{\numberline {3.1}Preliminary I: The SDD Package}{27}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1.1}Description}{27}}
+\newlabel{sdd_package}{{3.1}{27}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1.1}Overview}{27}}
 \citation{sdd_3}
 \citation{knuth}
 \citation{sdd_3}
@@ -106,6 +115,7 @@
 \newlabel{comparison_with_cudd}{{3.1.4}{30}}
 \newlabel{gc}{{3.1.4}{30}}
 \@writefile{toc}{\contentsline {section}{\numberline {3.2}Preliminary II: MCMAS}{30}}
+\newlabel{mcmas}{{3.2}{30}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2.1}Important Classes and Methods}{31}}
 \newlabel{MCMAS_steps}{{3.2.1}{31}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2.2}Variable Allocation}{32}}
@@ -118,111 +128,120 @@
 \newlabel{algebraic_decision_diagrams}{{3.2.4}{33}}
 \citation{sdd_3}
 \@writefile{toc}{\contentsline {section}{\numberline {3.3}Model Checking with Sentential Decision Diagrams}{34}}
+\newlabel{3.3}{{3.3}{34}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3.1}Suitability of SDDs for Model Cheking}{34}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3.2}The Importance of Vtrees}{35}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.3}A New Perspective on Vtrees}{35}}
+\newlabel{new_perspective}{{3.3.3}{35}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3.3}{\ignorespaces The l-subtrees of this vtree are the subtrees rooted at nodes 26, 21, 28, and 29.\relax }}{36}}
 \newlabel{fig:lsubtrees_vtree_example}{{3.3}{36}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.3}A New Perspective on Vtrees}{36}}
-\newlabel{new_perspective}{{3.3.3}{36}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.4}Vtree Options in Practice}{37}}
-\newlabel{vtree_options_in_practice}{{3.3.4}{37}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.4}Vtree Options in Practice}{36}}
+\newlabel{vtree_options_in_practice}{{3.3.4}{36}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3.5}Dynamic Minimisation in Symbolic Model Checking}{37}}
 \newlabel{dynamic_with_sdds}{{3.3.5}{37}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.4}Implementation Specifics}{38}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.1}Adapting MCMAS}{38}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.4}Implementation Specifics}{37}}
+\newlabel{implementation}{{3.4}{37}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.1}Adapting MCMAS}{37}}
 \citation{unified_framework}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.2}Existential Quantification}{39}}
-\newlabel{exist_implementation}{{3.4.2}{39}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.5}SDD-Specific Features}{41}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.1}Vtrees and Variable Orders}{41}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.2}A New Dynamic Vtree Search Algorithm}{42}}
-\newlabel{dynamic_with_sdds_implementation}{{3.5.2}{42}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.2}Existential Quantification}{38}}
+\newlabel{exist_implementation}{{3.4.2}{38}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.5}SDD-Specific Features}{40}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.1}Vtrees and Variable Orders}{40}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.2}A New Dynamic Vtree Search Algorithm}{41}}
+\newlabel{dynamic_with_sdds_implementation}{{3.5.2}{41}}
 \citation{minisat}
-\@writefile{toc}{\contentsline {section}{\numberline {3.6}Software Engineering Issues and Challenges}{43}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.1}Garbage Collection}{43}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.2}Comparing SDDs and BDDs}{43}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.6}Software Engineering Issues}{42}}
+\newlabel{issues}{{3.6}{42}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.1}Garbage Collection}{42}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.2}Comparing SDDs and BDDs}{42}}
 \citation{dot}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.3}Correctness}{44}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.3}Correctness}{43}}
 \citation{bdd_heuristics}
-\@writefile{toc}{\contentsline {chapter}{\numberline {4}Evaluation}{46}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {4}Evaluation}{45}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {4.1}Introduction}{46}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.1}Evaluation Strategy}{46}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.2}Example Models}{47}}
-\newlabel{ispl_examples}{{4.1.2}{47}}
-\@writefile{toc}{\contentsline {subsubsection}{The Dining Cryptographers}{47}}
-\@writefile{toc}{\contentsline {subsubsection}{100 Prisoners and a Lightbulb}{48}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.1}Introduction}{45}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.1}Evaluation Strategy}{45}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.2}Example Models}{46}}
+\newlabel{ispl_examples}{{4.1.2}{46}}
+\@writefile{toc}{\contentsline {subsubsection}{The Dining Cryptographers}{46}}
+\@writefile{toc}{\contentsline {subsubsection}{100 Prisoners and a Lightbulb}{47}}
 \citation{nspk}
-\@writefile{toc}{\contentsline {subsubsection}{The Needham-Schroeder Public-Key Protocol}{49}}
-\@writefile{toc}{\contentsline {subsubsection}{The Bit Transmission Problem}{50}}
-\@writefile{toc}{\contentsline {subsubsection}{Diversity}{50}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.3}Experimental Framework}{50}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.2}Static Comparisons with Standard Vtrees}{51}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.1}Right-Linear Vtrees}{51}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces Computation Time: SDDs were built with right-linear vtrees, and standard orderings\relax }}{52}}
-\newlabel{table:rightlineartime}{{4.1}{52}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.2}{\ignorespaces Memory Usage: SDDs were built with right-linear vtrees, and standard orderings\relax }}{52}}
-\newlabel{table:rightlinearmemory}{{4.2}{52}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.3}{\ignorespaces Time Comparisons with left-linear vtrees.\relax }}{53}}
-\newlabel{table:otherstandardvtrees1time}{{4.3}{53}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.4}{\ignorespaces Memory with left-linear vtrees.\relax }}{53}}
-\newlabel{table:otherstandardvtrees1memory}{{4.4}{53}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.2}Other Standard Vtrees}{53}}
-\newlabel{balanced_comparisons}{{4.2.2}{53}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.3}Towards a Better Vtree: Analysis \& Observations}{53}}
-\newlabel{analysis_example}{{4.2.3}{53}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.5}{\ignorespaces Balanced Vtrees: Computation Time\relax }}{54}}
-\newlabel{table:otherstandardvtrees2time}{{4.5}{54}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.6}{\ignorespaces Balanced Vtrees: Memory Usage\relax }}{54}}
-\newlabel{table:otherstandardvtrees2memory}{{4.6}{54}}
-\@writefile{toc}{\contentsline {subsubsection}{An ``Ideal" Example}{55}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.3}Static Comparisons with Alternative Vtrees}{55}}
-\newlabel{alternative}{{4.3}{55}}
-\newlabel{RF1}{56}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces The manager's vtree at the end of a run of our model checker on crypto6, with an initial vtree of type balanced.\relax }}{56}}
-\newlabel{fig:large_vtree_after_reordering}{{4.1}{56}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.1}A First Attempt Using Agent Variables}{57}}
-\newlabel{first_attempt}{{4.3.1}{57}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.7}{\ignorespaces Vtree Option 5 -- Time\relax }}{58}}
-\newlabel{table:vtree5time}{{4.7}{58}}
+\@writefile{toc}{\contentsline {subsubsection}{The Needham-Schroeder Public-Key Protocol}{48}}
+\@writefile{toc}{\contentsline {subsubsection}{The Bit Transmission Problem}{48}}
+\@writefile{toc}{\contentsline {subsubsection}{Range of Examples}{49}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.3}Experimental Framework}{49}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.2}Static Comparisons with Standard Vtrees}{49}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.1}Right-Linear Vtrees}{50}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces Computation Time: SDDs were built with right-linear vtrees, and standard orderings\relax }}{51}}
+\newlabel{table:rightlineartime}{{4.1}{51}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.2}{\ignorespaces Memory Usage: SDDs were built with right-linear vtrees, and standard orderings\relax }}{51}}
+\newlabel{table:rightlinearmemory}{{4.2}{51}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.3}{\ignorespaces Time Comparisons with left-linear vtrees.\relax }}{52}}
+\newlabel{table:otherstandardvtrees1time}{{4.3}{52}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.4}{\ignorespaces Memory with left-linear vtrees.\relax }}{52}}
+\newlabel{table:otherstandardvtrees1memory}{{4.4}{52}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.2}Other Standard Vtrees}{52}}
+\newlabel{balanced_comparisons}{{4.2.2}{52}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.5}{\ignorespaces Balanced Vtrees: Computation Time\relax }}{53}}
+\newlabel{table:otherstandardvtrees2time}{{4.5}{53}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.6}{\ignorespaces Balanced Vtrees: Memory Usage\relax }}{53}}
+\newlabel{table:otherstandardvtrees2memory}{{4.6}{53}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.3}Towards a Better Vtree: Analysis \& Observations}{54}}
+\newlabel{analysis_example}{{4.2.3}{54}}
+\@writefile{toc}{\contentsline {subsubsection}{An ``Ideal" Example}{54}}
+\newlabel{RF1}{55}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces The manager's vtree at the end of a run of our model checker on crypto6, with an initial vtree of type balanced.\relax }}{55}}
+\newlabel{fig:large_vtree_after_reordering}{{4.1}{55}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.3}Static Comparisons with Alternative Vtrees}{56}}
+\newlabel{alternative}{{4.3}{56}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.1}A First Attempt Using Agent Variables}{56}}
+\newlabel{first_attempt}{{4.3.1}{56}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.7}{\ignorespaces Vtree Option 5 -- Time\relax }}{57}}
+\newlabel{table:vtree5time}{{4.7}{57}}
 \@writefile{lot}{\contentsline {table}{\numberline {4.8}{\ignorespaces Vtree Option 5 -- Memory\relax }}{58}}
 \newlabel{table:vtree5memory}{{4.8}{58}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.2}An Upper Bound on the Size of Subtrees}{60}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.9}{\ignorespaces Time Comparisons With Different Values of the Upper Bound $N$. In the table, $n$ denotes the total number of variables in the model.\relax }}{61}}
-\newlabel{table:upperboundvaluestime}{{4.9}{61}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.10}{\ignorespaces Memory: Different Values of the Upper Bound $N$. \relax }}{61}}
-\newlabel{table:upperboundvaluesmemory}{{4.10}{61}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.3}A Different Partition of the Set of Variables}{63}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.11}{\ignorespaces Time\relax }}{64}}
-\newlabel{table:vtree6time}{{4.11}{64}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.12}{\ignorespaces Memory\relax }}{64}}
-\newlabel{table:vtree6memory}{{4.12}{64}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.4}Dynamic Variable Reordering and Minimisation}{65}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.13}{\ignorespaces Time and Memory: new partition\relax }}{66}}
-\newlabel{table:newpartition}{{4.13}{66}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.1}The Default Dynamic Minimisation Function}{66}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.2}Changing the Configuration}{67}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.14}{\ignorespaces Time\relax }}{68}}
-\newlabel{table:defaultdaotime}{{4.14}{68}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.15}{\ignorespaces memory\relax }}{68}}
-\newlabel{table:defaultdaomemory}{{4.15}{68}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.16}{\ignorespaces Time\relax }}{69}}
-\newlabel{table:newconftime}{{4.16}{69}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.17}{\ignorespaces memory\relax }}{69}}
-\newlabel{table:newconfmemory}{{4.17}{69}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.18}{\ignorespaces Time\relax }}{70}}
-\newlabel{table:newdaotime}{{4.18}{70}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.19}{\ignorespaces memory\relax }}{70}}
-\newlabel{table:newdaomemory}{{4.19}{70}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.3}The New Dynamic Minimisation Function}{70}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.4}Comparison with the MCMAS dynamic minimisation feature}{70}}
-\newlabel{daocomparison}{{4.4.4}{70}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.20}{\ignorespaces Comparisons of various exists functions\relax }}{71}}
-\newlabel{table:existcomparisons}{{4.20}{71}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.5}Existential Quantification}{71}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.2}An Upper Bound on the Size of Subtrees}{58}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.9}{\ignorespaces Time Comparisons With Different Values of the Upper Bound $N$. In the table, $n$ denotes the total number of variables in the model.\relax }}{60}}
+\newlabel{table:upperboundvaluestime}{{4.9}{60}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.10}{\ignorespaces Memory: Different Values of the Upper Bound $N$. \relax }}{60}}
+\newlabel{table:upperboundvaluesmemory}{{4.10}{60}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.3}A Different Partition of the Set of Variables}{62}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.11}{\ignorespaces Time\relax }}{63}}
+\newlabel{table:vtree6time}{{4.11}{63}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.12}{\ignorespaces Memory\relax }}{63}}
+\newlabel{table:vtree6memory}{{4.12}{63}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.13}{\ignorespaces Time and Memory: new partition\relax }}{64}}
+\newlabel{table:newpartition}{{4.13}{64}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.4}Dynamic Variable Reordering and Minimisation}{64}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.1}The Default Dynamic Minimisation Function}{65}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.14}{\ignorespaces Time\relax }}{66}}
+\newlabel{table:defaultdaotime}{{4.14}{66}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.15}{\ignorespaces memory\relax }}{66}}
+\newlabel{table:defaultdaomemory}{{4.15}{66}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.2}Changing the Configuration}{66}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.3}The New Dynamic Minimisation Function}{67}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.4}Comparison with the MCMAS dynamic minimisation feature}{67}}
+\newlabel{daocomparison}{{4.4.4}{67}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.16}{\ignorespaces Time\relax }}{68}}
+\newlabel{table:newconftime}{{4.16}{68}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.17}{\ignorespaces memory\relax }}{68}}
+\newlabel{table:newconfmemory}{{4.17}{68}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.18}{\ignorespaces Time\relax }}{69}}
+\newlabel{table:newdaotime}{{4.18}{69}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.19}{\ignorespaces memory\relax }}{69}}
+\newlabel{table:newdaomemory}{{4.19}{69}}
+\citation{CUDD_website}
+\@writefile{lot}{\contentsline {table}{\numberline {4.20}{\ignorespaces Dynamic Comparison with MCMAS: Time and Memory\relax }}{70}}
+\newlabel{table:dynamiccomparisonwithmcmas}{{4.20}{70}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.5}Existential Quantification}{70}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.21}{\ignorespaces Comparisons of various exists functions\relax }}{71}}
+\newlabel{table:existcomparisons}{{4.21}{71}}
 \@writefile{toc}{\contentsline {section}{\numberline {4.6}Summary}{71}}
 \@writefile{toc}{\contentsline {section}{\numberline {4.7}Qualitative Evaluation}{71}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.7.1}Evaluation of the evaluation}{71}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.7.2}Evaluation of the Code}{71}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.7.3}Project Limitations}{71}}
 \@writefile{toc}{\contentsline {chapter}{\numberline {5}Conclusion and future work}{72}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
@@ -237,37 +256,42 @@
 \bibcite{sdd_1}{7}
 \bibcite{sdd_2}{8}
 \bibcite{sdd_3}{9}
-\bibcite{compilation_map}{10}
-\bibcite{trees_of_bdds}{11}
-\bibcite{bdd_trees}{12}
-\bibcite{logic_in_computer_science}{13}
-\bibcite{knuth}{14}
-\bibcite{add}{15}
-\bibcite{bdd_heuristics}{16}
-\bibcite{interleaving}{17}
-\bibcite{atl}{18}
-\bibcite{bryant}{19}
-\bibcite{ctl*}{20}
-\bibcite{ctlk}{21}
-\bibcite{unified_framework}{22}
-\bibcite{nspk}{23}
-\bibcite{MCMAS_website}{24}
-\bibcite{CUDD_website}{25}
-\bibcite{SDD_website}{26}
-\bibcite{minisat}{27}
-\bibcite{dot}{28}
-\bibcite{notes_303}{29}
-\bibcite{notes_499}{30}
-\@writefile{toc}{\contentsline {chapter}{\numberline {A}The Bit Transmission Problem}{75}}
+\bibcite{evmdd}{10}
+\bibcite{compilation_map}{11}
+\bibcite{trees_of_bdds}{12}
+\bibcite{bdd_trees}{13}
+\bibcite{logic_in_computer_science}{14}
+\bibcite{knuth}{15}
+\bibcite{add}{16}
+\bibcite{bdd_heuristics}{17}
+\bibcite{interleaving}{18}
+\bibcite{atl}{19}
+\bibcite{bryant}{20}
+\bibcite{ctl*}{21}
+\bibcite{ctlk}{22}
+\bibcite{unified_framework}{23}
+\bibcite{nspk}{24}
+\bibcite{sat_based_smc}{25}
+\bibcite{sat_based_smc2}{26}
+\bibcite{sat_based_smc3}{27}
+\bibcite{multivalued_data_structures}{28}
+\bibcite{MCMAS_website}{29}
+\bibcite{CUDD_website}{30}
+\bibcite{SDD_website}{31}
+\bibcite{minisat}{32}
+\bibcite{dot}{33}
+\bibcite{notes_303}{34}
+\bibcite{notes_499}{35}
+\@writefile{toc}{\contentsline {chapter}{\numberline {A}The Bit Transmission Problem}{76}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{BTP}{{A}{75}}
-\@writefile{toc}{\contentsline {section}{\numberline {A.1}The Problem}{75}}
-\@writefile{toc}{\contentsline {section}{\numberline {A.2}The Model}{75}}
-\@writefile{toc}{\contentsline {section}{\numberline {A.3}ISPL Specification}{76}}
-\@writefile{lof}{\contentsline {figure}{\numberline {A.1}{\ignorespaces The ISPL code for the Environment.\relax }}{77}}
-\@writefile{lof}{\contentsline {figure}{\numberline {A.2}{\ignorespaces The ISPL code for the two agents of the system, Sender and Receiver.\relax }}{78}}
-\@writefile{lof}{\contentsline {figure}{\numberline {A.3}{\ignorespaces The rest of the ISPL code of the BTP, including the initial states, the fairness condition, the formulae to be checked, and the evaluation function for atoms of the model.\relax }}{79}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {B}Implementation Details}{80}}
+\newlabel{BTP}{{A}{76}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.1}The Problem}{76}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.2}The Model}{76}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.3}ISPL Specification}{77}}
+\@writefile{lof}{\contentsline {figure}{\numberline {A.1}{\ignorespaces The ISPL code for the Environment.\relax }}{78}}
+\@writefile{lof}{\contentsline {figure}{\numberline {A.2}{\ignorespaces The ISPL code for the two agents of the system, Sender and Receiver.\relax }}{79}}
+\@writefile{lof}{\contentsline {figure}{\numberline {A.3}{\ignorespaces The rest of the ISPL code of the BTP, including the initial states, the fairness condition, the formulae to be checked, and the evaluation function for atoms of the model.\relax }}{80}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {B}Implementation Details}{81}}
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
