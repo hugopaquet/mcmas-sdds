@@ -15,7 +15,7 @@
 \usepackage{rotating}
 \usepackage{caption}
 \usepackage{subcaption}
-\usepackage[margin=1.4in]{geometry}
+\usepackage[margin=1.5in]{geometry}
 \usepackage{algorithm,algorithmic}
 \newcommand{\chapterbreak}{\clearpage}
 \usepackage{tabularx}
@@ -2154,12 +2154,15 @@ We propose the following vtree construction:
 \begin{itemize}
 \item We create balanced l-subtrees which contain 2 variables from each agent, a state variable and its primed counterpart;
 \item We continue until all agents have run out of variables (i.e l-subtrees get smaller as the process goes on);
-\item For action variables, we give ourselves two options: we can create an l-subtree containing \textit{all }the action variables (option 1), or we can create one action l-subtree for each agent (option 2). 
+\item For action variables, we create an l-subtree containing \textit{all} the action variables which we append at the bottom of the vtree.
 \end{itemize}
 
-TODO changer le troisieme point au desssus et analyse + conclusion
+The results, reported in Table~\ref{table:newpartition}, are very similar to those obtained with the bounded construction in the previous section. 
 
-The results are in Table~\ref{table:newpartition}.
+TODO very interesting 
+
+
+
 \begin{table}
 \centering
 \begin{tabular}{|*{5}{c|}}
@@ -2301,52 +2304,28 @@ nspk5 & - & - & -\\ \hline
 
 \subsection{The New Dynamic Minimisation Function}
 
+In order to lower the number of vtrees considered during dynamic minimisation, we had the idea of limiting the vtree operations to the l-subtrees which, as our previous experiments demonstrated, are a very important factor in the overall performance of the model checker. The original motivation was that it would limit the search to vtrees which we \textit{know} are efficient, and thus would avoid wasting time searching for alternative vtrees.
 
-\begin{table}
-\centering
-\begin{tabular}{|*{4}{c|}}
-\hline
- &5 & 6 & 7 \\ \hline
-cryptos9 && &\\ \hline
-cryptos12  &&  & \\ \hline
-cryptos15   &&  & \\ \hline
-pris10 &  && \\ \hline
-pris11 & & & \\ \hline
-pris12 & && \\ \hline
-nspk2 & & & \\ \hline
-nspk4 & && \\ \hline
-nspk5 &&& \\ \hline
-\end{tabular}
-\caption{Time}
-\label{table:newdaotime}
-\vspace{1in}
-\centering
-\begin{tabular}{|*{4}{c|}}
-\hline
-& 5 & 6 & 7\\ \hline
-cryptos9 & & & \\ \hline
-cryptos12  &  && \\ \hline
-cryptos15   &  && \\ \hline
-pris10 &&  & \\ \hline
-pris11 & & & \\ \hline
-pris12 & && \\ \hline
-nspk2 &  && \\ \hline
-nspk4 & && \\ \hline
-nspk5 &  && \\ \hline
-\end{tabular}
-\caption{memory}
-\label{table:newdaomemory}
-\end{table}
+Unfortunately, this part of the project did not go as well as we had hoped, and the performance of our implementation turned out to be extremely bad. The results our not included here as (we believe) this issue requires more work, both on the theoretical and on the implementation side. 
+
+The following are likely reasons why our algorithm and implementation failed to improve computations: 
+\begin{itemize}
+\item The implementation was not properly synchronised with the default minimisation function of the SDD Package, which is used for minimising l-subtrees. This resulted in our function sometimes being called for minimise l-subtrees themselves, which was not the point. More work would need to be done in order to properly \textit{integrate} our new algorithm into the SDD Package. 
+\item In the CUDD techniques that we were attempting to mimic, groups of variables are created in order to be kept contiguous during the reordering process. Not only does the process then reorder variables within groups (which our algorithm does too), the process may also reorder groups themselves. We did not implement this for l-subtrees as it would have been impossible to use the default minimisation function and a new reordering function would have been needed. 
+\end{itemize}
+
+Nonetheless, this idea of grouping variables has proved critical for the efficiency of some BDD reordering techniques, and we believe that there is much room for improvement in this area of SDD minimisation.
+
 
 \subsection{Comparison with the MCMAS dynamic minimisation feature} 
 \label{daocomparison}
 
 In this final subsection, we compare the results obtained for SDD dynamic minimisation in our model checker with the BDD variable reordering functionality implemented in MCMAS. Table~\ref{table:dynamiccomparisonwithmcmas} contains both the time and memory results of our comparison. The BDD results were obtained by running MCMAS using the standard ordering 2 as the initial variable order. The SDD results do not correspond to one experiment in particular, but instead were taken as the \textit{shortest} of all the computation results obtained previously. Memory and time results do however correspond to the same run of the model checker.
 
-Although this is not really a fair comparison, it is enough for us to realise that BDDs \textit{massively} outperform SDDs, when both minimisation features are activated. This could have been expected, as there are two major reasons for this: \begin{enumerate}
+Although this is not really a fair comparison, it is enough for us to realise that BDDs \textit{massively} outperform SDDs, when both minimisation features are activated. This could have been expected, as there are two major reasons for this: \begin{itemize}
 \item Vtree search is a much more time-consuming process, as seen earlier in this report. It is very likely that the structures obtained after a good vtree search are more compact than the corresponding BDDs, however the difference in size does not make up for the time required for the search -- at least in our examples.
 \item In CUDD are implemented 14 different variable reordering techniques \cite{CUDD_website}. Some of these were designed specifically for the development of the library, and the rest were taken from the large amount of existing research on BDD minimisation. In comparison, only one SDD minimisation algorithm has been proposed, and it was not designed for model checking but for knowledge compilation, which requires far less operations on SDDs. 
-\end{enumerate}
+\end{itemize}
 
 
 
@@ -2367,7 +2346,7 @@ nspk4 & 5.68 & 17.34 & 20 & 57 \\ \hline
 nspk5 & - & - & -& - \\ \hline
 \end{tabular}
 
-\caption{Dynamic Comparison with MCMAS: Time and Memory}
+\caption{Dynamic Comparison with MCMAS (Time and Memory)}
 \label{table:dynamiccomparisonwithmcmas}
 \end{table}
 
@@ -2377,9 +2356,11 @@ In these final experiments, we evaluate our new implementation of the existentia
 
 Table~\ref{table:existcomparisons} contains the results of our comparisons of both algorithms, with BDDs, and SDDs with both right-linear and ``bounded agent-based" vtrees. 
 
-In the case of BDDs, the recursive algorithm performs slightly better, as we expected. However, the SDD results are rather suprising at first sight, considering the iterative algorithm is more efficient in most cases. 
-We need to point out one thing before we give our analysis of the situation: the dashes `-' in that tables are due to a problem in the recurse
+In the case of BDDs, the recursive algorithm performs slightly better, as we expected. However, the SDD results are rather suprising at first sight, as it is the iterative algorithm which is more efficient in all cases.
 
+We observe that the time difference between the two algorithms is much more marked with the bounded vtrees than with the right-linear, which \textit{confirms} that the unsuitability of this algorithm for SDDs is due to the fact that a ``top variable" makes sense in a right-linear vtree but not in a bounded SDD. That is, the order in which variables are existentially quantified makes an important difference in a BDD or a right-linear SDD, but not in other types of SDDs, for which a recursive algorithm is therefore just additional overhead. 
+
+In the case of right-linear vtrees, a likely reason for the longer recursive computations is the fact that the \texttt{condition} algorithm on SDDs was not optimised for this particular type of vtrees, and therefore probably isn't as efficient as it should be for this type of data structures. This, along with the overhead added by the recursive calls, makes the iterative method preferable even in this case. 
 
 \begin{table}
 \centering
@@ -2415,27 +2396,56 @@ DYNAMIC
 
 \section{Qualitative Evaluation}
 
-\subsection{Evaluation of the evaluation}
+\subsection{Pertinence of the Approach}
 
--Our research is a good basis, and we evaluated a lot of different things
--perhaps not in too much depth
--also to explain the results better it would have been useful to have access to the SDD package code 
-- should have done more research on memory management..packages rely a lot on the cache
+Our theoretical approach identified the key challenges in model checking with SDDs, namely:
+\begin{itemize}
+\item Finding an efficient method for existential quantification of a set of variables on an SDD;
+\item Identifying appropriate, statically generated vtrees;
+\item Developing a powerful dynamic vtree search algorithm.
+\end{itemize}
 
-\subsection{Evaluation of the Code}
+\subsection{Effectiveness and Elegance of the Implementation}
 
-not a great design, and code is messy
+In this subsection, we discuss two aspects of the code: its effectiveness and its elegance. To summarise, our implementation is believed to be effective, but not quite so elegant. 
 
-\subsection{Project Limitations}
+We argue this first point by saying that most of the vtree options used throughout this project were implemented as command line options, following the design of MCMAS. For example, 
+\begin{verbatim}
+./mcmas_sdd -vtree 1 -o 2 example.ispl
+\end{verbatim}
+will verify the model encoded in the file \texttt{example.ispl}, by using a static right-linear vtree (option 1) with standard ordering 2 (the same as MCMAS). Similarly, 
+\begin{verbatim}
+./mcmas_sdd -vtree 5 -d example.ispl
+\end{verbatim}
+will enable the dynamic minimisation feature (the \texttt{-d} option), with an initial ``agent-based" vtree (option 5).
+Running \texttt{./mcmas\_sdd} without arguments will print out a help screen describing all possible options. 
 
-THINGS WE DIDN'T DO BUT SHOULD HAVE DONE: 
-- the debugging thing
-- go into more depth in evaluation
+On the other hand, the code base itself is not the most elegant or accessible. 
+Specifically, we believe that our implementation doesn't make enough use of the object-oriented features of C$++$, in particular during the vtree generation process, which has some duplicate code that could have been avoided, had we created a \texttt{vtree\_creator} class, and similarly a \texttt{var\_order\_creator} class.
+Also, the code that we added is well commented, but requires an understanding of the original MCMAS implementation, which itself is not the most documented code base. 
+
+
+
+
+\subsection{Depth of Experiments}
+
+During the evaluation period of our project, we chose to explore a broad range of options, in order to give the most accurate judgement of the suitability of SDDs for model checking, and attempt to find alternative techniques to the less efficient ones. 
+
+Unfortunately, this prevented us from going into very much depth in each of our experiments, and we were often limited to only trying a small number of different options, or spend too much time investigating the causes of various performance issues. A particular area that we somewhat overlooked is the way memory is managed in the CUDD library and the SDD Package. This is really important, as the \textit{cache} is an essential element to the efficiency of using these data structures in practice. In CUDD, this is relatively well documented, but we did not have access to the SDD Package source code and were forced to use it as a ``black box".
+
+Nevertheless, this initial investigation provides a good basis for identifying potential ways of improving the performance of an SDD-based model checker. 
+
+\subsection{Limitations}
+
+One limitation of the project is the small variety of examples on which our model checker was tested. Although our three classes of examples were sufficient to identify important flaws and more efficient techniques, a more thorough investigation could be conducted using even more diverse models.  
+
+
 
 \chapter{Conclusion and future work}
 
-ARE BDDs REALLY BETTER?
-yes but SDDs still impressive (that they sometimes beat BDDs even though manager is much worse)
+So far, it seems relatively unlikely that SDDs will replace OBDDs in model checking. However, our project clearly layed out 
+
+
 
 
 REVIEW
